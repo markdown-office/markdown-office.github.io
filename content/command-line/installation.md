@@ -91,8 +91,8 @@ which Composer only runs when the project allows it:
 ```
 
 Without that line the install stops with Composer's own message naming the plugin.
-Nothing else has to be relaxed: every dependency is a stable release, so the default
-stability holds.
+Nothing else has to be relaxed: the package carries the stability it needs itself,
+and every dependency it resolves to is a stable release.
 
 ## Homebrew
 

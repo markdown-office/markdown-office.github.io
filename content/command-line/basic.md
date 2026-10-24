@@ -153,7 +153,7 @@ An installed copy answers with its own version and the two libraries it holds:
 $ mdoffice --version
 mdoffice 0.1.0
   markdown-office/markdown-word            0.2.0
-  markdown-office/markdown-presentation    0.1.0
+  markdown-office/markdown-presentation    0.2.0
 ```
 
 The tool versions itself separately from the libraries it holds, because it is neither of them: a
