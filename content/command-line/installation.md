@@ -29,7 +29,10 @@ and the page carries a `SHA256SUMS` file with the checksum of each of them.
 **A download in a browser asks a question on a Mac that a download in a terminal does
 not.** The quarantine flag is set by the application that fetched the file rather than
 by where it came from, so a file saved by a browser is quarantined and Gatekeeper
-asks. Fetching it with `curl` does not set the flag:
+asks — the dialog that says *Apple could not check whether "mdoffice" is free of
+malware that could harm your Mac or violate your privacy*. It asks because the
+signature is an ad-hoc one and the binary is not notarised. Fetching the file with
+`curl` does not set the flag:
 
 ```bash
 curl -L -o mdoffice https://github.com/markdown-office/mdoffice/releases/latest/download/mdoffice-0.1.0-macos-arm64
@@ -37,7 +40,7 @@ chmod +x mdoffice
 ```
 
 If the dialog appears on a file that was fetched some other way, the flag comes off
-like this:
+like this, and the program runs:
 
 ```bash
 xattr -d com.apple.quarantine mdoffice
