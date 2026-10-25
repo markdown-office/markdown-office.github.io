@@ -152,7 +152,7 @@ An installed copy answers with its own version and the two libraries it holds:
 ```bash
 $ mdoffice --version
 mdoffice 0.1.0
-  markdown-office/markdown-word            0.2.0
+  markdown-office/markdown-word            0.2.1
   markdown-office/markdown-presentation    0.2.0
 ```
 
@@ -166,5 +166,5 @@ answers with the branch it resolved rather than with a release, because that is 
 
 ```bash
 $ mdoffice word --version
-mdoffice word 0.2.0
+mdoffice word 0.2.1
 ```
