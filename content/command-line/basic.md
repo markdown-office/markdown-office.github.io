@@ -44,6 +44,10 @@ The Word half decides the direction from the file's first bytes, but with more t
 here a name alone cannot say which way the data goes, and an error that guessed would be right
 half the time and wrong the other half.
 
+Only a `.docx` is read back. An `.odt` is a zip archive as well, so it is read as a Word
+document and refused — the reader knows the Word document format and not the OpenDocument one.
+The two are written, not read.
+
 ## Commands
 
 | Part | Command | Does |
