@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73bca613558e398b45e7ca6f57160334",
+    "content-hash": "a7c52b0758fa031d56ea2f018057c411",
     "packages": [
         {
             "name": "composer/pcre",
@@ -83,6 +83,129 @@
             "time": "2026-06-07T11:47:49+00:00"
         },
         {
+            "name": "cweagans/composer-configurable-plugin",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cweagans/composer-configurable-plugin.git",
+                "reference": "15433906511a108a1806710e988629fd24b89974"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cweagans/composer-configurable-plugin/zipball/15433906511a108a1806710e988629fd24b89974",
+                "reference": "15433906511a108a1806710e988629fd24b89974",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "require-dev": {
+                "codeception/codeception": "~4.0",
+                "codeception/module-asserts": "^2.0",
+                "composer/composer": "~2.0",
+                "php-coveralls/php-coveralls": "~2.0",
+                "php-parallel-lint/php-parallel-lint": "^1.0.0",
+                "phpro/grumphp": "^1.8.0",
+                "sebastian/phpcpd": "^6.0",
+                "squizlabs/php_codesniffer": "^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "cweagans\\Composer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Cameron Eagans",
+                    "email": "me@cweagans.net"
+                }
+            ],
+            "description": "Provides a lightweight configuration system for Composer plugins.",
+            "support": {
+                "issues": "https://github.com/cweagans/composer-configurable-plugin/issues",
+                "source": "https://github.com/cweagans/composer-configurable-plugin/tree/2.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/cweagans",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-02-12T04:58:58+00:00"
+        },
+        {
+            "name": "cweagans/composer-patches",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cweagans/composer-patches.git",
+                "reference": "bfa6018a5f864653d9ed899b902ea72f858a2cf7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cweagans/composer-patches/zipball/bfa6018a5f864653d9ed899b902ea72f858a2cf7",
+                "reference": "bfa6018a5f864653d9ed899b902ea72f858a2cf7",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^2.0",
+                "cweagans/composer-configurable-plugin": "^2.0",
+                "ext-json": "*",
+                "php": ">=8.0.0"
+            },
+            "require-dev": {
+                "codeception/codeception": "~4.0",
+                "codeception/module-asserts": "^2.0",
+                "codeception/module-cli": "^2.0",
+                "codeception/module-filesystem": "^2.0",
+                "composer/composer": "~2.0",
+                "php-coveralls/php-coveralls": "~2.0",
+                "php-parallel-lint/php-parallel-lint": "^1.0.0",
+                "phpro/grumphp": "^1.8.0",
+                "sebastian/phpcpd": "^6.0",
+                "squizlabs/php_codesniffer": "^4.0"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "_": "The following two lines ensure that composer-patches is loaded as early as possible.",
+                "class": "cweagans\\Composer\\Plugin\\Patches",
+                "plugin-modifies-downloads": true,
+                "plugin-modifies-install-path": true
+            },
+            "autoload": {
+                "psr-4": {
+                    "cweagans\\Composer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Cameron Eagans",
+                    "email": "me@cweagans.net"
+                }
+            ],
+            "description": "Provides a way to patch Composer packages.",
+            "support": {
+                "issues": "https://github.com/cweagans/composer-patches/issues",
+                "source": "https://github.com/cweagans/composer-patches/tree/2.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/cweagans",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-10-30T23:44:22+00:00"
+        },
+        {
             "name": "dflydev/dot-access-data",
             "version": "v3.0.3",
             "source": {
@@ -159,16 +282,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.10.3",
+            "version": "2.10.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "6efbd9c472b91db0a3350fcd601c8332c2382e1f"
+                "reference": "40821b7606d8d946bac57dbd2290076c722e3a65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/6efbd9c472b91db0a3350fcd601c8332c2382e1f",
-                "reference": "6efbd9c472b91db0a3350fcd601c8332c2382e1f",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/40821b7606d8d946bac57dbd2290076c722e3a65",
+                "reference": "40821b7606d8d946bac57dbd2290076c722e3a65",
                 "shasum": ""
             },
             "require": {
@@ -262,7 +385,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-21T13:07:34+00:00"
+            "time": "2026-10-17T19:59:50+00:00"
         },
         {
             "name": "league/config",
@@ -533,11 +656,11 @@
         },
         {
             "name": "markdown-office/commonmark-generic-directives",
-            "version": "0.2.0",
+            "version": "0.3.0",
             "dist": {
                 "type": "path",
                 "url": "../commonmark-generic-directives",
-                "reference": "3955efcbc2a8d6bb02755831169209e163e88ff2"
+                "reference": "7e4c56b1e9e78d57b4684dc99f13e8899d919ec8"
             },
             "require": {
                 "league/commonmark": "^2.10",
@@ -617,16 +740,17 @@
             "dist": {
                 "type": "path",
                 "url": "../markdown-presentation",
-                "reference": "71c361504fe7ad2b7c80803a9d1636cf11cb394e"
+                "reference": "06da2e48f72b9df0309b6a0ac4bb991e651079bd"
             },
             "require": {
+                "cweagans/composer-patches": "^2.0",
                 "ext-dom": "*",
                 "ext-gd": "*",
                 "ext-zip": "*",
                 "league/commonmark": "^2.10",
-                "markdown-office/commonmark-generic-directives": "^0.2.0",
+                "markdown-office/commonmark-generic-directives": "^0.3.0",
                 "php": "^8.2",
-                "phpoffice/phppresentation": "dev-master#54586957f0fbbce0e3a9434c88cb6050f6cc0759",
+                "phpoffice/phppresentation": "~1.2.0",
                 "symfony/yaml": "^7.2 || ^8.0"
             },
             "require-dev": {
@@ -637,6 +761,17 @@
                 "ext-imagick": "Embeds SVG. PowerPoint holds a vector only beside a raster of it, so something has to draw the raster; without this an SVG raises rather than going in as a picture no reader can show."
             },
             "type": "library",
+            "extra": {
+                "patches": {
+                    "phpoffice/phppresentation": [
+                        {
+                            "description": "PHPPresentation 1.2.0 brought up to upstream's master, with the fixes that give a picture the path, the bytes and the name it was read from, and that find the folder of a part of a package with the slashes of the package",
+                            "url": "https://raw.githubusercontent.com/markdown-office/PHPPresentation/9aa3f4624f1cab54fc5d275397c2fc59cf6f276d/patches/phpoffice-phppresentation-1.2.0-to-master.patch",
+                            "sha256": "0b8f7c150f7ba5d12671fb9e211c9f1a4db549d7609239f49c0cea707a190551"
+                        }
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "MarkdownPresentation\\": "src/"
@@ -658,7 +793,7 @@
                     "pest --testsuite=readme"
                 ],
                 "test:coverage": [
-                    "pest --coverage --min=100"
+                    "php -d memory_limit=-1 vendor/bin/pest --coverage --min=100"
                 ],
                 "analyse": [
                     "tools/phpstan.sh"
@@ -701,7 +836,7 @@
             "dist": {
                 "type": "path",
                 "url": "../markdown-word",
-                "reference": "00558bd0146cf48b48c0d8f7a380bc65517a4d50"
+                "reference": "707f5f05c05a6d9ce9880fe88390341c330f3ee6"
             },
             "require": {
                 "ext-dom": "*",
@@ -709,7 +844,7 @@
                 "ext-mbstring": "*",
                 "ext-zip": "*",
                 "league/commonmark": "^2.10",
-                "markdown-office/commonmark-generic-directives": "^0.2.0",
+                "markdown-office/commonmark-generic-directives": "^0.3.0",
                 "php": "^8.2",
                 "phpoffice/phpword": "^1.4",
                 "symfony/yaml": "^7.4 || ^8.1"
@@ -792,33 +927,33 @@
         },
         {
             "name": "nette/schema",
-            "version": "v1.3.6",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/schema.git",
-                "reference": "c54350438cd6914616f790a49cb424605f421562"
+                "reference": "af9fa8a86bfca9b02b10346220db26e62ef942ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/schema/zipball/c54350438cd6914616f790a49cb424605f421562",
-                "reference": "c54350438cd6914616f790a49cb424605f421562",
+                "url": "https://api.github.com/repos/nette/schema/zipball/af9fa8a86bfca9b02b10346220db26e62ef942ec",
+                "reference": "af9fa8a86bfca9b02b10346220db26e62ef942ec",
                 "shasum": ""
             },
             "require": {
                 "nette/utils": "^4.0",
-                "php": "8.1 - 8.5"
+                "php": "8.1 - 8.6"
             },
             "require-dev": {
-                "nette/phpstan-rules": "^1.0",
+                "nette/phpstan-rules": "^1.0.7",
                 "nette/tester": "^2.6",
                 "phpstan/extension-installer": "^1.4@stable",
-                "phpstan/phpstan": "^2.1.39@stable",
+                "phpstan/phpstan": "^2.3@stable",
                 "tracy/tracy": "^2.8"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.3-dev"
+                    "dev-master": "1.4-dev"
                 }
             },
             "autoload": {
@@ -839,40 +974,40 @@
                 {
                     "name": "David Grudl",
                     "homepage": "https://davidgrudl.com"
-                },
-                {
-                    "name": "Nette Community",
-                    "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "📐 Nette Schema: validating data structures against a given Schema.",
-            "homepage": "https://nette.org",
+            "description": "📐 Nette Schema: validates and normalizes data such as configuration or API input against a schema described in a few readable lines of PHP, with precise error messages.",
+            "homepage": "https://doc.nette.org/schema",
             "keywords": [
-                "config",
-                "nette"
+                "configuration",
+                "data validation",
+                "nette",
+                "normalization",
+                "schema",
+                "validation"
             ],
             "support": {
                 "issues": "https://github.com/nette/schema/issues",
-                "source": "https://github.com/nette/schema/tree/v1.3.6"
+                "source": "https://github.com/nette/schema/tree/v1.4.0"
             },
-            "time": "2026-08-16T21:58:41+00:00"
+            "time": "2026-10-22T02:12:50+00:00"
         },
         {
             "name": "nette/utils",
-            "version": "v4.1.5",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/utils.git",
-                "reference": "b043439dbdf954e6c28b5ea7e34b0100f83165e0"
+                "reference": "6bf24518accf32cf845bca305e0b92078700fd01"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/utils/zipball/b043439dbdf954e6c28b5ea7e34b0100f83165e0",
-                "reference": "b043439dbdf954e6c28b5ea7e34b0100f83165e0",
+                "url": "https://api.github.com/repos/nette/utils/zipball/6bf24518accf32cf845bca305e0b92078700fd01",
+                "reference": "6bf24518accf32cf845bca305e0b92078700fd01",
                 "shasum": ""
             },
             "require": {
-                "php": "8.2 - 8.5"
+                "php": "8.2 - 8.6"
             },
             "conflict": {
                 "nette/finder": "<3",
@@ -944,9 +1079,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/utils/issues",
-                "source": "https://github.com/nette/utils/tree/v4.1.5"
+                "source": "https://github.com/nette/utils/tree/v4.1.6"
             },
-            "time": "2026-07-17T23:02:45+00:00"
+            "time": "2026-10-20T17:07:56+00:00"
         },
         {
             "name": "pclzip/pclzip",
@@ -1099,37 +1234,34 @@
         },
         {
             "name": "phpoffice/phppresentation",
-            "version": "dev-master",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPPresentation.git",
-                "reference": "54586957f0fbbce0e3a9434c88cb6050f6cc0759"
+                "reference": "b9cdcd413e2d463ba3198f912f32716adc88f340"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPPresentation/zipball/54586957f0fbbce0e3a9434c88cb6050f6cc0759",
-                "reference": "54586957f0fbbce0e3a9434c88cb6050f6cc0759",
+                "url": "https://api.github.com/repos/PHPOffice/PHPPresentation/zipball/b9cdcd413e2d463ba3198f912f32716adc88f340",
+                "reference": "b9cdcd413e2d463ba3198f912f32716adc88f340",
                 "shasum": ""
             },
             "require": {
                 "ext-xml": "*",
                 "ext-zip": "*",
-                "php": "^7.4|^8.0",
+                "php": "^7.1|^8.0",
                 "phpoffice/common": "^1",
-                "phpoffice/phpspreadsheet": "^1.9 || ^2.0 || ^3.0 || ^4.0 || ^5.0"
+                "phpoffice/phpspreadsheet": "^1.9 || ^2.0 || ^3.0 || ^4.0"
             },
             "require-dev": {
                 "dompdf/dompdf": "^3.1",
                 "phpmd/phpmd": "2.*",
-                "phpoffice/wmf": "^0.2.1",
-                "phpstan/phpstan": "^2.2,!=2.2.11",
+                "phpstan/phpstan": "^0.12.88 || ^1.0.0",
                 "phpunit/phpunit": ">=7.0"
             },
             "suggest": {
-                "ext-gd": "Required to add images",
-                "phpoffice/wmf": "Allows adding WMF, EMF and EMF+ images (requires ext-gd)"
+                "ext-gd": "Required to add images"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -1166,30 +1298,29 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PHPPresentation/issues",
-                "source": "https://github.com/PHPOffice/PHPPresentation/tree/master"
+                "source": "https://github.com/PHPOffice/PHPPresentation/tree/1.2.0"
             },
-            "time": "2026-10-09T05:21:29+00:00"
+            "time": "2025-06-06T10:27:25+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "5.10.0",
+            "version": "3.10.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "eb18727acf6b1f4cc67145a52ab04f9fd4c28d53"
+                "reference": "fee9c1ca8d9f1f676f007ac1ab134ce43624bd52"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/eb18727acf6b1f4cc67145a52ab04f9fd4c28d53",
-                "reference": "eb18727acf6b1f4cc67145a52ab04f9fd4c28d53",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/fee9c1ca8d9f1f676f007ac1ab134ce43624bd52",
+                "reference": "fee9c1ca8d9f1f676f007ac1ab134ce43624bd52",
                 "shasum": ""
             },
             "require": {
-                "composer/pcre": "^1||^2||^3",
+                "composer/pcre": "^1 || ^2 || ^3",
                 "ext-ctype": "*",
                 "ext-dom": "*",
                 "ext-fileinfo": "*",
-                "ext-filter": "*",
                 "ext-gd": "*",
                 "ext-iconv": "*",
                 "ext-libxml": "*",
@@ -1203,29 +1334,25 @@
                 "maennchen/zipstream-php": "^2.1 || ^3.0",
                 "markbaker/complex": "^3.0",
                 "markbaker/matrix": "^3.0",
-                "php": "^8.2",
+                "php": "^8.1",
                 "psr/simple-cache": "^1.0 || ^2.0 || ^3.0"
             },
             "require-dev": {
                 "dealerdirect/phpcodesniffer-composer-installer": "dev-main",
                 "dompdf/dompdf": "^2.0 || ^3.0",
-                "ext-intl": "*",
-                "ext-openssl": "*",
                 "friendsofphp/php-cs-fixer": "^3.2",
                 "mitoteam/jpgraph": "^10.5",
                 "mpdf/mpdf": "^8.1.1",
                 "phpcompatibility/php-compatibility": "^9.3",
-                "phpstan/phpstan": "^1.1 || ^2.0",
-                "phpstan/phpstan-deprecation-rules": "^1.0 || ^2.0",
-                "phpstan/phpstan-phpunit": "^1.0 || ^2.0",
-                "phpunit/phpunit": "^10.5 || ^11.0",
+                "phpstan/phpstan": "^1.1",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpunit/phpunit": "^10.5",
                 "squizlabs/php_codesniffer": "^3.7",
-                "tecnickcom/tcpdf": ">=6.8.0 <7.0.0"
+                "tecnickcom/tcpdf": "^6.5"
             },
             "suggest": {
                 "dompdf/dompdf": "Option for rendering PDF with PDF Writer",
-                "ext-intl": "PHP Internationalization Functions, required for NumberFormat Wizard and StringHelper::setLocale()",
-                "ext-openssl": "Handline Agile-encrypted Xlsx spreadsheets",
+                "ext-intl": "PHP Internationalization Functions, required for NumberFormatter Wizard",
                 "mitoteam/jpgraph": "Option for rendering charts, or including charts with PDF or HTML Writers",
                 "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
                 "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer"
@@ -1277,9 +1404,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/5.10.0"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/3.10.8"
             },
-            "time": "2026-09-17T03:54:50+00:00"
+            "time": "2026-09-17T04:27:19+00:00"
         },
         {
             "name": "phpoffice/phpword",
@@ -1808,16 +1935,16 @@
     "packages-dev": [
         {
             "name": "brianium/paratest",
-            "version": "v7.27.1",
+            "version": "v7.27.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paratestphp/paratest.git",
-                "reference": "739b3b1b5065c52664ef5a77716593ab9d5e263d"
+                "reference": "6d73b615611a2da7af85637d99d1b0efac9fcd00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/739b3b1b5065c52664ef5a77716593ab9d5e263d",
-                "reference": "739b3b1b5065c52664ef5a77716593ab9d5e263d",
+                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/6d73b615611a2da7af85637d99d1b0efac9fcd00",
+                "reference": "6d73b615611a2da7af85637d99d1b0efac9fcd00",
                 "shasum": ""
             },
             "require": {
@@ -1831,7 +1958,7 @@
                 "phpunit/php-code-coverage": "^14.4.1",
                 "phpunit/php-file-iterator": "^7.0.2",
                 "phpunit/php-timer": "^9",
-                "phpunit/phpunit": "^13.4.1",
+                "phpunit/phpunit": "^13.4.3",
                 "sebastian/environment": "^9.3.3",
                 "symfony/console": "^7.4.20 || ^8.1.8",
                 "symfony/process": "^7.4.19 || ^8.1.7"
@@ -1885,7 +2012,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v7.27.1"
+                "source": "https://github.com/paratestphp/paratest/tree/v7.27.4"
             },
             "funding": [
                 {
@@ -1897,7 +2024,7 @@
                     "type": "paypal"
                 }
             ],
-            "time": "2026-10-14T05:58:28+00:00"
+            "time": "2026-10-22T06:15:12+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -2011,16 +2138,16 @@
         },
         {
             "name": "filp/whoops",
-            "version": "2.18.6",
+            "version": "2.18.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filp/whoops.git",
-                "reference": "7d0a2cde892089bb09372f4366e9b960eb3001a9"
+                "reference": "50670ba239926c50f2073e868f6672f775cd57ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filp/whoops/zipball/7d0a2cde892089bb09372f4366e9b960eb3001a9",
-                "reference": "7d0a2cde892089bb09372f4366e9b960eb3001a9",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/50670ba239926c50f2073e868f6672f775cd57ec",
+                "reference": "50670ba239926c50f2073e868f6672f775cd57ec",
                 "shasum": ""
             },
             "require": {
@@ -2070,7 +2197,7 @@
             ],
             "support": {
                 "issues": "https://github.com/filp/whoops/issues",
-                "source": "https://github.com/filp/whoops/tree/2.18.6"
+                "source": "https://github.com/filp/whoops/tree/2.18.7"
             },
             "funding": [
                 {
@@ -2078,7 +2205,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-03T17:03:57+00:00"
+            "time": "2026-10-18T13:17:38+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
@@ -2442,16 +2569,16 @@
         },
         {
             "name": "pestphp/pest",
-            "version": "v5.3.2",
+            "version": "v5.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pestphp/pest.git",
-                "reference": "73fe04f8c30a734fe2e269a71d4628cdf7131062"
+                "reference": "c947def97e1d56a3f3f9a3ced04c6af74b7e3caf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pestphp/pest/zipball/73fe04f8c30a734fe2e269a71d4628cdf7131062",
-                "reference": "73fe04f8c30a734fe2e269a71d4628cdf7131062",
+                "url": "https://api.github.com/repos/pestphp/pest/zipball/c947def97e1d56a3f3f9a3ced04c6af74b7e3caf",
+                "reference": "c947def97e1d56a3f3f9a3ced04c6af74b7e3caf",
                 "shasum": ""
             },
             "require": {
@@ -2463,13 +2590,13 @@
                 "pestphp/pest-plugin-mutate": "^5.0.2",
                 "pestphp/pest-plugin-profanity": "^5.0.1",
                 "php": "^8.4",
-                "phpunit/phpunit": "^13.4.2",
+                "phpunit/phpunit": "^13.4.3",
                 "symfony/process": "^8.1.7"
             },
             "conflict": {
                 "filp/whoops": "<2.18.3",
                 "laravel/boost": "<2.6.0",
-                "phpunit/phpunit": ">13.4.2",
+                "phpunit/phpunit": ">13.4.3",
                 "sebastian/exporter": "<7.0.0",
                 "webmozart/assert": "<1.11.0"
             },
@@ -2546,7 +2673,7 @@
             ],
             "support": {
                 "issues": "https://github.com/pestphp/pest/issues",
-                "source": "https://github.com/pestphp/pest/tree/v5.3.2"
+                "source": "https://github.com/pestphp/pest/tree/v5.3.3"
             },
             "funding": [
                 {
@@ -2558,7 +2685,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-12T17:28:57+00:00"
+            "time": "2026-10-18T11:51:10+00:00"
         },
         {
             "name": "pestphp/pest-plugin",
@@ -3574,16 +3701,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "13.4.2",
+            "version": "13.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "7b9ba83328f01ce299ef82161720195bd827a4bb"
+                "reference": "2180c47c4229e5da117ff248753370443c074f10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/7b9ba83328f01ce299ef82161720195bd827a4bb",
-                "reference": "7b9ba83328f01ce299ef82161720195bd827a4bb",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2180c47c4229e5da117ff248753370443c074f10",
+                "reference": "2180c47c4229e5da117ff248753370443c074f10",
                 "shasum": ""
             },
             "require": {
@@ -3654,7 +3781,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.4.2"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.4.3"
             },
             "funding": [
                 {
@@ -3662,7 +3789,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-10-12T15:29:04+00:00"
+            "time": "2026-10-16T05:56:47+00:00"
         },
         {
             "name": "psr/container",
@@ -4314,28 +4441,28 @@
         },
         {
             "name": "sebastian/git-state",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/git-state.git",
-                "reference": "792a952e0eba55b6960a48aeceb9f371aad1f76b"
+                "reference": "31a565f463686f0eefa85f899549256bf5805985"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/git-state/zipball/792a952e0eba55b6960a48aeceb9f371aad1f76b",
-                "reference": "792a952e0eba55b6960a48aeceb9f371aad1f76b",
+                "url": "https://api.github.com/repos/sebastianbergmann/git-state/zipball/31a565f463686f0eefa85f899549256bf5805985",
+                "reference": "31a565f463686f0eefa85f899549256bf5805985",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.4"
             },
             "require-dev": {
-                "phpunit/phpunit": "^13.0"
+                "phpunit/phpunit": "^13.4.3"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.0-dev"
+                    "dev-main": "1.1-dev"
                 }
             },
             "autoload": {
@@ -4359,7 +4486,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/git-state/issues",
                 "security": "https://github.com/sebastianbergmann/git-state/security/policy",
-                "source": "https://github.com/sebastianbergmann/git-state/tree/1.0.0"
+                "source": "https://github.com/sebastianbergmann/git-state/tree/1.1.0"
             },
             "funding": [
                 {
@@ -4379,7 +4506,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-21T12:54:28+00:00"
+            "time": "2026-10-21T05:59:52+00:00"
         },
         {
             "name": "sebastian/global-state",
