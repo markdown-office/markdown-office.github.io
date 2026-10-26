@@ -60,6 +60,21 @@ jobs:
           ref: main
           path: commonmark-generic-directives
 
+      # The command line, for the check that compares the pages against it. It is the fourth
+      # repository of the suite, and the pages under `content/command-line/` are the only
+      # place it is documented — so the pages are checked against the program, rather than
+      # against what somebody remembered of it.
+      #
+      # It goes beside the two libraries rather than inside this repository, because its own
+      # manifest resolves them by directory, and `../markdown-word` means nothing in any
+      # other arrangement.
+      - name: Check out mdoffice
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: markdown-office/mdoffice
+          ref: main
+          path: mdoffice
+
       - name: Set up PHP
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
@@ -77,6 +92,13 @@ jobs:
       - name: Install the libraries
         working-directory: documentation
         run: composer install --no-interaction --no-progress
+
+      # The command line's own dependencies. The script is the repository's own, because it
+      # knows that the manifest resolves the two libraries by directory and that a lock would
+      # record whichever branches those checkouts happened to be on.
+      - name: Install the command line
+        working-directory: mdoffice
+        run: tools/install.sh --no-dev
 
       - name: Install Eleventy
         working-directory: documentation
@@ -142,6 +164,20 @@ jobs:
       - name: The site's own links
         working-directory: documentation
         run: php tools/check-site-links.php
+
+      # The pages under `content/command-line/` are written by hand, and nothing else says
+      # whether they still describe the program. A command that is implemented and not
+      # documented, an option that is renamed, a summary that is a word out of date — each
+      # of those is found by a reader, at a terminal, at the worst possible moment.
+      - name: The command-line pages describe the command line
+        working-directory: documentation
+        run: php tools/check-command-line.php ../mdoffice
+
+      # The READMEs of the sibling repositories are the way a reader finds the pages, and a
+      # README that has stopped pointing at them is a page nobody can reach.
+      - name: The READMEs point at the command-line page
+        working-directory: documentation
+        run: php tools/check-readme-links.php ../markdown-word ../markdown-presentation ../mdoffice
 
       - name: Upload the site
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
