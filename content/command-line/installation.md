@@ -26,7 +26,7 @@ winget install markdown-office.mdoffice
 {% endtab %}
 {% tab "Linux" %}
 ```bash
-curl -L -o mdoffice https://github.com/markdown-office/mdoffice/releases/latest/download/mdoffice-0.1.0-linux-x86_64
+curl -L -o mdoffice https://github.com/markdown-office/mdoffice/releases/latest/download/mdoffice-0.1.1-linux-x86_64
 chmod +x mdoffice
 ```
 {% endtab %}
@@ -37,7 +37,7 @@ composer require markdown-office/mdoffice
 {% endtab %}
 {% endtabs %}
 
-On ARM, the Linux asset is `mdoffice-0.1.0-linux-aarch64`.
+On ARM, the Linux asset is `mdoffice-0.1.1-linux-aarch64`.
 
 **The package managers need the first release, and none has been published yet.** Until
 there is one, a clone is the way in. The three repositories have to be side by side,
@@ -79,7 +79,7 @@ signature is an ad-hoc one and the binary is not notarised. Fetching the file wi
 `curl` does not set the flag:
 
 ```bash
-curl -L -o mdoffice https://github.com/markdown-office/mdoffice/releases/latest/download/mdoffice-0.1.0-macos-arm64
+curl -L -o mdoffice https://github.com/markdown-office/mdoffice/releases/latest/download/mdoffice-0.1.1-macos-arm64
 chmod +x mdoffice
 ```
 
@@ -100,7 +100,7 @@ The same program as a PHAR, for a machine that has PHP and would rather not down
 a second copy of it:
 
 ```bash
-curl -L -o mdoffice.phar https://github.com/markdown-office/mdoffice/releases/latest/download/mdoffice-0.1.0.phar
+curl -L -o mdoffice.phar https://github.com/markdown-office/mdoffice/releases/latest/download/mdoffice-0.1.1.phar
 php mdoffice.phar word notes.md
 ```
 

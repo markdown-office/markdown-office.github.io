@@ -160,7 +160,7 @@ An installed copy answers with its own version and the two libraries it holds:
 
 ```bash
 $ mdoffice --version
-mdoffice 0.1.0
+mdoffice 0.1.1
   markdown-office/markdown-word            0.2.2
   markdown-office/markdown-presentation    0.2.2
 ```
