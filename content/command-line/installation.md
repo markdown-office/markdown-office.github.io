@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 permalink: /command-line/installation/
 title: Installation
-summary: One command per platform, and what to do until there is a release.
+summary: One command per platform, and what each of them needs.
 section: The command line
 order: 0
 ---
@@ -41,10 +41,9 @@ On ARM, the Linux asset is `mdoffice-0.1.1-linux-aarch64`.
 
 **The release is out**, and the executables and the archive are on [the releases
 page](https://github.com/markdown-office/mdoffice/releases) with the checksum of
-each beside them in `SHA256SUMS`. The Homebrew formula and the `winget` manifest
-are written from that release by their own repositories, and each is a pull
-request away — so a package manager may not have it yet, and a download always
-does.
+each beside them in `SHA256SUMS`. The package is on Packagist, the Homebrew
+formula is in the tap, and the `winget` manifest is with `winget` for its review —
+so a package manager may not have it yet, and a download always does.
 
 A clone works too, and always will. The three repositories have to be side by
 side, because the manifest resolves the other two by directory:
@@ -151,14 +150,14 @@ and it writes the formula from the release: the URL of the asset and the checksu
 file it downloads. It installs the binary for the machine it is on: Apple silicon or
 Intel, x86-64 or ARM.
 
-**The formula is written from the release, so it is a pull request away.** It is
-opened by the tap's own workflow and merged by a person, and until that happens
-`brew install mdoffice` finds nothing. The download above does not wait for
-anybody.
+**The formula is in the tap.** It is written from the release by the tap's own
+workflow and merged by a person, so a release that is newer than the last merge
+is a day or so behind. The download above does not wait for anybody.
 
 ### winget
 
 The manifest is written from the release rather than by hand, so it carries the
 checksum of the file it names. It is written against
-[microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs), and it is a pull
-request away in the same way.
+[microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs), and `winget`
+reviews it before it lands, which takes a few days. The download above does not
+wait for that either.
