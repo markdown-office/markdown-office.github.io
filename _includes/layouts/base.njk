@@ -103,7 +103,7 @@
           </div>
           {%- endif %}
 
-          {{ content | expandExamples | safe }}
+          {{ content | expandExamples | expandTabs | safe }}
 
           {%- if section %}
           {# Previous and next, computed by a filter: Nunjucks has no `where`, and a
