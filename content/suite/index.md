@@ -56,7 +56,7 @@ The command line is documented in full under [The command line](/command-line/ba
 | [`markdown-office/markdown-presentation`](/presentation/directives/) | Markdown to `.pptx`, with a Slidev-compatible splitter |
 | [`markdown-office/commonmark-generic-directives`](/directives/syntax/) | the directive syntax, for your own parser if you want one |
 
-Both converters require the directives package at the same constraint, `^0.2.0`, and both use it
+Both converters require the directives package at the same constraint, `^0.3.0`, and both use it
 permissively — no registry — because the presentation half claims `::click`, `::column` and
 `:::click` itself, in front of the generic extension, since the generic grammar has no room for an
 argument written after an equals sign.

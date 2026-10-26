@@ -3,4 +3,5 @@
 /_site/
 /_examples/
 /_data/examples.json
+/patches.lock.json
 .DS_Store
