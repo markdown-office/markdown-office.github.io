@@ -44,9 +44,9 @@ composer require markdown-office/mdoffice
 {% endtab %}
 {% endtabs %}
 
-One command each, and a release carries its own PHP. The release is out, and the
-package managers write their formula and their manifest from it —
-[Installation](/command-line/installation/) has the details.
+One command each, and a release carries its own PHP. The release is out, the
+package is on Packagist, and the package managers write their formula and their
+manifest from it — [Installation](/command-line/installation/) has the details.
 
 ## What each one does
 
