@@ -248,7 +248,7 @@ zip and Markdown is text, and the four bytes that say which is which are part of
 | `--theme <name>` | name or path | the frontmatter's `theme:` |
 | `-t, --template <file>` | `.docx` or `.dotx` | none |
 | `--require-control` | flag | off |
-| `--images <mode>` | `embed`, `placeholder`, `skip` | `embed` |
+| `--images <mode>` | `embed`, `placeholder` or `alt`, `skip` or `none` | `embed` |
 | `--no-images` | flag | shorthand for `--images skip` |
 | `--image-base <dir>` | path | the input's directory; the working directory for standard input |
 | `--svg-fallback <mode>` | `raster`, `none` | `raster` |

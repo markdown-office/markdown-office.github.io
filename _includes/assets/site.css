@@ -452,6 +452,97 @@ img {
   margin: 0 0 2rem;
 }
 
+/* ---------- tabs ---------- */
+
+/*
+  A set of tabs is a set of radio buttons and a set of panels, and CSS alone decides which
+  panel the checked button shows. The site has no script, and a set of tabs is not the place
+  to start one.
+
+  The buttons are hidden but not inert: they keep the focus, so the arrow keys move between
+  the tabs, and the ring is drawn on the label rather than on the button — the button is
+  one pixel wide and cannot show a ring anybody would see.
+*/
+.tabs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0 0.25rem;
+  margin: 1.6rem 0;
+}
+
+.tabs__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tabs__tab {
+  padding: 0.45rem 0.9rem;
+  margin-bottom: -1px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tabs__tab:hover {
+  color: var(--ink);
+  background: var(--panel);
+}
+
+.tabs__radio:checked + .tabs__tab {
+  color: var(--ink);
+  background: var(--paper);
+  border-color: var(--line);
+  font-weight: 600;
+}
+
+.tabs__radio:focus-visible + .tabs__tab {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.tabs__panel {
+  flex: 0 0 100%;
+  display: none;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 0 8px 8px 8px;
+  background: var(--paper);
+}
+
+.tabs__panel > :first-child {
+  margin-top: 0;
+}
+
+.tabs__panel > :last-child {
+  margin-bottom: 0;
+}
+
+/*
+  The panel a checked button owns is the one that is shown. The buttons come before the
+  panels and the labels sit between them, so a button and its panel are siblings and a
+  general sibling combinator reaches the panel — and `nth-of-type` counts the panels among
+  themselves, because the labels are not panels.
+*/
+.tabs__radio:nth-of-type(1):checked ~ .tabs__panel:nth-of-type(1),
+.tabs__radio:nth-of-type(2):checked ~ .tabs__panel:nth-of-type(2),
+.tabs__radio:nth-of-type(3):checked ~ .tabs__panel:nth-of-type(3),
+.tabs__radio:nth-of-type(4):checked ~ .tabs__panel:nth-of-type(4),
+.tabs__radio:nth-of-type(5):checked ~ .tabs__panel:nth-of-type(5),
+.tabs__radio:nth-of-type(6):checked ~ .tabs__panel:nth-of-type(6) {
+  display: block;
+}
+
 /* ---------- examples ---------- */
 
 .example {

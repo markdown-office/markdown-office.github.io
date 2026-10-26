@@ -79,6 +79,14 @@ export default function (eleventyConfig) {
   // literal text for Nunjucks to choke on.
   eleventyConfig.addPairedShortcode("example", example);
   eleventyConfig.addFilter("expandExamples", expandExamples);
+
+  // A set of tabs is a set of radio buttons and a set of panels, and CSS alone decides which
+  // panel the checked button shows: the site has no script, and a set of tabs is not the
+  // place to start one. The buttons keep the focus, so the arrow keys move between the tabs.
+  eleventyConfig.addPairedShortcode("tabs", tabs);
+  eleventyConfig.addPairedShortcode("tab", tab);
+  eleventyConfig.addFilter("expandTabs", expandTabs);
+
   eleventyConfig.addFilter("sections", sectionGroups);
   eleventyConfig.addFilter("pager", pager);
 
@@ -193,6 +201,94 @@ function expandExamples(html) {
       return render(hash, Buffer.from(encoded, "base64").toString("utf8"), occurrence);
     },
   );
+}
+
+/**
+ * One tab of a set.
+ *
+ * The label is the tab's own text, and the content is the panel. Both go into the page as
+ * markers, and the markup is built when the page is finished: the content is Markdown, and
+ * Markdown is rendered after the shortcodes have run.
+ */
+function tab(content, ...args) {
+  const label = String(args[0] ?? "")
+    .trim()
+    .replace(/^["']|["']$/g, "");
+
+  return [
+    `<!--mo-tab:${Buffer.from(label, "utf8").toString("base64")}-->`,
+    content.trim(),
+    "<!--/mo-tab-->",
+  ].join("\n");
+}
+
+/**
+ * A set of tabs.
+ */
+function tabs(content) {
+  return `<!--mo-tabs-->\n${content.trim()}\n<!--/mo-tabs-->`;
+}
+
+/**
+ * Turn every `<!--mo-tabs-->…<!--/mo-tabs-->` block into the markup for a set of tabs.
+ *
+ * Applied to the finished page, after the examples have been built: the panels hold the
+ * rendered Markdown, and the markup is put around them rather than inside them.
+ */
+function expandTabs(html) {
+  let sets = 0;
+
+  return String(html ?? "").replace(
+    /<!--mo-tabs-->\n?([\s\S]*?)\n?<!--\/mo-tabs-->/g,
+    (_, body) => renderTabs(body, ++sets),
+  );
+}
+
+/**
+ * The markup for one set of tabs.
+ *
+ * The buttons come first, each followed by its own label, and the panels follow. That order
+ * is what the CSS is written against: a button and its label are neighbours, so the ring
+ * around a focused button is drawn on the label, and a button and its panel are siblings, so
+ * a checked button can hide the panels that are not its own.
+ */
+function renderTabs(body, set) {
+  const panels = [];
+  const pattern = /<!--mo-tab:([A-Za-z0-9+/=]*)-->\n?([\s\S]*?)\n?<!--\/mo-tab-->/g;
+  let match;
+
+  while ((match = pattern.exec(body)) !== null) {
+    panels.push({
+      label: Buffer.from(match[1], "base64").toString("utf8"),
+      html: match[2].trim(),
+    });
+  }
+
+  if (panels.length === 0) {
+    // A set of tabs with nothing in it is a mistake, and the content is better
+    // than the silence: it is shown as it was written rather than dropped.
+    return body;
+  }
+
+  const name = `mo-tabs-${set}`;
+  const parts = [];
+
+  panels.forEach((panel, index) => {
+    const id = `${name}-${index}`;
+
+    parts.push(
+      `<input class="tabs__radio" type="radio" name="${name}" id="${id}"` +
+        (index === 0 ? " checked" : "") +
+        ">",
+      `<label class="tabs__tab" for="${id}">${escape(panel.label)}</label>`,
+    );
+  });
+
+  for (const panel of panels) {
+    parts.push(`<div class="tabs__panel">\n${panel.html}\n</div>`);
+  }
+
+  return `<div class="tabs">\n${parts.join("\n")}\n</div>`;
 }
 
 function render(hash, title, occurrence) {

@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 permalink: /
 title: Markdown, into the file you actually send
-summary: Markdown to Word and to PowerPoint, in PHP. Word converts back; PowerPoint does not.
+summary: Markdown to Word and to PowerPoint, in PHP. Both convert back.
 section: Home
 order: 0
 ---
@@ -17,12 +17,43 @@ browser, no export button.
 
 </div>
 
+## Get it
+
+{% tabs %}
+{% tab "macOS" %}
+```bash
+brew tap markdown-office/mdoffice
+brew install mdoffice
+```
+{% endtab %}
+{% tab "Windows" %}
+```powershell
+winget install markdown-office.mdoffice
+```
+{% endtab %}
+{% tab "Linux" %}
+```bash
+curl -L -o mdoffice https://github.com/markdown-office/mdoffice/releases/latest/download/mdoffice-0.1.0-linux-x86_64
+chmod +x mdoffice
+```
+{% endtab %}
+{% tab "PHP" %}
+```bash
+composer require markdown-office/mdoffice
+```
+{% endtab %}
+{% endtabs %}
+
+One command each, and a release carries its own PHP. The package managers need the first
+release, which has not been published yet —
+[Installation](/command-line/installation/) has the details and the way in until then.
+
 ## What each one does
 
 |  | **Markdown Word** | **Markdown Presentation** |
 | --- | --- | --- |
 | **Markdown → document** | `.docx` `.odt` `.rtf` | `.pptx` |
-| **document → Markdown** | **yes**, for standard Markdown | **no** — one direction only |
+| **document → Markdown** | **yes**, for standard Markdown | **yes** |
 | **Markdown dialect** | CommonMark + GitHub Flavored | Slidev-inspired |
 | **Look and feel** | frontmatter + themes | frontmatter + themes |
 | **Special features** | directives | directives |
@@ -38,10 +69,10 @@ and are written down rather than glossed over: a `::toc` comes back as the text
 `:footnote[…]` comes back as itself because it was never a footnote in the first place. See
 [Round trips](/word/round-trip/).
 
-**PowerPoint is one direction.** There is no reader, no `.pptx` back to Markdown, and no plan to
-add one: a deck is a thing you present, and the interesting inverse problem — what someone edited
-in PowerPoint should become Markdown — is a different and much larger problem than the one this
-package solves.
+**PowerPoint converts back too.** A `.pptx` goes back to Markdown, and what comes back is the
+Markdown this package writes decks in — so a deck can be taken apart, edited as text and put
+in again under a different theme. What comes back is the text and the structure; the design
+does not travel, because a `.pptx` records what is on a slide and not how it was drawn.
 
 <div class="hero__rule">The suite</div>
 

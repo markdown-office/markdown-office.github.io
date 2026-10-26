@@ -45,7 +45,7 @@ The command line is documented in full under [The command line](/command-line/ba
 | Package | Markdown in | Document out | Back to Markdown |
 | --- | --- | --- | --- |
 | `markdown-office/markdown-word` | CommonMark + GFM | `.docx` `.odt` `.rtf` | **yes**, for standard Markdown |
-| `markdown-office/markdown-presentation` | Slidev-inspired | `.pptx` | **no** |
+| `markdown-office/markdown-presentation` | Slidev-inspired | `.pptx` | **yes** |
 | `markdown-office/commonmark-generic-directives` | — | — | — a parser extension, on its own |
 
 ## What each one is

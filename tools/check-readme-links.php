@@ -46,7 +46,7 @@ if ($paths === []) {
  */
 function commandLineUrl(string $root): string
 {
-    $page = $root . '/content/guides/command-line.md';
+    $page = $root . '/content/command-line/basic.md';
 
     if (! \is_file($page)) {
         throw new RuntimeException(\sprintf('The page "%s" is not there.', $page));
