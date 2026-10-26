@@ -19,7 +19,34 @@ browser, no export button.
 
 ## Get it
 
+{% tabs %}
+{% tab "macOS" %}
+```bash
+brew tap markdown-office/mdoffice
+brew install mdoffice
+```
+{% endtab %}
+{% tab "Windows" %}
+```powershell
+winget install markdown-office.mdoffice
+```
+{% endtab %}
+{% tab "Linux" %}
+```bash
+curl -L -o mdoffice https://github.com/markdown-office/mdoffice/releases/latest/download/mdoffice-0.1.0-linux-x86_64
+chmod +x mdoffice
+```
+{% endtab %}
+{% tab "PHP" %}
+```bash
+composer require markdown-office/mdoffice
+```
+{% endtab %}
+{% endtabs %}
 
+One command each, and a release carries its own PHP. The package managers need the first
+release, which has not been published yet —
+[Installation](/command-line/installation/) has the details and the way in until then.
 
 ## What each one does
 
