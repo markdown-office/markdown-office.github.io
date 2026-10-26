@@ -107,12 +107,13 @@ With `blockQuote: null` there is no style id for the reader to match against, so
 Every column comes back as one of exactly three markers: `:--`, `--:` or `:-:`. The alignment
 survives; the marker does not.
 
-## And PowerPoint has no second direction at all
+## And PowerPoint's second direction is a different one
 
-There is no `.pptx` back to Markdown: no reader class, no reverse entry point, and
-`PresentationRenderer` has two methods — `render()` and `overflows()`. A deck is a thing you
-present, and reading back what someone edited in PowerPoint is a much larger problem than the one
-this package solves.
+A `.pptx` goes back to Markdown too, but what comes back is the text and the structure of the
+slides, and the design does not travel with it: the type sizes, the colours and the geometry
+live in the theme and the master. A deck read back out is the Markdown this suite writes decks
+in, so it can be put in again — under a different theme, and therefore a different design. What
+it is not is a copy of the deck somebody else made.
 
 ## Reading a document without writing one
 

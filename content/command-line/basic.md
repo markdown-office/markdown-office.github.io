@@ -27,7 +27,7 @@ The first argument says which converter the run is for.
 | Part | Does |
 | --- | --- |
 | `mdoffice word …` | Markdown to `.docx`, `.odt` and `.rtf`, and `.docx` back to Markdown |
-| `mdoffice slides …` | Markdown to `.pptx` |
+| `mdoffice slides …` | Markdown to `.pptx`, and back |
 
 **A bare file is not a run.** `mdoffice notes.md` is refused, and the parts are listed:
 
@@ -37,7 +37,7 @@ mdoffice: Unknown part "notes.md".
   mdoffice <part> — one of:
 
   word       Markdown to .docx, .odt and .rtf, and .docx back to Markdown
-  slides     Markdown to .pptx
+  slides     Markdown to .pptx, and back
 ```
 
 The Word half decides the direction from the file's first bytes, but with more than one converter
@@ -53,12 +53,16 @@ half the time and wrong the other half.
 | `word` | `to-rtf` | Markdown to `.rtf` |
 | `word` | `to-markdown` | a Word document to Markdown |
 | `slides` | `to-pptx` | Markdown to `.pptx` |
+| `slides` | `to-markdown` | a deck to Markdown |
 
 In the Word part, with no command, the direction is detected. `--to` overrides it: `docx` or
 `word` for a Word document, `odt` for an OpenDocument Text, `rtf` for Rich Text Format, and
-`markdown` or `md` for Markdown. `opendocument` and `rich text` say the same as `odt` and `rtf`.
-The slides part has one command, so `mdoffice slides deck.md` is the same run as `mdoffice slides
-to-pptx deck.md`.
+`markdown` or `md` for Markdown. Those are the spellings it takes; `opendocument` and `rich
+text` are refused, because the command that runs says which format it reads.
+
+The slides part has two commands, and the first is the default: `mdoffice slides deck.md` is
+the same run as `mdoffice slides to-pptx deck.md`. The second reads a deck back, and it is
+named — a deck is a `.pptx`, and the part does not work the direction out for itself.
 
 A command named on the command line decides the direction itself, and `--to` is then only allowed
 to agree with it:
@@ -69,15 +73,16 @@ mdoffice word:   Omit it and let mdoffice word work the direction out from the f
 ```
 
 The two forms do not take quite the same options. With no command named, the direction is worked
-out from a list of its own, and that list does not carry `--theme` or `--require-control`:
+out from the file, and the options are the ones the four commands take between them — `--theme`
+and `--require-control` among them. An option no command takes is refused:
 
 ```text
-mdoffice word: Unknown option "--theme".
+mdoffice word: Unknown option "--nope".
 mdoffice word:   Run `mdoffice help` to see what each command accepts.
 ```
 
-Naming the command takes them, so `mdoffice word to-docx notes.md --theme corporate` is the way
-to write it.
+Naming the command is still what a script should do: an option that belongs to another command
+is refused by the command the run turns out to be, whichever form it was written in.
 
 Every command answers `--help` on its own, and every part answers `help`:
 
@@ -152,8 +157,8 @@ An installed copy answers with its own version and the two libraries it holds:
 ```bash
 $ mdoffice --version
 mdoffice 0.1.0
-  markdown-office/markdown-word            0.2.1
-  markdown-office/markdown-presentation    0.2.1
+  markdown-office/markdown-word            0.2.2
+  markdown-office/markdown-presentation    0.2.2
 ```
 
 The tool versions itself separately from the libraries it holds, because it is neither of them: a
@@ -166,5 +171,5 @@ answers with the branch it resolved rather than with a release, because that is 
 
 ```bash
 $ mdoffice word --version
-mdoffice word 0.2.1
+mdoffice word 0.2.2
 ```

@@ -8,7 +8,7 @@ order: 3
 ---
 
 The Word part decides the direction from the file's first bytes, and `--to` overrides it. The
-options it takes are here; the slides part has one command and one set of options, on [For
+options it takes are here; the slides part has two commands and two sets of options, on [For
 presentations](/command-line/presentations/).
 
 ## Options for `to-docx`, `to-odt` and `to-rtf`
@@ -20,7 +20,7 @@ presentations](/command-line/presentations/).
 | `--theme <name>` | name or path | the frontmatter's `theme:` |
 | `-t, --template <file>` | `.docx` or `.dotx` | none |
 | `--require-control` | flag | off |
-| `--images <mode>` | `embed`, `placeholder`, `skip` | `embed` |
+| `--images <mode>` | `embed`, `placeholder` or `alt`, `skip` or `none` | `embed` |
 | `--no-images` | flag | shorthand for `--images skip` |
 | `--image-base <dir>` | path | the input's directory; the working directory for standard input |
 | `--svg-fallback <mode>` | `raster`, `none` | `raster` |
@@ -31,6 +31,17 @@ presentations](/command-line/presentations/).
 
 `--plain` is the fastest thing to try: no code colouring, no quote style, no table borders, no
 added spacing.
+
+The `--to` in this table is the one that names a command, and it takes that command's own
+format — any other is refused:
+
+```text
+mdoffice word: --to docx does not match what this reads; it takes odt.
+mdoffice word:   Omit it and let mdoffice word work the direction out from the file.
+```
+
+With no command named, `--to` names the direction instead, and takes `docx`, `word`, `odt`,
+`rtf`, `markdown` or `md` — see [Basic use](/command-line/basic/).
 
 Only `to-docx` takes `--template`. The others answer:
 

@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 permalink: /presentation/
 title: Markdown Presentation
-summary: Slidev-inspired Markdown into .pptx — layouts, themes, click builds and speaker notes, extended with directives. One direction only.
+summary: Slidev-inspired Markdown into .pptx — layouts, themes, click builds and speaker notes, extended with directives. And back again.
 section: Markdown Presentation
 order: 0
 ---
@@ -17,8 +17,12 @@ composer require markdown-office/markdown-presentation
 
 PHP 8.2 or newer, with `ext-dom`, `ext-gd` and `ext-zip`. `ext-imagick` is optional and buys SVG.
 
-**One direction.** Markdown to `.pptx`, and nothing back. There is no reader class, no reverse
-entry point, and `PresentationRenderer` has two methods: `render()` and `overflows()`.
+**Both directions.** Markdown to `.pptx`, and a `.pptx` back to Markdown — what comes back is
+the Markdown this package writes decks in, so a deck can be taken apart, edited as text and put
+in again under a different theme. `PresentationRenderer` has two methods, `render()` and
+`overflows()`; the reader is `PowerPointToMarkdown`, with `convert()`, `save()`, `toMarkdown()`
+and `read()`. What the round trip does not keep is written down in
+[Reading a deck back](#reading-a-deck-back).
 
 ---
 
@@ -184,7 +188,7 @@ More, including the refusal table and the three things that look like they work 
 
 ## 2. Command line
 
-**There is none.** The package declares no `bin`, and `examples/build.php` in the repository is
+**The package declares no `bin`**, and `examples/build.php` in the repository is
 the closest thing — it converts a directory of Markdown files and renders page images of each.
 
 A shell loop is the whole substitute:
@@ -198,7 +202,8 @@ for f in decks/*.md; do
 done
 ```
 
-The Word half has a real CLI — see [Markdown Word → command line](/word/#2-command-line).
+The suite has a command line for both halves — see
+[The command line](/command-line/basic/).
 
 ---
 
@@ -235,6 +240,53 @@ foreach ($deck->slides() as $slide) {
 0 One
 1 Two
 ```
+
+### Reading a deck back
+
+The other direction: a `.pptx` becomes the Markdown this package writes decks in, so a deck
+somebody else made can be taken apart, edited as text, and put back together in another
+design.
+
+```php
+use MarkdownPresentation\PowerPointToMarkdown;
+use MarkdownPresentation\Reverse\Options;
+
+echo (new PowerPointToMarkdown('deck.pptx', new Options(mediaDirectory: null)))->convert();
+```
+
+```text
+---
+title: "Untitled Presentation"
+author: "markdown-office"
+---
+
+# One
+
+Text.
+```
+
+The frontmatter carries what the deck said about itself — its title, its author and its
+description — because a deck's own properties are the only thing about it that is not on a
+slide. `save()` writes it to a file instead, and `read()` gives the slides back as a list.
+
+What comes back is the text and the structure. What does not is the design: the type sizes,
+the colours and the geometry live in the theme and the master, and neither travels to a new
+deck. A `.pptx` records what is on a slide, not how it was drawn.
+
+| In the deck | In the Markdown |
+| --- | --- |
+| the title placeholder | the heading of the slide |
+| the subtitle placeholder | a paragraph under it |
+| a body placeholder | a list |
+| a text box | a paragraph |
+| a picture | an image, written out beside the deck |
+| a table | a Markdown table |
+| the speaker's note | a `::note` block |
+| the date, the footer and the slide number | nothing |
+
+What the round trip does not keep is written down in the package's own
+[README](https://github.com/markdown-office/markdown-presentation#reading-a-deck-back): the
+design, the layout, the underline, a link inside a run, and a chart.
 
 ### The rendering pipeline
 
