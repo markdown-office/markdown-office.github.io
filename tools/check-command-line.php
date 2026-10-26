@@ -119,7 +119,7 @@ function partsOf(string $help): array
         // A blank line ends the section, and so does anything that is not a
         // part: the list is padded to a fixed width, so the name and the
         // summary are separated by more than one space.
-        if (\preg_match('/^  (\S+)\s\s+(\S.*)$/', $line, $match) !== 1) {
+        if (\preg_match('/^ {2}(\S+)\s{2,}(\S.*)$/', $line, $match) !== 1) {
             if (\trim($line) === '') {
                 continue;
             }
@@ -205,24 +205,41 @@ function optionsOf(string $help): array
         }
 
         $command = \strtolower(\str_replace(' ', '-', \trim($match[1])));
-        $options[$command] ??= [];
+        $options[$command] = [...($options[$command] ?? []), ...optionsUnder($lines, $number)];
+    }
 
-        for ($next = $number + 2; $next < \count($lines); $next++) {
-            $entry = $lines[$next];
+    return $options;
+}
 
-            if (\trim($entry) === '') {
-                break;
-            }
+/**
+ * The options under one heading of the help.
+ *
+ * The heading is at `$number` and the rule under it at `$number + 1`, so the options
+ * begin after both. The section ends at the first blank line.
+ *
+ * @param list<string> $lines
+ *
+ * @return list<string>
+ */
+function optionsUnder(array $lines, int $number): array
+{
+    $options = [];
 
-            if (\preg_match('/^  (-{1,2}[^\s,]+)(?:, (-{1,2}[^\s]+))?/', $entry, $found) !== 1) {
-                continue;
-            }
+    for ($next = $number + 2; $next < \count($lines); $next++) {
+        $entry = $lines[$next];
 
-            $options[$command][] = $found[1];
+        if (\trim($entry) === '') {
+            break;
+        }
 
-            if (($found[2] ?? '') !== '') {
-                $options[$command][] = $found[2];
-            }
+        if (\preg_match('/^ {2}(-{1,2}[^\s,]+)(?:, (-{1,2}[^\s]+))?/', $entry, $match) !== 1) {
+            continue;
+        }
+
+        $options[] = $match[1];
+
+        if (($match[2] ?? '') !== '') {
+            $options[] = $match[2];
         }
     }
 
