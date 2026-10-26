@@ -39,9 +39,15 @@ composer require markdown-office/mdoffice
 
 On ARM, the Linux asset is `mdoffice-0.1.1-linux-aarch64`.
 
-**The package managers need the first release, and none has been published yet.** Until
-there is one, a clone is the way in. The three repositories have to be side by side,
-because the manifest resolves the other two by directory:
+**The release is out**, and the executables and the archive are on [the releases
+page](https://github.com/markdown-office/mdoffice/releases) with the checksum of
+each beside them in `SHA256SUMS`. The Homebrew formula and the `winget` manifest
+are written from that release by their own repositories, and each is a pull
+request away — so a package manager may not have it yet, and a download always
+does.
+
+A clone works too, and always will. The three repositories have to be side by
+side, because the manifest resolves the other two by directory:
 
 ```bash
 git clone https://github.com/markdown-office/mdoffice.git
@@ -106,7 +112,7 @@ php mdoffice.phar word notes.md
 
 The archive carries both converter libraries inside it. It needs PHP 8.2 or newer with
 `ext-dom`, `ext-gd`, `ext-mbstring`, `ext-xmlwriter` and `ext-zip`. It is published
-with the executables, so it is waiting for the same first release.
+with the executables, so it is on the same page as they are.
 
 ### Composer
 
@@ -145,13 +151,14 @@ and it writes the formula from the release: the URL of the asset and the checksu
 file it downloads. It installs the binary for the machine it is on: Apple silicon or
 Intel, x86-64 or ARM.
 
-**The formula in the tap is a placeholder** until there is a release to write it from,
-and it points at a version that was never published, so `brew install mdoffice` fails
-with a 404. The tap writes the real formula as soon as a release exists.
+**The formula is written from the release, so it is a pull request away.** It is
+opened by the tap's own workflow and merged by a person, and until that happens
+`brew install mdoffice` finds nothing. The download above does not wait for
+anybody.
 
 ### winget
 
 The manifest is written from the release rather than by hand, so it carries the
 checksum of the file it names. It is written against
-[microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs), and it is waiting for
-the same first release.
+[microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs), and it is a pull
+request away in the same way.
