@@ -33,7 +33,7 @@ winget install markdown-office.mdoffice
 {% endtab %}
 {% tab "Linux" %}
 ```bash
-curl -L -o mdoffice https://github.com/markdown-office/mdoffice/releases/latest/download/mdoffice-0.1.0-linux-x86_64
+curl -L -o mdoffice https://github.com/markdown-office/mdoffice/releases/latest/download/mdoffice-0.1.1-linux-x86_64
 chmod +x mdoffice
 ```
 {% endtab %}
