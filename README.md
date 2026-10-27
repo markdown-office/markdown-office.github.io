@@ -63,11 +63,11 @@ So the tables are checked against the code, and a table says which vocabulary it
 
 `tools/check-reference.php` reads every vocabulary out of the library that owns it — the frontmatter
 keys, the layout roles, the free shapes, the colour slots, the theme keys, the style keys, the
-exceptions, the themes that ship, the ceilings, the Word directives, the Word options, the Word
-style slots and the inline style attributes — and reads the page that carries it for the names it
-lists. The two are compared in both directions: a name the code does not have is a page offering
-something that does not work, and a name the code has and the page does not is a feature nobody
-can find.
+exceptions, the themes that ship, the ceilings, the Word directives, the features a Word format
+cannot carry, the Word options, the Word style slots and the inline style attributes — and reads
+the page that carries it for the names it lists. The two are compared in both directions: a name
+the code does not have is a page offering something that does not work, and a name the code has
+and the page does not is a feature nobody can find.
 
 A vocabulary the two halves share is read out of both of them and held to one list, so the
 attributes an inline style takes are the same eight in the deck and in the document — and the
