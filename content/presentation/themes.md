@@ -15,6 +15,7 @@ themes/corporate-dark/
 ├── theme.yml      required
 ├── styles.yml     the Word half's vocabulary — the renderer does not read it
 ├── layouts.yml    which PowerPoint layout each role maps to
+├── text-styles.yml  the names a deck writes words in — see [Text styles](#text-styles)
 └── template.pptx  optional, a path
 ```
 
@@ -78,6 +79,31 @@ subtle ink `lt2` — which is why the same theme can be dark without being a sec
 | `leading` | number | 1.2 | 1.0 |
 | `heading-weight` | `bold` or `regular` | `bold` | |
 | `heading-ink` | `ink` or `accent` | `ink` | |
+
+## Text styles
+
+A theme may name the styles a deck writes words in. `text-styles.yml` is optional: a theme
+without one has no named styles, and every named form written against it is a name the theme does
+not have.
+
+```yaml
+# themes/mine/text-styles.yml
+brand:
+  color: accent1
+  bold: true
+muted:
+  color: lt2
+  size: 10
+```
+
+The properties are the [eight attributes](/directives/#a-word-in-a-style) an inline style takes, and
+a size is in points as it is everywhere else. A colour is the same one a shape's fill is written
+in: a role, a theme slot or a hex value.
+
+When the theme is read, a style that names an attribute that does not exist, a style that carries
+no property at all, a style called `style` — the word the raw form is written with — and a
+`highlight`, which this half does not draw, are each refused. A typo in the file is never rendered
+as silence.
 
 ## Layout roles
 

@@ -11,6 +11,9 @@ Markdown Presentation splits its vocabulary in two: **frontmatter keys**, which 
 and **in-body colon markers**, which are instructions. Both are closed sets, and both fail the
 build with a message naming what would have worked.
 
+The one marker whose names are not closed is the inline one: a name in a deck is a
+[text style](#a-word-in-a-style), and the names are the theme's own.
+
 ## In-body markers
 
 | Written | Shape | What it does |
@@ -116,6 +119,41 @@ Read this out loud.
 Case-insensitive and whitespace-tolerant. A note has to be the last thing on the slide: the
 closer is anchored to the end of it, so two `::note` blocks on one slide become **one** note
 carrying both. An unclosed note is refused.
+
+## A word in a style
+
+A box carries one colour, one size and one face, and every word in it takes them or does not. A
+**text style** is a name the theme gives to a set of those, and a word written in one is drawn in
+it.
+
+The three forms and the eight attributes are the suite's, and are on
+[How directives work](/directives/#a-word-in-a-style). The named styles come from the theme's
+`text-styles.yml` — see [Text styles](/presentation/themes/#text-styles).
+
+**What this half does with a name it does not know is the opposite of the Word half's: it refuses
+it**, and the message names the styles the theme does have. Every inline directive in a deck is a
+text style, so `Status :green[go]` — which reads like a status — names a style the theme does not
+have, and it fails the build rather than reaching the slide as text.
+
+A label is **plain text** — the directives package stores a label as a string rather than parsing
+it as Markdown — so a complete Markdown construct in one is refused, and the message names the two
+ways out: give the style the weight, or write the emphasis in the paragraph around it. A bare `*`
+or `_` is a character and not an intent, so `2 * 3` and `snake_case` are drawn as they are.
+
+{% example "A word in a colour of its own, inside a box" %}
+````md presentation
+---
+layout: blank
+---
+
+:::content{left=8% top=40% width=60% height=20% fill=none font-size=20}
+Resilience :style[Bakery]{color=00B4D8} is open.
+:::
+````
+{% endexample %}
+
+The `highlight` attribute is **not drawn by this half**. PHPPresentation's font has no setter for
+one, so the attribute is refused by name rather than accepted and quietly dropped.
 
 ## Free shapes
 
