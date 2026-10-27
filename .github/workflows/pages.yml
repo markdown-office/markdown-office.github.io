@@ -155,9 +155,27 @@ jobs:
           "$RUNNER_TEMP/bin/wordcraft-cli" --version
           "$RUNNER_TEMP/bin/deckcraft-cli" --version
 
+      # The strict build, not the plain one: an example that does not build is rendered
+      # into the page as "This example did not build", and the build succeeds anyway.
+      # A green build with a broken example on it is the failure this step exists to
+      # catch, so the strict flag is the one that is asked for.
       - name: Build the site
         working-directory: documentation
-        run: npm run build
+        run: npm run build:strict
+
+      # The reference tables are written by hand, and a hand-written list is correct
+      # only until the code moves. Each vocabulary is read out of the library that
+      # owns it and the page that carries it is read for the names it lists, and the
+      # two are compared in both directions.
+      - name: The reference tables list what the libraries have
+        working-directory: documentation
+        run: php tools/check-reference.php
+
+      # The claims the pages make in prose — the counts, the completeness, the rules —
+      # which a table cannot carry and a name cannot say.
+      - name: The claims the pages make
+        working-directory: documentation
+        run: vendor/bin/pest
 
       # A site whose links 404 is worse than no site, and nothing else says so: the build
       # succeeds, the pages are there, and the reader is the one who finds out.
