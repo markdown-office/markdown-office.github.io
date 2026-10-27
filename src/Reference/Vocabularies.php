@@ -18,6 +18,7 @@ use MarkdownWord\Configuration\Options;
 use MarkdownWord\Configuration\Styles;
 use MarkdownWord\Exception\Exception as WordException;
 use MarkdownWord\MarkdownToWord;
+use MarkdownWord\Render\Directives;
 
 /**
  * The vocabularies the site lists, and where the code keeps each one.
@@ -96,23 +97,15 @@ final class Vocabularies
     /**
      * The spellings a theme file may use instead of DrawingML's own.
      *
-     * The list is a private constant of the mapper, and there is no accessor for it: a
-     * theme file is read into a `Theme`, and the names the file may use are not part of
-     * the theme. The constant is read the way the mapper reads it — as the code's own
-     * answer — rather than written down here, because a copy of it here would be the
-     * thing that drifts.
+     * Asked of the mapper, which owns them, rather than read out of its internals: a
+     * private constant read by reflection breaks the day it is renamed, and a copy
+     * written down here is the thing that drifts.
      *
      * @return list<string>
      */
     public static function themeAliases(): array
     {
-        $constant = (new \ReflectionClass(ThemeMapping::class))->getReflectionConstant('ALIASES');
-
-        if ($constant === false) {
-            return [];
-        }
-
-        return \array_keys((array) $constant->getValue());
+        return \array_keys(ThemeMapping::aliases());
     }
 
     /**
@@ -184,65 +177,16 @@ final class Vocabularies
     /**
      * The directives the Word half draws.
      *
-     * `MarkdownToWord` wires them into a `Directives` registry with two calls whose first
-     * argument is the name, and the registry offers no accessor for what it holds — so the
-     * names are read out of that call and out of nowhere else.
-     *
-     * The file is tokenised rather than matched with a pattern: a name is a string
-     * literal, and the tokens say which literals are arguments to those calls and which
-     * are something else entirely.
+     * Asked of the registry, which owns the names. The registry used to be read by
+     * tokenising `MarkdownToWord.php` and looking for the literals its two calls were
+     * given — which finds nothing, and passes, the day the registration moves to
+     * another file. A check that checks nothing is worse than no check.
      *
      * @return list<string>
      */
     public static function wordDirectives(): array
     {
-        $file = (string) (new \ReflectionClass(MarkdownToWord::class))->getFileName();
-        $tokens = \token_get_all((string) \file_get_contents($file));
-        $names = [];
-
-        for ($index = 0; $index < \count($tokens); $index++) {
-            $token = $tokens[$index];
-
-            if (!\is_array($token) || $token[0] !== \T_STRING) {
-                continue;
-            }
-
-            if (!\in_array($token[1], ['withBlock', 'withInline'], true)) {
-                continue;
-            }
-
-            $name = self::literalAfter($tokens, $index);
-
-            if ($name !== null) {
-                $names[] = $name;
-            }
-        }
-
-        \sort($names);
-
-        return $names;
-    }
-
-    /**
-     * The string literal the call at `$index` is given, or null where there is none.
-     *
-     * @param list<array{0: int, 1: string, 2: int}|string> $tokens
-     */
-    private static function literalAfter(array $tokens, int $index): ?string
-    {
-        for ($next = $index + 1; $next < \count($tokens); $next++) {
-            if ($tokens[$next] === '(') {
-                $argument = $tokens[$next + 1] ?? null;
-
-                if (\is_array($argument) && $argument[0] === \T_CONSTANT_ENCAPSED_STRING) {
-                    return \trim($argument[1], "'\"");
-                }
-
-                return null;
-            }
-        }
-
-        return null;
+        return Directives::names();
     }
 
     /**

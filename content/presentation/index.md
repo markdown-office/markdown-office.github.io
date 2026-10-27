@@ -83,8 +83,10 @@ description: What changed, what it cost, and what happens next.
 #### A theme
 
 A theme is a directory, and `theme.yml` is what it has to hold: the name, an optional description
-and author, the colours, the fonts and the geometry. The keys it takes, the colour slots, the
-geometry and the themes that ship are all on [Themes and layout](/presentation/themes/).
+and author, the colours, the fonts and the geometry. A `theme:` may also name the `theme.yml`
+itself, in which case the theme's other files are the ones beside it. The keys it takes, the
+colour slots, the geometry and the themes that ship are all on
+[Themes and layout](/presentation/themes/).
 
 Resolution is a path, then `themes/<name>` beside the deck, then the package's own. **No silent
 fallback to `default`**: a name that does not resolve raises `ThemeNotFound` listing the ones that

@@ -32,6 +32,8 @@ is about both libraries, is on [Errors in general](/errors/).
 | `UnknownStyleSlot` | `styles.yml` names a slot that does not exist |
 | `MalformedTemplate` | a `template.pptx` is not one |
 | `MalformedShape` | a free shape has an attribute it does not read, or a value it cannot be |
+| `UnknownTextStyle` | an inline style names a style the theme does not have — the message names the styles |
+| `MalformedTextStyle` | a text style has a property it does not have, or a value it cannot be |
 | `ImageNotFound` | a path, a URL, or something outside the roots |
 | `UnreadablePackage` | **not** `InvalidInput`; nothing a deck names fixes it |
 | `UnreadableDeck` | **not** `InvalidInput`; the file is not a package this PHP can read |

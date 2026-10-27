@@ -151,7 +151,8 @@ which refuses a template with no content control instead of appending to it.
 ## Themes
 
 A theme is a directory: `theme.yml` — `name` required, plus `description` and `author` — and an
-optional `styles.yml` holding the same slot names as above.
+optional `styles.yml` holding the same slot names as above. A `theme:` may also name the
+`theme.yml` itself, in which case the `styles.yml` beside it is the theme's.
 
 Four themes ship, and a document names one with `theme:`:
 
@@ -164,6 +165,8 @@ Four themes ship, and a document names one with `theme:`:
 | `corporate` | serif headings in navy, wide spacing, ruled tables |
 | `report` | serif body on an open leading, understated headings — for something meant to be read to the end |
 
-Resolution is a path, then `<cwd>/themes/<name>`, then the package's own `themes/<name>`, and
+Resolution is a path — written from beside the document, the way a relative image path is —
+then `themes/<name>` beside the document, then `themes/<name>` beside the working directory,
+then the package's own `themes/<name>`, and
 **there is no silent fallback** — a name that does not resolve raises `ThemeNotFound` listing the
 ones that do.

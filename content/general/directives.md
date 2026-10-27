@@ -28,7 +28,8 @@ and `{…}` is a modifier available on all three shapes rather than a shape of i
 
 Here the two packages make opposite decisions, and both are defensible.
 
-**Markdown Word is permissive.** It draws exactly two directives — `::toc` and `:footnote` — and
+**Markdown Word is permissive.** It draws exactly three directives — `::toc`, `:footnote` and
+`:style` — and
 renders every other name as its own source text. A document nobody intended as a set of
 directives keeps working, and the text an author wrote is what a reader sees.
 

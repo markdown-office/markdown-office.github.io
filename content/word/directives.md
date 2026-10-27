@@ -2,13 +2,13 @@
 layout: layouts/base.njk
 permalink: /word/directives/
 title: Word directives
-summary: ::toc and :footnote are drawn. Everything else is written into the document exactly as the author typed it.
+summary: ::toc, :footnote and :style are drawn. Everything else is written into the document exactly as the author typed it.
 section: Markdown Word
 order: 1
 ---
 
-Markdown Word draws **two** directives. Both are real Word features rather than Markdown dressed
-up, which is the reason they exist at all.
+Markdown Word draws **three** directives. They are real Word features rather than Markdown
+dressed up, which is the reason they exist at all.
 
 <!-- reference: word.directives -->
 
@@ -16,6 +16,7 @@ up, which is the reason they exist at all.
 | --- | --- | --- |
 | `toc` | block | a table of contents Word can build |
 | `footnote` | inline | a real Word footnote |
+| `style` | inline | a word in one of the theme's named styles |
 
 ## `::toc` — a table of contents Word can build
 

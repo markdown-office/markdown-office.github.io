@@ -99,12 +99,11 @@ can carry `title:` for a pipeline downstream that cares and be none the worse.
 
 ### Extended: directives
 
-Two directives, and both are real Word features rather than Markdown dressed up.
+Three directives, and all of them are real Word features rather than Markdown dressed up.
 
 **`::toc`** — a table of contents Word can build. The field goes out empty and marked dirty, with
 `w:updateFields` set, because PHPWord's cached page numbers are all `1` and a reader who never
 updates a field shows them as they are.
-
 | Attribute | Type | Default |
 | --- | --- | --- |
 | `depth` | integer | `maxHeadingLevel`, which is `6`, clamped to 1–6 |
@@ -138,6 +137,11 @@ rather than parsed as Markdown. There are no attributes.
 > `word/footnotes.xml` in it at all**, and the literal text `:footnote[Source: the ledger.]` in
 > the body. This page says so rather than describing the intended behaviour, because the build on
 > this site checks the difference.
+
+**`:style[…]`** — a word in one of the theme's named styles. The text in the brackets is the
+word, and the style is named by the directive's own name: `:brand[Bakery]` is "Bakery" in the
+theme's `brand` style. Attributes on the directive override the style's own properties for that
+word alone.
 
 **Everything else** parses and is written into the document as the text the author typed.
 `Status :green[go] before lunch.` parses, and reaches the document exactly as written. That is the
