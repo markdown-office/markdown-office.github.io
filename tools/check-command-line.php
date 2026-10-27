@@ -88,6 +88,9 @@ const FORBIDDEN = [
     'the presentation page listed the layout roles twice' => 'The eight layout roles:',
     'the frontmatter table named a number of roles' => 'one of eight roles',
     'the presentation page said one exception sat beside InvalidInput' => 'One sits beside those two rather than under `InvalidInput`',
+    'the round-trip page said five things do not survive' => 'the five things that do not',
+    'the Word index said two directives' => 'with two directives',
+    'the presentation index said two methods' => 'has two methods',
 ];
 
 /**
