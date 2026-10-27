@@ -151,7 +151,9 @@ which refuses a template with no content control instead of appending to it.
 ## Themes
 
 A theme is a directory: `theme.yml` — `name` required, plus `description` and `author` — and an
-optional `styles.yml` holding the same slot names as above. A `theme:` may also name the
+optional `styles.yml` holding the same slot names as above. One key of that file is not a slot:
+`textStyles` holds the named styles a document may write a word in — see
+[Word directives](/word/directives/#a-word-in-a-style). A `theme:` may also name the
 `theme.yml` itself, in which case the `styles.yml` beside it is the theme's.
 
 Four themes ship, and a document names one with `theme:`:

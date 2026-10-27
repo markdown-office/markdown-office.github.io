@@ -112,6 +112,42 @@ Word's own footnote syntax is not what is parsed here. `:footnote[…]` is this 
 - An empty body — `:footnote` or `:footnote[]` — draws the source characters instead.
 - Only `.docx` carries it; `.odt` and `.rtf` get the text back.
 
+## A word in a style
+
+A word in a style, in the middle of a sentence:
+
+```markdown
+Resilience :brand[Bakery] is open.
+```
+
+The three forms and the eight attributes are the suite's, and are on
+[How directives work](/directives/#a-word-in-a-style). The named styles come from the theme: the
+`textStyles` key of its `styles.yml`, beside the slots — see [Themes](/word/configuration/#themes).
+
+**What this half does with a name it does not know is the opposite of the presentation half's: it
+writes the directive out as its own source text.**
+
+| Written | In the document |
+| --- | --- |
+| `:brand[Bakery]` where the theme has no `brand` | `:brand[Bakery]` |
+| `:style[Bakery]` with no attributes | `:style[Bakery]` |
+| `:brand[Bakery]{weight=900}` | `:brand[Bakery]{weight="900"}` |
+| `:brand[**Bakery**]` | `:brand[**Bakery**]` |
+
+The label is plain text, so a complete Markdown construct in one is drawn as the source text as
+well. A bare `*` or `_` is not Markdown: `2 * 3` and `snake_case` are ordinary text, and the word
+is written in the style as it stands.
+
+{% example "A word in the theme's own named style" %}
+````md word
+---
+theme: corporate
+---
+
+Resilience :brand[Bakery] is open. It has been since :muted[2019].
+````
+{% endexample %}
+
 ## Everything else
 
 Any other name parses and is **written out as its own source text**. That is the policy, and it is

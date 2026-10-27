@@ -6,6 +6,8 @@ use MarkdownOffice\Documentation\Tests\Support\Deck;
 use MarkdownOffice\Documentation\Tests\Support\Document;
 use MarkdownOffice\Documentation\Tests\Support\Theme;
 use MarkdownPresentation\Theme\ThemeLoader;
+use MarkdownWord\Configuration\TextStyles;
+use MarkdownWord\WordToMarkdown;
 
 /**
  * The claims the pages make about the inline styles.
@@ -154,4 +156,57 @@ it('leaves a property off the run of a deck when an attribute is false', functio
     }
 
     expect(Deck::run($slide, 'Bakery'))->not->toContain('b="1"');
+});
+
+it('reads the named styles of a Word theme from the key the page names', function () {
+    says('word/configuration.md', '`textStyles`');
+
+    expect(TextStyles::KEY)->toBe('textStyles');
+});
+
+it('draws a word in a named style in a Word document', function () {
+    says('word/directives.md', 'the named styles come from the theme');
+
+    $body = Document::body("---\ntheme: corporate\n---\n\nResilience :brand[Bakery] is open.\n");
+
+    expect(Document::run($body, 'Bakery'))->not->toBe('');
+    expect($body)->not->toContain(':brand[Bakery]');
+});
+
+it('overrides a named style with the attributes on the directive in a Word document', function () {
+    $body = Document::body("---\ntheme: corporate\n---\n\nA :brand[Bakery]{color=FF0000} B\n");
+
+    expect(Document::run($body, 'Bakery'))->toContain('<w:color w:val="FF0000"/>');
+});
+
+it('leaves a property off the run of a Word document when an attribute is false', function () {
+    $body = Document::body("---\ntheme: corporate\n---\n\nA :brand[Bakery]{bold=false} B\n");
+
+    expect(Document::run($body, 'Bakery'))->not->toContain('<w:b');
+});
+
+it('writes a name the theme does not have as its own source text', function () {
+    says('word/directives.md', 'writes the directive out as its own source text');
+
+    $body = Document::body("Resilience :brand[Bakery] is open.\n");
+
+    expect($body)->toContain(':brand[Bakery]');
+});
+
+it('writes a label that holds Markdown as the source text of a Word document', function () {
+    says('word/directives.md', 'a complete Markdown construct in one is drawn as the source text as well');
+
+    $body = Document::body("---\ntheme: corporate\n---\n\nA :brand[**Bakery**] B\n");
+
+    expect($body)->toContain(':brand[**Bakery**]');
+});
+
+it('reads a word in a text style back as the word', function () {
+    says('word/round-trip.md', 'the style is not, and neither is the name it was written under');
+
+    $path = Document::path("---\ntheme: corporate\n---\n\nResilience :brand[Bakery] is open.\n");
+    $markdown = (new WordToMarkdown($path))->convert();
+
+    expect($markdown)->toContain('Bakery');
+    expect($markdown)->not->toContain(':brand');
 });

@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 permalink: /word/round-trip/
 title: Round trips
-summary: Markdown to a document and back. What comes out the same, and the five things that do not.
+summary: Markdown to a document and back. What comes out the same, and the six things that do not.
 section: Markdown Word
 order: 3
 ---
@@ -48,6 +48,7 @@ Checked, rather than assumed:
 | --- | --- |
 | `::toc{depth=2}` | `Press F9 to build the table of contents.` |
 | `:footnote[Source: the ledger.]` | `:footnote[Source: the ledger.]` |
+| `:brand[Bakery]` | `Bakery` |
 
 The first is **not** a directive and never was on the way back — the document really does contain
 that sentence, inside the table-of-contents field, waiting for Word to build it. The reader reads
@@ -57,8 +58,12 @@ The second round trips only by accident: `:footnote[…]` does not currently pro
 `footnotes.xml` at all, so what the reader finds is the source text that was always in the body.
 See [Word directives](/word/directives/).
 
-**Neither is a round trip you should build on.** A pipeline that edits documents in Word and reads
-them back should treat directives as one-way.
+The third keeps the word and loses the style: `:brand[Bakery]` is written as direct formatting — a
+colour, a weight, a size — and the reader reads bold, italic and strike and no colour. The word is
+there; the style is not, and neither is the name it was written under.
+
+**None of them is a round trip you should build on.** A pipeline that edits documents in Word and
+reads them back should treat directives as one-way.
 
 ## What else does not survive
 
