@@ -43,6 +43,12 @@ it('counts the frontmatter keys as the code does', function () {
     says('presentation/directives.md', 'one of these ' . words($count));
 });
 
+it('counts the free shapes as the code does', function () {
+    $shapes = Vocabularies::all()['presentation.free-shapes']->names();
+
+    says('presentation/directives.md', words(\count($shapes)) . ' of them and no others');
+});
+
 it('counts the themes that ship as the code does', function () {
     $themes = Vocabularies::all()['presentation.themes']->names();
 

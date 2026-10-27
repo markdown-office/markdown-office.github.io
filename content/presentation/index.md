@@ -21,8 +21,10 @@ PHP 8.2 or newer, with `ext-dom`, `ext-gd` and `ext-zip`. `ext-imagick` is optio
 the Markdown this package writes decks in, so a deck can be taken apart, edited as text and put
 in again under a different theme. `PresentationRenderer` has three methods, `render()`,
 `overflows()` and `unknownFonts()`; the reader is `PowerPointToMarkdown`, with `convert()`,
-`save()`, `toMarkdown()` and `read()`. What the round trip does not keep is written down in
-[Reading a deck back](#reading-a-deck-back).
+`save()`, `toMarkdown()` and `read()`. The two that report rather than write are
+`overflows()` — every block that had to be made smaller than it asked for — and `unknownFonts()`
+— every face the deck named that there is no table of advance widths for. What the round trip
+does not keep is written down in [Reading a deck back](#reading-a-deck-back).
 
 ---
 
@@ -59,10 +61,10 @@ slides and **cannot be a thematic break** — use `***`.
 ### Extended: frontmatter and themes
 
 The deck's own configuration goes in the frontmatter of slide 1. Every key is in a **closed set of
-seven**, and anything outside it fails the build with a message naming what would have worked. The
-seven are listed with the [directives](/presentation/directives/#frontmatter-directives).
+nine**, and anything outside it fails the build with a message naming what would have worked. The
+nine are listed with the [directives](/presentation/directives/#frontmatter-directives).
 
-{% example "Every frontmatter key on a deck" %}
+{% example "The four keys that describe a deck" %}
 ````md presentation
 ---
 theme: corporate-dark
@@ -91,6 +93,13 @@ colour slots, the geometry and the themes that ship are all on
 Resolution is a path, then `themes/<name>` beside the deck, then the package's own. **No silent
 fallback to `default`**: a name that does not resolve raises `ThemeNotFound` listing the ones that
 do.
+
+#### A template
+
+A **template** is the furniture of a deck — the wordmark, the rule, the page number — written
+once and drawn on every slide that names it. It is a slide of the deck's own Markdown, marked by
+its own frontmatter, and it is not a slide of the deck: it does not appear and it does not count
+towards the number of slides. See [Presentation directives](/presentation/directives/#slide-templates).
 
 ### Extended: directives
 

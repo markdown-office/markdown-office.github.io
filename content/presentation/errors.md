@@ -20,6 +20,9 @@ is about both libraries, is on [Errors in general](/errors/).
 | `UnknownDirective` | a key or marker outside the closed set — the message names the set |
 | `UnknownMarker` | `::click=0`, backwards, over 500, unclosed, or a stray closer |
 | `UnknownLayoutRole` | `layout:` is not one of the layout roles |
+| `UnknownTemplate` | a slide names a template the deck does not have — the message names the templates |
+| `MalformedChrome` | a template holds ordinary Markdown, or a chrome file holds a slide |
+| `ChromeNotFound` | the chrome file a deck names is not there, or is outside the roots |
 | `UnsupportedColumn` | more `::column` markers than the layout has columns |
 | `UnsupportedImageFormat` | not an image, no decoder, or over the ceiling |
 | `UnsupportedLink` | `javascript:`, `data:`, `phar://`, `file://`, a UNC share |
@@ -45,3 +48,6 @@ is about both libraries, is on [Errors in general](/errors/).
 Five sit beside `InvalidInput` rather than under it: nothing a deck names fixes a file that cannot
 be read, a target that cannot be written, a conversion with nothing to convert, or a dependency
 that was installed without the fixes the library needs.
+
+The three that carry a template are about the deck rather than about a file on disk: a name
+nothing is under, a body that holds the wrong thing, and a file that is not there.

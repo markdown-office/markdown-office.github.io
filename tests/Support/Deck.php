@@ -66,4 +66,58 @@ final class Deck
 
         return '';
     }
+
+    /**
+     * The slides of a deck, as the XML each of them holds.
+     *
+     * The slides rather than the deck, because a claim about a deck is usually a claim
+     * about one of them: which shapes it carries, and in which order.
+     *
+     * @return list<string>
+     */
+    public static function slides(string $markdown, string $directory = '.'): array
+    {
+        $path = \sys_get_temp_dir() . '/markdown-office-deck-' . \bin2hex(\random_bytes(6)) . '.pptx';
+
+        (new PresentationRenderer($directory))->render((new DeckParser())->parse($markdown), $path);
+
+        $zip = new \ZipArchive();
+        $zip->open($path);
+
+        $slides = [];
+
+        for ($number = 1; $number <= $zip->numFiles; $number++) {
+            $name = $zip->getNameIndex($number - 1);
+
+            if (\preg_match('#^ppt/slides/slide(\d+)\.xml$#', $name, $match) === 1) {
+                $slides[(int) $match[1]] = (string) $zip->getFromName($name);
+            }
+        }
+
+        \ksort($slides);
+
+        return \array_values($slides);
+    }
+
+    /**
+     * The names of the shapes on every slide of a deck, in the order they are drawn.
+     *
+     * The names rather than the XML, because what a claim is about is which shapes a
+     * slide carries and in which order — the chrome of a template is drawn over what the
+     * slide placed itself, and that is an order.
+     *
+     * @return list<list<string>>
+     */
+    public static function shapes(string $markdown, string $directory = '.'): array
+    {
+        $names = [];
+
+        foreach (self::slides($markdown, $directory) as $slide) {
+            \preg_match_all('#<p:cNvPr id="\d+" name="([^"]*)"#', $slide, $matches);
+
+            $names[] = \array_values(\array_filter($matches[1]));
+        }
+
+        return $names;
+    }
 }

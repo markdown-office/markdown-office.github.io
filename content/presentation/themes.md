@@ -120,6 +120,26 @@ master — the file may be a bare mapping or nested under a single `layouts:` ke
 
 Only the roles a deck actually uses are built, so a ten-slide deck does not carry eight masters.
 
+## Templates
+
+A **template** is not a theme, and it does not live beside one.
+
+| | Theme | Template |
+| --- | --- | --- |
+| Where it lives | a directory, `themes/<name>/` | a slide of the deck, or a file beside the deck |
+| What it is | `theme.yml` and its friends | chrome: the free shapes it draws, and the words in them |
+| What names it | `theme:` | `template:` |
+| What it decides | the colours, the type, the grid | the furniture on the slide |
+
+A theme's own `template.pptx` is a **third thing** and shares only the name: it is the PowerPoint
+file that says where the theme's layouts put their boxes, and it says nothing about the furniture
+on a slide. A template that says where the furniture goes is written in Markdown, beside the deck
+or in it — `chrome: ./chrome.md` resolves against the deck's own directory, so a deck and the
+furniture it shares travel together.
+
+The rules a template follows, and the four things that decide what one is, are on
+[Presentation directives](/presentation/directives/#slide-templates).
+
 ## The ones that ship
 
 Five themes ship, and a deck names one with `theme:`:
