@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         failOnWarning="true"
+         failOnRisky="true"
+         beStrictAboutOutputDuringTests="true"
+         cacheDirectory=".phpunit.cache">
+    <!--
+        Pest test files are closures, not classes, so they carry no `Test.php`
+        suffix; the suite is matched on the extension instead.
+    -->
+    <testsuites>
+        <testsuite name="claims">
+            <directory suffix=".php">tests/Claims</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

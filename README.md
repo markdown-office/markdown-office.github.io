@@ -18,6 +18,11 @@ npm run serve        # the same, with a watcher
 ```
 
 ```bash
+composer check       # the examples, the command-line pages, the reference tables, the claims
+composer test        # the claims on their own
+```
+
+```bash
 npm run build:strict # ...and exit non-zero if an example does not build
 ```
 
@@ -40,6 +45,49 @@ fails the build rather than the reader's afternoon.
 
 That is not decoration — it caught three real errors in these pages while they were being written,
 including one where an example claimed a Word footnote that the converter did not produce.
+
+## The reference tables
+
+The tables are claims too, and they drift: the site said four themes shipped when five did, and
+its error page said it listed every exception the package throws and left five of them out.
+
+So the tables are checked against the code, and a table says which vocabulary it carries:
+
+```markdown
+<!-- reference: presentation.layout-roles -->
+
+| Role | Title box |
+| --- | --- |
+| `title` | yes |
+```
+
+`tools/check-reference.php` reads every vocabulary out of the library that owns it — the frontmatter
+keys, the layout roles, the free shapes, the colour slots, the theme keys, the style keys, the
+exceptions, the themes that ship, the ceilings, the Word directives, the Word options and the Word
+style slots — and reads the page that carries it for the names it lists. The two are compared in
+both directions: a name the code does not have is a page offering something that does not work, and
+a name the code has and the page does not is a feature nobody can find.
+
+Three rules make the lists stay lists:
+
+- **One list, one home.** A second copy of a table is a failure, because two copies drift apart and
+  the one nobody reads is the one that is wrong. Every table that lists names is marked, and the
+  marked one is the only one.
+- **The code is the only source.** The lists are read out of the libraries, not written down in the
+  site, so there is no second copy for the check to compare against.
+- **A vocabulary with no home is a failure.** A check that passes because it found nothing to check
+  is worse than no check at all.
+
+What a table cannot hold is prose — what a key does, what an exception means — and a count written
+out in a sentence ("Eight, and only these"). Those are claims too, and they are checked by the
+suite in `tests/`: the counts against the code, the claims of completeness against the code, and the
+rules against the library that has to behave that way. A sentence that was wrong and has been
+corrected goes into the `FORBIDDEN` map of `tools/check-command-line.php`, and a page that says it
+again is a failure.
+
+The tables are not generated. Their other columns are prose that no code holds, and moving that
+prose into a generator would make a second copy of the documentation in a file that is not a page —
+the same drift, one repository further away.
 
 ## Writing a page
 
@@ -178,7 +226,9 @@ to it, and the site is published at the GitHub Pages address until then.
 content/          the pages, one directory per chapter
 _includes/        the layout, the stylesheet, the wordmark
 _documents/       the documents the examples read. Committed: an input must not change.
-tools/            render-examples.php, make-input-document.php, the two link checks, and lib/
+src/              the reference tables, read out of the libraries and compared with the pages
+tests/            the claims the pages make in prose
+tools/            render-examples.php, make-input-document.php, the three checks, and lib/
 _examples/        built artifacts, published under the site's own path. Not committed.
 _data/            examples.json, written by the example builder. Not committed.
 _site/            the built site. Not committed.

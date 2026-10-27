@@ -4,7 +4,8 @@
 declare(strict_types=1);
 
 /**
- * Checks that the command-line pages say what the command line does.
+ * Checks that the command-line pages say what the command line does, and that the
+ * whole site does not say again what it has been corrected on.
  *
  *   php tools/check-command-line.php [path-to-mdoffice]
  *
@@ -33,7 +34,10 @@ declare(strict_types=1);
  *    the command takes is named
  *  - the quoted error is the error the program prints
  *
- * and what it refuses to let the pages say, which is in {@see FORBIDDEN} below.
+ * and what it refuses to let the site say, which is in {@see FORBIDDEN} below. That
+ * list covers every page and not only the command-line ones: a sentence that was
+ * wrong is wrong wherever it is written, and the pages that drifted most were the
+ * ones nothing was checking.
  */
 
 \error_reporting(\E_ALL & ~\E_DEPRECATED & ~\E_USER_DEPRECATED);
@@ -55,12 +59,16 @@ if (!\is_file($binary)) {
 }
 
 /**
- * The claims the pages must not make, and the page each was made on.
+ * The claims the site must not make, and the page each was made on.
  *
  * These are claims that were made, and were wrong, and were found. A claim that
  * is corrected once tends to come back, because the code moved on and the
  * sentence did not — so the phrase is here, and a page that says it again is a
  * failure.
+ *
+ * The list is the whole site's and not the command-line pages': a wrong sentence is
+ * wrong wherever it is written, and the pages that drifted most were the ones
+ * nothing was checking.
  *
  * @var array<string, string>
  */
@@ -70,7 +78,39 @@ const FORBIDDEN = [
     'the reader class does not exist' => 'There is no reader, no `.pptx` back to Markdown',
     'the release workflow does not exist' => 'there is no release job',
     'the package is on Packagist' => 'It is on Packagist as `markdown-office/mdoffice`',
+    'the presentation page said four themes ship' => 'Four themes ship: `default`, `corporate-dark`, `minimal`, `dense`.',
+    'the themes page called them the four that ship' => 'The four that ship',
+    'the Word page said four themes ship' => 'Four ship: `default`, `minimal`, `corporate`, `report`.',
+    'the themes page counted the colour aliases wrongly' => 'four readable aliases accepted',
+    'the themes page counted the colour aliases wrongly in capitals' => 'Four read-friendly aliases are accepted',
+    'the themes page counted the style keys wrongly' => 'the thirteen style keys',
+    'the themes page found a theme under the working directory' => '`<workingDirectory>/themes/<name>`',
+    'the presentation page listed the layout roles twice' => 'The eight layout roles:',
+    'the frontmatter table named a number of roles' => 'one of eight roles',
+    'the presentation page said one exception sat beside InvalidInput' => 'One sits beside those two rather than under `InvalidInput`',
 ];
+
+/**
+ * The Markdown files under a directory.
+ *
+ * @return list<string>
+ */
+function markdownFiles(string $directory): array
+{
+    $files = [];
+
+    foreach (\glob($directory . '/**/*.md') ?: [] as $path) {
+        $files[] = $path;
+    }
+
+    foreach (\glob($directory . '/*.md') ?: [] as $path) {
+        $files[] = $path;
+    }
+
+    \sort($files);
+
+    return \array_values(\array_unique($files));
+}
 
 /**
  * Runs the command line and returns what it printed.
@@ -528,18 +568,13 @@ if ($quoted === null) {
 }
 
 /**
- * The claims the pages must not make.
+ * The claims the site must not make.
  */
-$pages = [
-    'basic.md' => $basic,
-    'word.md' => $word,
-    'presentations.md' => $presentations,
-    'index.md' => (string) \file_get_contents($root . '/content/index.md'),
-    'presentation/index.md' => (string) \file_get_contents($root . '/content/presentation/index.md'),
-    'word/round-trip.md' => (string) \file_get_contents($root . '/content/word/round-trip.md'),
-    'suite/index.md' => (string) \file_get_contents($root . '/content/suite/index.md'),
-    'llms/llms.txt.njk' => (string) \file_get_contents($root . '/content/llms/llms.txt.njk'),
-];
+$pages = [];
+
+foreach (markdownFiles($root . '/content') as $file) {
+    $pages[\str_replace($root . '/content/', '', $file)] = (string) \file_get_contents($file);
+}
 
 foreach (FORBIDDEN as $claim => $phrase) {
     foreach ($pages as $name => $markdown) {
@@ -550,7 +585,7 @@ foreach (FORBIDDEN as $claim => $phrase) {
 }
 
 if ($failures !== []) {
-    \fwrite(\STDERR, \sprintf("%d problem(s) with the command-line pages:\n\n", \count($failures)));
+    \fwrite(\STDERR, \sprintf("%d problem(s) with the pages:\n\n", \count($failures)));
 
     foreach ($failures as $failure) {
         \fwrite(\STDERR, '  ' . \str_replace("\n", "\n  ", $failure) . "\n\n");
