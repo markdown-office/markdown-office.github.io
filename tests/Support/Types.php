@@ -32,7 +32,7 @@ final class Types
         $listed = Pages::codeIn($match[1] ?? '');
 
         if ($listed === []) {
-            throw new \RuntimeException(\sprintf('The page "%s" lists no type at all.', $page));
+            throw NoTypesListed::on($page);
         }
 
         foreach ($listed as $type) {

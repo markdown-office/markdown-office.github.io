@@ -20,7 +20,7 @@ final class Package
         $zip = new \ZipArchive();
 
         if ($zip->open($path) !== true) {
-            throw new \RuntimeException(\sprintf('The package at "%s" could not be opened.', $path));
+            throw PackageNotReadable::at($path);
         }
 
         $part = (string) $zip->getFromName($name);

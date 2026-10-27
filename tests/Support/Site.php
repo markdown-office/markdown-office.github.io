@@ -10,6 +10,36 @@ namespace MarkdownOffice\Documentation\Tests\Support;
 final class Site
 {
     /**
+     * The page that documents the directives of both halves.
+     */
+    public const GENERAL_DIRECTIVES = 'general/directives.md';
+
+    /**
+     * The page that documents the directives of the slides half.
+     */
+    public const PRESENTATION_DIRECTIVES = 'presentation/directives.md';
+
+    /**
+     * The page that documents the themes of the slides half.
+     */
+    public const PRESENTATION_THEMES = 'presentation/themes.md';
+
+    /**
+     * The page that introduces the slides half.
+     */
+    public const PRESENTATION_INDEX = 'presentation/index.md';
+
+    /**
+     * The page that documents the directives of the Word half.
+     */
+    public const WORD_DIRECTIVES = 'word/directives.md';
+
+    /**
+     * The page that documents what does not survive a round trip in the Word half.
+     */
+    public const WORD_ROUND_TRIP = 'word/round-trip.md';
+
+    /**
      * The root of the site: the directory this repository is in.
      */
     public static function root(): string
@@ -25,7 +55,7 @@ final class Site
         $file = self::root() . '/content/' . $path;
 
         if (!\is_file($file)) {
-            throw new \RuntimeException(\sprintf('There is no page at %s.', $file));
+            throw PageNotFound::at($file);
         }
 
         return (string) \file_get_contents($file);

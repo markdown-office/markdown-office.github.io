@@ -221,10 +221,7 @@ final class Vocabularies
             $parent = \dirname($directory);
 
             if ($parent === $directory) {
-                throw new \RuntimeException(\sprintf(
-                    'There is no composer.json above %s, so the package it belongs to cannot be found.',
-                    $class,
-                ));
+                throw PackageNotFound::for($class);
             }
 
             $directory = $parent;
