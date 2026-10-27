@@ -88,86 +88,14 @@ The `theme:` key names a look that ships with the library. Everything under `opt
 ````
 {% endexample %}
 
-#### Every frontmatter key
+#### The keys, the options and the slots
 
-| Key | Type | Default | |
-| --- | --- | --- | --- |
-| `options:` | mapping | absent | handed to `Options::fromArray()` |
-| `styles:` | mapping | absent | handed to `new Styles(...)` |
-| `theme:` | string | absent | a named look, or a path to one |
-| `template_file:` | string | absent | a `.docx` or `.dotx` to render into |
-| `fields:` | mapping | `{}` | values for the template's `MERGEFIELD`s |
-| `header:` | mapping | empty | the running head |
-| `footer:` | mapping | empty | the running foot |
+Every frontmatter key, every option, every style slot and its default, the headers and footers and
+the themes that ship are listed in [Configuration](/word/configuration/) — one list each, so a key
+that is added to the library is a key the page has.
 
 Only `options:` and `styles:` are validated. Every other key is open-ended metadata, so a document
 can carry `title:` for a pipeline downstream that cares and be none the worse.
-
-#### Every option
-
-| Key | Type | Default | Values |
-| --- | --- | --- | --- |
-| `softBreak` | string | `space` | `space`, `lineBreak`, `paragraph` |
-| `hardBreak` | string | `line` | `remove`, `line`, `paragraph` |
-| `html` | string | `strip` | `strip`, `preserve`, `drop` |
-| `images` | string | `embed` | `embed`, `placeholder`, `skip` |
-| `imageBasePath` | string | `null` | where relative paths resolve from |
-| `imageMaxWidth` | number | `15.0` | centimetres, ≥ 0 |
-| `svgFallback` | string | `raster` | `raster`, `none` |
-| `maxHeadingLevel` | integer | `6` | clamped to 1–6 |
-| `orderedListFormat` | string | `decimal` | any OOXML `w:numFmt` |
-| `orderedListSuffix` | string | `tab` | `tab`, `space`, `nothing` |
-| `tableBorders` | boolean | `true` | |
-| `tableHeaderBold` | boolean | `true` | off makes a round trip honest about headers |
-| `tableWidth` | integer | `5000` | fiftieths of a percent, 0–5000 |
-| `codeBlockShading` | boolean | `true` | |
-| `linkTarget` | string | `_blank` | |
-| `thematicBreak` | string | `border` | `border`, `text` |
-| `deferredHyperlinks` | boolean | `false` | |
-
-#### Style slots
-
-Each slot holds a **style id** (a string), an **inline style** (a mapping), or `null`. A mapping
-merges recursively into the default; a style id or `null` replaces the slot whole.
-
-| Slot | Default |
-| --- | --- |
-| `heading.1` … `heading.6` | `Heading1`…`Heading6`, bold, 16/13/12/11/11/11pt, `2F5496` |
-| `paragraph` | 6pt after, 1.15 line height |
-| `blockQuote` | `IntenseQuote`, italic, `404040`, 720 twips either side |
-| `codeBlock` | 360 twips left, no space above or below |
-| `listParagraph` | 3pt after |
-| `codeFont` | Consolas 9pt `A31515` |
-| `linkFont` | `0563C1`, underlined |
-
-Font properties are `name`, `size`, `color`, `bold`, `italic`, `strikethrough`, `underline`.
-Paragraph properties are `indentation`, `space`, `shading`, `keepNext`, `alignment`, `styleName`,
-`lineHeight`.
-
-A colour is **six hex digits with no `#`** and no colour name. A size is a number ≥ 0.001, and `0`
-is refused with the reason: it is a size in points, and 0 makes the text invisible in Word.
-
-#### Headers and footers
-
-Both take `body`, `align` (`left`/`center`/`right`), `border` (`top`/`bottom`/`both`), and the
-switches `page`, `total`, `chapter`, `filename`, `date`, `firstPage`, `even`. A `body` may contain
-`{page}`, `{total}`, `{filename}`, `{chapter}` and `{date}`.
-
-```yaml
-footer:
-  align: center
-  border: top
-  body: "Page {page} of {total}"
-  page: true
-  total: true
-```
-
-#### Themes
-
-A theme is a directory: `theme.yml` — `name` required, plus `description` and `author` — and an
-optional `styles.yml`. Four ship: `default`, `minimal`, `corporate`, `report`. Resolution is a
-path, then `<cwd>/themes/<name>`, then the package's own `themes/<name>`, and **there is no silent
-fallback** — a name that does not resolve raises `ThemeNotFound` listing the ones that do.
 
 ### Extended: directives
 

@@ -1,0 +1,272 @@
+<?php
+
+declare(strict_types=1);
+
+namespace MarkdownOffice\Documentation\Reference;
+
+use MarkdownPresentation\Exception\Exception as PresentationException;
+use MarkdownPresentation\Render\CommonMark\BlockTranslator;
+use MarkdownPresentation\Render\Free\FreeShapes;
+use MarkdownPresentation\Render\ImageConverter;
+use MarkdownPresentation\Render\PresentationRenderer;
+use MarkdownPresentation\Theme\LayoutRole;
+use MarkdownPresentation\Theme\StyleMapping;
+use MarkdownPresentation\Theme\StyleSlots;
+use MarkdownPresentation\Theme\Theme;
+use MarkdownPresentation\Theme\ThemeMapping;
+use MarkdownWord\Configuration\Options;
+use MarkdownWord\Configuration\Styles;
+use MarkdownWord\Exception\Exception as WordException;
+use MarkdownWord\MarkdownToWord;
+
+/**
+ * The vocabularies the site lists, and where the code keeps each one.
+ *
+ * Every list is asked of the code rather than written down here, because a list written
+ * down here is a second copy of the thing it is meant to check — and a second copy is
+ * what this whole mechanism exists to remove.
+ */
+final class Vocabularies
+{
+    /**
+     * Every vocabulary, keyed by the name a page marks its table with.
+     *
+     * @return array<string, Vocabulary>
+     */
+    public static function all(): array
+    {
+        return [
+            'presentation.frontmatter' => new Vocabulary([
+                'PresentationRenderer::DIRECTIVES' => PresentationRenderer::DIRECTIVES,
+            ]),
+            'presentation.layout-roles' => new Vocabulary([
+                'LayoutRole::names()' => LayoutRole::names(),
+            ]),
+            'presentation.free-shapes' => new Vocabulary([
+                'FreeShapes::names()' => FreeShapes::names(),
+            ]),
+            'presentation.theme-colours' => new Vocabulary([
+                'Theme::COLOURS' => Theme::COLOURS,
+            ]),
+            'presentation.theme-keys' => new Vocabulary([
+                'ThemeMapping::KEYS' => ThemeMapping::KEYS,
+            ]),
+            'presentation.theme-aliases' => new Vocabulary([
+                'ThemeMapping::ALIASES' => self::themeAliases(),
+            ]),
+            'presentation.style-keys' => new Vocabulary([
+                'StyleMapping::KEYS' => StyleMapping::KEYS,
+            ]),
+            'presentation.exceptions' => new Vocabulary([
+                'MarkdownPresentation\\Exception' => self::exceptions(PresentationException::class),
+            ]),
+            'presentation.themes' => new Vocabulary([
+                'themes/' => self::themes(PresentationRenderer::class),
+            ]),
+            'presentation.ceilings' => new Vocabulary(
+                [
+                    'PresentationRenderer::MAX_SLIDES, BlockTranslator::MAX_STEP, ImageConverter::MAX_PIXELS'
+                        => ['MAX_SLIDES', 'MAX_STEP', 'MAX_PIXELS'],
+                ],
+                [
+                    'MAX_SLIDES' => PresentationRenderer::MAX_SLIDES,
+                    'MAX_STEP' => BlockTranslator::MAX_STEP,
+                    'MAX_PIXELS' => ImageConverter::MAX_PIXELS,
+                ],
+            ),
+            'word.directives' => new Vocabulary([
+                'MarkdownToWord' => self::wordDirectives(),
+            ]),
+            'word.exceptions' => new Vocabulary([
+                'MarkdownWord\\Exception' => self::exceptions(WordException::class),
+            ]),
+            'word.options' => new Vocabulary([
+                'Options::toArray()' => \array_keys((new Options())->toArray()),
+            ]),
+            'word.themes' => new Vocabulary([
+                'themes/' => self::themes(MarkdownToWord::class),
+            ]),
+            'style-slots' => new Vocabulary([
+                'Styles::defaults()' => \array_keys(Styles::defaults()),
+                'StyleSlots::names()' => StyleSlots::names(),
+            ]),
+        ];
+    }
+
+    /**
+     * The spellings a theme file may use instead of DrawingML's own.
+     *
+     * The list is a private constant of the mapper, and there is no accessor for it: a
+     * theme file is read into a `Theme`, and the names the file may use are not part of
+     * the theme. The constant is read the way the mapper reads it — as the code's own
+     * answer — rather than written down here, because a copy of it here would be the
+     * thing that drifts.
+     *
+     * @return list<string>
+     */
+    public static function themeAliases(): array
+    {
+        $constant = (new \ReflectionClass(ThemeMapping::class))->getReflectionConstant('ALIASES');
+
+        if ($constant === false) {
+            return [];
+        }
+
+        return \array_keys((array) $constant->getValue());
+    }
+
+    /**
+     * The concrete exceptions a package throws.
+     *
+     * The classes in the package's own `Exception` directory, minus the base every one of
+     * them extends. The directory is found through the base class rather than written
+     * down, so the list is the package's own and not this class's.
+     *
+     * @param class-string $base
+     *
+     * @return list<string>
+     */
+    public static function exceptions(string $base): array
+    {
+        $directory = \dirname((string) (new \ReflectionClass($base))->getFileName());
+        $namespace = \substr($base, 0, (int) \strrpos($base, '\\'));
+        $names = [];
+
+        foreach (\glob($directory . '/*.php') ?: [] as $path) {
+            $short = \basename($path, '.php');
+
+            if ($short === 'Exception') {
+                continue;
+            }
+
+            $class = $namespace . '\\' . $short;
+
+            // The directory is the package's, but a file in it that is not a class of the
+            // package's own would be counted as one, so each is asked of the autoloader.
+            if (!\class_exists($class) || !\is_subclass_of($class, $base)) {
+                continue;
+            }
+
+            $names[] = $short;
+        }
+
+        \sort($names);
+
+        return $names;
+    }
+
+    /**
+     * The themes a package ships: the directories under its own `themes/`.
+     *
+     * A directory without a `theme.yml` is not a theme, which is the rule the library's
+     * own resolver follows when it lists the names that resolve.
+     *
+     * @param class-string $class A class of the package.
+     *
+     * @return list<string>
+     */
+    public static function themes(string $class): array
+    {
+        $directory = self::packageRoot($class) . '/themes';
+        $names = [];
+
+        foreach (\scandir($directory) ?: [] as $entry) {
+            if (\is_dir($directory . '/' . $entry) && \is_file($directory . '/' . $entry . '/theme.yml')) {
+                $names[] = $entry;
+            }
+        }
+
+        \sort($names);
+
+        return $names;
+    }
+
+    /**
+     * The directives the Word half draws.
+     *
+     * `MarkdownToWord` wires them into a `Directives` registry with two calls whose first
+     * argument is the name, and the registry offers no accessor for what it holds — so the
+     * names are read out of that call and out of nowhere else.
+     *
+     * The file is tokenised rather than matched with a pattern: a name is a string
+     * literal, and the tokens say which literals are arguments to those calls and which
+     * are something else entirely.
+     *
+     * @return list<string>
+     */
+    public static function wordDirectives(): array
+    {
+        $file = (string) (new \ReflectionClass(MarkdownToWord::class))->getFileName();
+        $tokens = \token_get_all((string) \file_get_contents($file));
+        $names = [];
+
+        for ($index = 0; $index < \count($tokens); $index++) {
+            $token = $tokens[$index];
+
+            if (!\is_array($token) || $token[0] !== \T_STRING) {
+                continue;
+            }
+
+            if (!\in_array($token[1], ['withBlock', 'withInline'], true)) {
+                continue;
+            }
+
+            $name = self::literalAfter($tokens, $index);
+
+            if ($name !== null) {
+                $names[] = $name;
+            }
+        }
+
+        \sort($names);
+
+        return $names;
+    }
+
+    /**
+     * The string literal the call at `$index` is given, or null where there is none.
+     *
+     * @param list<array{0: int, 1: string, 2: int}|string> $tokens
+     */
+    private static function literalAfter(array $tokens, int $index): ?string
+    {
+        for ($next = $index + 1; $next < \count($tokens); $next++) {
+            if ($tokens[$next] === '(') {
+                $argument = $tokens[$next + 1] ?? null;
+
+                if (\is_array($argument) && $argument[0] === \T_CONSTANT_ENCAPSED_STRING) {
+                    return \trim($argument[1], "'\"");
+                }
+
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * The root of the package a class belongs to: the directory its `composer.json` is in.
+     *
+     * @param class-string $class
+     */
+    private static function packageRoot(string $class): string
+    {
+        $directory = \dirname((string) (new \ReflectionClass($class))->getFileName());
+
+        while (!\is_file($directory . '/composer.json')) {
+            $parent = \dirname($directory);
+
+            if ($parent === $directory) {
+                throw new \RuntimeException(\sprintf(
+                    'There is no composer.json above %s, so the package it belongs to cannot be found.',
+                    $class,
+                ));
+            }
+
+            $directory = $parent;
+        }
+
+        return $directory;
+    }
+}

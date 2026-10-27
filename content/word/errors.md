@@ -12,6 +12,8 @@ about both libraries, is on [Errors in general](/errors/).
 
 ## Word
 
+<!-- reference: word.exceptions -->
+
 | Exception | Means |
 | --- | --- |
 | `InvalidConfiguration` | the key half; the base for the next one |

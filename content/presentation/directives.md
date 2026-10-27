@@ -113,8 +113,41 @@ Read this out loud.
 ::
 ```
 
-Case-insensitive, whitespace-tolerant, and the closer is anchored to the end of the slide, so two
-`::note` blocks on one slide become **one** note carrying both. An unclosed note is refused.
+Case-insensitive and whitespace-tolerant. A note has to be the last thing on the slide: the
+closer is anchored to the end of it, so two `::note` blocks on one slide become **one** note
+carrying both. An unclosed note is refused.
+
+## Free shapes
+
+A **free shape** is one you place yourself, in pixels or in fractions of the slide, rather than one
+the layout puts where it wants it. It is written in the body of a slide with the same two-colon
+directives the step markers use, and there are twelve of them and no others — a name outside them
+is refused with a message that lists all twelve.
+
+<!-- reference: presentation.free-shapes -->
+
+| Shape | Written | Draws |
+| --- | --- | --- |
+| `rectangle` | `::rectangle` | a rectangle |
+| `roundrect` | `::roundrect` | a rounded one, with `border-radius` |
+| `ellipse` | `::ellipse` | an ellipse |
+| `circle` | `::circle` | an ellipse that is as wide as it is tall |
+| `triangle` | `::triangle` | an isosceles triangle |
+| `diamond` | `::diamond` | a diamond |
+| `chevron` | `::chevron` | a chevron |
+| `hexagon` | `::hexagon` | a hexagon |
+| `arrow` | `::arrow` | a right-pointing arrow |
+| `line` | `::line` | a hairline rule as thick as its `stroke-width` |
+| `image` | `::image` | a picture |
+| `content` | `:::content` … `:::` | Markdown, in a box you sized |
+
+**Attributes are separated by a space.** `::circle{left=8% top=10% width=6% height=6%}` is one
+attribute after another, not a list with commas in it — a comma is part of the value, so
+`{fill=red,stroke=blue}` is one attribute called `fill` whose value is `red,stroke=blue`.
+
+`layout: blank` is what most of them want: a slide whose whole content is free shapes has no title
+to place them around. Every attribute each of them reads is in the package's own
+[README](https://github.com/markdown-office/markdown-presentation#free-shapes).
 
 ## Slidev, and where it differs
 
@@ -176,19 +209,20 @@ splits here the way it does there.
 
 Every key of every slide's frontmatter must be one of these seven:
 
+<!-- reference: presentation.frontmatter -->
+
 | Key | Type | Default | Slide |
 | --- | --- | --- | --- |
 | `title` | string | `null` | any |
 | `name` | string | `null` | any — a fallback for `title` |
 | `level` | integer ≥ 1 | the heading's own depth | any |
-| `layout` | one of eight roles | `content` | any |
+| `layout` | a role name | `content` | any |
 | `theme` | string | `default` | **first only** |
 | `author` | string | the theme's, else `markdown-presentation` | **first only** |
 | `description` | string | `null` | **first only** |
 
-The eight layout roles: `title`, `content`, `two-column`, `section`, `blank`, `image-text`,
-`image-title`, `image-slide`. Anything else — including Slidev's own `two-cols` — is refused with
-the list of what would have worked.
+The layout roles are listed with the [themes](/presentation/themes/#layout-roles). Anything else —
+including Slidev's own `two-cols` — is refused with the list of what would have worked.
 
 A deck directive on a later slide is refused by name, because it is nearly always a slide that
 was meant to be the first one.

@@ -59,20 +59,8 @@ slides and **cannot be a thematic break** — use `***`.
 ### Extended: frontmatter and themes
 
 The deck's own configuration goes in the frontmatter of slide 1. Every key is in a **closed set of
-seven**, and anything outside it fails the build with a message naming what would have worked.
-
-| Key | Type | Default | |
-| --- | --- | --- | --- |
-| `title` | string | `null` | the slide's title |
-| `name` | string | `null` | a fallback for `title` |
-| `level` | integer ≥ 1 | the heading's own depth | the depth a title is drawn at |
-| `layout` | one of eight roles | `content` | which layout to use |
-| `theme` | string | `default` | **slide 1 only** |
-| `author` | string | the theme's | **slide 1 only** |
-| `description` | string | `null` | **slide 1 only** |
-
-The eight layout roles: `title`, `content`, `two-column`, `section`, `blank`, `image-text`,
-`image-title`, `image-slide`.
+seven**, and anything outside it fails the build with a message naming what would have worked. The
+seven are listed with the [directives](/presentation/directives/#frontmatter-directives).
 
 {% example "Every frontmatter key on a deck" %}
 ````md presentation
@@ -92,47 +80,15 @@ description: What changed, what it cost, and what happens next.
 ````
 {% endexample %}
 
-#### The whole of `theme.yml`
+#### A theme
 
-| Key | Type | Default |
-| --- | --- | --- |
-| `name` | string | **required**, non-empty |
-| `description` | string | `null` |
-| `author` | string | `null` |
-| `dark` | boolean | `false` — boolean only; `dark: yes` is refused |
-| `colors:` | mapping | the twelve slots below |
-| `fonts:` | mapping | Calibri / Calibri / Consolas |
-| `style:` | mapping | the geometry below |
+A theme is a directory, and `theme.yml` is what it has to hold: the name, an optional description
+and author, the colours, the fonts and the geometry. The keys it takes, the colour slots, the
+geometry and the themes that ship are all on [Themes and layout](/presentation/themes/).
 
-The twelve colour slots — `dk1` `lt1` `dk2` `lt2` `accent1`…`accent6` `hlink` `folHlink` — with
-four readable aliases accepted: `dark1`, `light1`, `dark2`, `light2`, `hyperlink`,
-`followedHyperlink`.
-
-#### The whole of `style:`
-
-| Key | Type | Default | Minimum |
-| --- | --- | --- | --- |
-| `margin` | int, px | 40 | 1 |
-| `gutter` | int, px | 20 | 1 |
-| `block` | int, px | 12 | 1 |
-| `rule` | int, px | 2 | 1 |
-| `body` | int, pt | 16 | 1 |
-| `title` | int, pt | 28 | 1 |
-| `cover` | int, pt | 40 | 1 |
-| `section` | int, pt | 44 | 1 |
-| `headings` | list of int, pt | `[22, 20, 18, 16, 14]` | each ≥ 1 |
-| `leading` | number | 1.2 | 1.0 |
-| `heading-weight` | `bold` or `regular` | `bold` | |
-| `heading-ink` | `ink` or `accent` | `ink` | |
-
-Four themes ship: `default`, `corporate-dark`, `minimal`, `dense`. `minimal` has more margin and
-less ink; `dense` has less margin and smaller type — those are the two axes a deck is usually
-fighting over, and they are separate keys so you can move one.
-
-Resolution is a path, then `<cwd>/themes/<name>`, then the package's own. **No silent fallback to
-`default`**: a name that does not resolve raises `ThemeNotFound` listing the ones that do.
-
-More, including `layouts.yml` and every built-in theme's numbers: [Themes and layout](/presentation/themes/).
+Resolution is a path, then `themes/<name>` beside the deck, then the package's own. **No silent
+fallback to `default`**: a name that does not resolve raises `ThemeNotFound` listing the ones that
+do.
 
 ### Extended: directives
 
@@ -301,6 +257,8 @@ PowerPoint open the deck as `[Repaired]`.
 
 ### Ceilings
 
+<!-- reference: presentation.ceilings -->
+
 | | |
 | --- | --- |
 | `MAX_SLIDES` | 1000 |
@@ -331,8 +289,9 @@ try {
 }
 ```
 
-One sits beside those two rather than under `InvalidInput`: `Exception\UnreadablePackage`. Nothing
-a deck names fixes a package that is not a package.
+Five sit beside `InvalidInput` rather than under it: nothing a deck names fixes a file that cannot
+be read, a target that cannot be written, a conversion with nothing to convert, or a dependency
+installed without the fixes the library needs.
 
 The whole catalogue is on [Errors](/presentation/errors/).
 

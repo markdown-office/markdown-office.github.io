@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 permalink: /presentation/themes/
 title: Themes and layout
-summary: The twelve colour slots, the thirteen style keys, the eight layout roles, and the four themes that ship with the presentation package.
+summary: The twelve colour slots, the twelve style keys, the eight layout roles, and the themes that ship with the presentation package.
 section: Markdown Presentation
 order: 2
 ---
@@ -20,20 +20,27 @@ themes/corporate-dark/
 
 ## `theme.yml`
 
+<!-- reference: presentation.theme-keys -->
+
 | Key | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `name` | string | — | **required**, non-empty |
 | `description` | string | `null` | |
 | `author` | string | `null` | |
 | `dark` | boolean | `false` | boolean only — `dark: yes` is refused |
-| `colors:` | mapping | see below | `#rrggbb`, stored upper-cased |
-| `fonts:` | mapping | Calibri / Calibri / Consolas | `heading`, `body`, `mono` |
-| `style:` | mapping | see below | the geometry |
+| `colors` | mapping | see below | `#rrggbb`, stored upper-cased |
+| `fonts` | mapping | Calibri / Calibri / Consolas | `heading`, `body`, `mono` |
+| `style` | mapping | see below | the geometry |
+
+The last three hold a mapping. A key is written with a colon in the file whatever it holds,
+and the table names the keys as they are — the colon is YAML's and not theirs.
 
 `dark: yes` being refused is not pedantry. YAML 1.1 truthy strings are what make a theme written
 by hand behave differently from one written by a machine, and this one is for machines.
 
 ## The twelve colour slots
+
+<!-- reference: presentation.theme-colours -->
 
 ```text
 dk1 lt1 dk2 lt2 accent1 accent2 accent3 accent4 accent5 accent6 hlink folHlink
@@ -42,13 +49,20 @@ dk1 lt1 dk2 lt2 accent1 accent2 accent3 accent4 accent5 accent6 hlink folHlink
 Defaults: `#000000` `#FFFFFF` `#44546A` `#E7E6E6` `#4472C4` `#ED7D31` `#A5A5A5` `#FFC000`
 `#5B9BD5` `#70AD47` `#0563C1` `#954F72`.
 
-Four read-friendly aliases are accepted: `dark1`, `light1`, `dark2`, `light2`, `hyperlink`,
-`followedHyperlink`.
+Six read-friendly aliases are accepted — the spellings the concept draft used:
+
+<!-- reference: presentation.theme-aliases -->
+
+```text
+dark1  light1  dark2  light2  hyperlink  followedHyperlink
+```
 
 `dark: true` swaps four of them — the page becomes `dk1`, the ink `lt1`, the panel `dk2`, the
 subtle ink `lt2` — which is why the same theme can be dark without being a second theme.
 
 ## `style:` — the geometry
+
+<!-- reference: presentation.style-keys -->
 
 | Key | Type | Default | Minimum |
 | --- | --- | --- | --- |
@@ -69,6 +83,8 @@ subtle ink `lt2` — which is why the same theme can be dark without being a sec
 
 Eight, and only these:
 
+<!-- reference: presentation.layout-roles -->
+
 ```text
 title  content  two-column  section  blank  image-text  image-title  image-slide
 ```
@@ -78,7 +94,11 @@ master — the file may be a bare mapping or nested under a single `layouts:` ke
 
 Only the roles a deck actually uses are built, so a ten-slide deck does not carry eight masters.
 
-## The four that ship
+## The ones that ship
+
+Five themes ship, and a deck names one with `theme:`:
+
+<!-- reference: presentation.themes -->
 
 | Theme | Margin | Block | Body | Headings | Leading | Weight | Ink |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -86,14 +106,18 @@ Only the roles a deck actually uses are built, so a ten-slide deck does not carr
 | `corporate-dark` | 48 | 16 | 18pt | 26/23/21/19/17 | 1.32 | bold | **accent** |
 | `minimal` | 64 | 14 | 17pt | 23/22/21/20/19 | 1.12 | **regular** | ink |
 | `dense` | 28 | 8 | 13pt | 17/16/15/14/13 | 1.1 | bold | ink |
+| `pitch` | 48 | 10 | 12pt | 24/20/16/14/12 | 1.25 | bold | ink |
 
 `minimal` has more margin and less ink; `dense` has less margin and smaller type. Those are the
 two axes a deck is usually fighting over, and they are separate keys so you can move one.
 
+`pitch` is the one for a proposal: a near-black ink rather than a true black, and accents that carry
+greys as well as colours.
+
 ## Resolution order
 
 1. an explicit path — anything containing `/`
-2. `<workingDirectory>/themes/<name>`
+2. `themes/<name>` beside the deck
 3. the package's own `themes/<name>`
 
 There is **no silent fallback to `default`**. A name that does not resolve raises `ThemeNotFound`
@@ -104,8 +128,8 @@ asked for is worse than a deck that did not build.
 
 The Word half has themes too, and they are the other shape: a directory with `theme.yml` —
 `name`, `description`, `author`, and `name` required — and an optional `styles.yml` holding the
-same slot names the [Word configuration](/word/configuration/) page lists. Four ship:
-`default`, `minimal`, `corporate`, `report`.
+same slot names the [Word configuration](/word/configuration/) page lists. They are listed
+[there](/word/configuration/#themes).
 
 A theme is a **starting point**, not a replacement: your own `styles:` sits on top of it, and
 which keys you wrote is remembered so a partial override does not silently discard the rest.

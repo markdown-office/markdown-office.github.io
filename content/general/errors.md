@@ -32,8 +32,9 @@ try {
 so one `catch` does not also catch the failures of the libraries underneath. The failures a deck
 author can fix by naming something else extend `Exception\InvalidInput` below it.
 
-One sits beside those two rather than under `InvalidInput`: `Exception\UnreadablePackage`. Nothing
-a deck names fixes a package that is not a package.
+Five sit beside `InvalidInput` rather than under it, and nothing a deck names fixes any of them: a
+file that cannot be read, a target that cannot be written, a conversion with nothing to convert, or
+a dependency installed without the fixes the library needs.
 
 ## The two `UnknownDirective`
 
