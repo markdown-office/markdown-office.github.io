@@ -31,4 +31,39 @@ final class Deck
 
         return '';
     }
+
+    /**
+     * The slide a deck was written as, as the XML it holds.
+     *
+     * The XML rather than the file, because what a claim about a deck is about is what was
+     * written into it: a colour, a weight, a size.
+     */
+    public static function slide(string $markdown, string $directory = '.'): string
+    {
+        $deck = (new DeckParser())->parse($markdown);
+        $path = \sys_get_temp_dir() . '/markdown-office-deck-' . \bin2hex(\random_bytes(6)) . '.pptx';
+
+        (new PresentationRenderer($directory))->render($deck, $path);
+
+        return Package::part($path, 'ppt/slides/slide1.xml');
+    }
+
+    /**
+     * The run of a slide that holds the given text, as the XML it holds.
+     *
+     * The run rather than the slide, because a slide carries the words around the one a
+     * claim is about, and those are the ones that did not change.
+     */
+    public static function run(string $slide, string $text): string
+    {
+        \preg_match_all('#<a:r>.*?</a:r>#s', $slide, $matches);
+
+        foreach ($matches[0] as $run) {
+            if (\preg_match('#<a:t>(?:<!\[CDATA\[)?' . \preg_quote($text, '#') . '(?:\]\]>)?</a:t>#', $run) === 1) {
+                return $run;
+            }
+        }
+
+        return '';
+    }
 }

@@ -12,10 +12,12 @@ use MarkdownPresentation\Render\PresentationRenderer;
 use MarkdownPresentation\Theme\LayoutRole;
 use MarkdownPresentation\Theme\StyleMapping;
 use MarkdownPresentation\Theme\StyleSlots;
+use MarkdownPresentation\Theme\TextStyle;
 use MarkdownPresentation\Theme\Theme;
 use MarkdownPresentation\Theme\ThemeMapping;
 use MarkdownWord\Configuration\Options;
 use MarkdownWord\Configuration\Styles;
+use MarkdownWord\Configuration\TextStyles;
 use MarkdownWord\Exception\Exception as WordException;
 use MarkdownWord\MarkdownToWord;
 use MarkdownWord\Render\Directives;
@@ -90,6 +92,10 @@ final class Vocabularies
             'style-slots' => new Vocabulary([
                 'Styles::defaults()' => \array_keys(Styles::defaults()),
                 'StyleSlots::names()' => StyleSlots::names(),
+            ]),
+            'text-style-attributes' => new Vocabulary([
+                'MarkdownPresentation\\Theme\\TextStyle::ATTRIBUTES' => TextStyle::ATTRIBUTES,
+                'MarkdownWord\\Configuration\\TextStyles::ATTRIBUTES' => \array_keys(TextStyles::ATTRIBUTES),
             ]),
         ];
     }

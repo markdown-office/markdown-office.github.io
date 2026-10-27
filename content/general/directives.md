@@ -29,20 +29,73 @@ and `{…}` is a modifier available on all three shapes rather than a shape of i
 Here the two packages make opposite decisions, and both are defensible.
 
 **Markdown Word is permissive.** It draws exactly three directives — `::toc`, `:footnote` and
-`:style` — and
-renders every other name as its own source text. A document nobody intended as a set of
-directives keeps working, and the text an author wrote is what a reader sees.
+`:style` — and every named style the theme brings, and renders every other name as its own source
+text. A document nobody intended as a set of directives keeps working, and the text an author
+wrote is what a reader sees.
 
 **Markdown Presentation has a closed set.** Anything outside it fails the build with a message
 naming what would have worked. A deck is a thing a person presents, and a slide with the wrong
-thing on it is worse than a deck that did not build.
+thing on it is worse than a deck that did not build. An inline directive in a deck is a
+[text style](#a-word-in-a-style), so a name the theme does not have is refused there too.
 
 Both then agree on one thing: an unrecognised directive is never silently dropped.
 
-- [Word directives](/word/directives/) — `::toc`, `:footnote`, and the rest rendered as text.
+- [Word directives](/word/directives/) — `::toc`, `:footnote`, `:style`, and the rest rendered as
+  text.
 - [Presentation directives](/presentation/directives/) — `::click`, `:::click`, `::column`,
   `::note`, and the refusals.
 - [The syntax itself](/directives/syntax/) — every rule, including the ones that surprise people.
+
+## A word in a style
+
+Both halves can write one word in a style of its own — a colour, a size, a weight — inside a
+sentence that is otherwise one colour and one size. The syntax is the same in both, and the set of
+attributes is the same in both: eight attributes, closed.
+
+<!-- reference: text-style-attributes -->
+
+| Attribute | Carries |
+| --- | --- |
+| `color` | the ink |
+| `size` | the size of the type, in points |
+| `font` | the family |
+| `bold` | the weight |
+| `italic` | the slant |
+| `underline` | the underline |
+| `strike` | the strike |
+| `highlight` | a colour behind the word |
+
+Two of the eight are not the same in both halves. A `color` is a role, a theme slot or a hex value
+in Markdown Presentation, and six hexadecimal digits in Markdown Word. A `highlight` is drawn by
+Markdown Word and **refused by name** by Markdown Presentation, which has no way to write one.
+
+Three forms, one grammar:
+
+| Written | Means |
+| --- | --- |
+| `:accent[brand]` | the word "brand", in the style the theme names `accent` |
+| `:accent[brand]{color=FF0000}` | the same word, with the attributes laid over the style's |
+| `:style[brand]{color=FF0000}` | the word "brand", in the attributes, with no theme style behind it |
+
+`style` is reserved: a theme may not name a style `style`, and the raw form needs at least one
+attribute — a style with neither a named style nor a property says nothing.
+
+**An attribute overrides the style for the property it names, and for that property only.** A
+property neither of them names is not set: the run takes it from the block it is in, and nothing is
+reset to a default. A property set to `false` is not set either — it means "not on this run" rather
+than "off", because neither format can write a weight of none.
+
+**The label is plain text.** A directive's label is a string rather than Markdown, because
+CommonMark's inline engine has no way for a parser to say "the rest of this run is mine". So a
+complete Markdown construct in a label — `**text**`, `*text*`, `_text_`, `__text__` or `` `code` ``
+— is not honoured as emphasis. A link cannot be one: a label holds no brackets at all, so there is
+no way to write one. A bare `*` or `_` is a character rather than an intent, so `2 * 3` and
+`snake_case` are ordinary text.
+
+What the two halves do with a name they do not know, and with a label they cannot honour, is where
+they part: [Markdown Presentation](/presentation/directives/#a-word-in-a-style) refuses both and
+names what would have worked, and [Markdown Word](/word/directives/#a-word-in-a-style) writes the
+directive out as its own source text.
 
 ## The exact grammar
 
