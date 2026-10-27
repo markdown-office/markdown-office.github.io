@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use MarkdownOffice\Documentation\Reference\Vocabularies;
+use MarkdownOffice\Documentation\Tests\Support\Site;
 use MarkdownPresentation\Render\PresentationRenderer;
 use MarkdownPresentation\Theme\LayoutRole;
 use MarkdownPresentation\Theme\StyleMapping;
@@ -58,4 +59,27 @@ it('counts the Word directives as the code does', function () {
     $directives = Vocabularies::all()['word.directives']->names();
 
     says('word/directives.md', 'draws **' . words(\count($directives)) . '** directives');
+    says('word/index.md', words(\count($directives)) . ' directives');
+    says('general/directives.md', words(\count($directives)) . ' directives');
+});
+
+it('counts the inline style attributes as the code does', function () {
+    $attributes = Vocabularies::all()['text-style-attributes']->names();
+
+    says('general/directives.md', words(\count($attributes)) . ' attributes');
+});
+
+it('counts the things that do not survive as the page lists them', function () {
+    $sections = (int) \preg_match_all('/^### /m', Site::page('word/round-trip.md'));
+
+    says('word/round-trip.md', words($sections) . ' things that do not');
+});
+
+it('counts the renderer\'s methods as the code does', function () {
+    $methods = \array_filter(
+        (new \ReflectionClass(PresentationRenderer::class))->getMethods(\ReflectionMethod::IS_PUBLIC),
+        static fn (\ReflectionMethod $method): bool => $method->getName() !== '__construct',
+    );
+
+    says('presentation/index.md', words(\count($methods)) . ' methods');
 });

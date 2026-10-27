@@ -34,6 +34,7 @@ is about both libraries, is on [Errors in general](/errors/).
 | `MalformedShape` | a free shape has an attribute it does not read, or a value it cannot be |
 | `UnknownTextStyle` | an inline style names a style the theme does not have — the message names the styles |
 | `MalformedTextStyle` | a text style has a property it does not have, or a value it cannot be |
+| `UnknownFont` | the theme names a face there is no table of advance widths for |
 | `ImageNotFound` | a path, a URL, or something outside the roots |
 | `UnreadablePackage` | **not** `InvalidInput`; nothing a deck names fixes it |
 | `UnreadableDeck` | **not** `InvalidInput`; the file is not a package this PHP can read |

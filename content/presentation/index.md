@@ -19,9 +19,9 @@ PHP 8.2 or newer, with `ext-dom`, `ext-gd` and `ext-zip`. `ext-imagick` is optio
 
 **Both directions.** Markdown to `.pptx`, and a `.pptx` back to Markdown — what comes back is
 the Markdown this package writes decks in, so a deck can be taken apart, edited as text and put
-in again under a different theme. `PresentationRenderer` has two methods, `render()` and
-`overflows()`; the reader is `PowerPointToMarkdown`, with `convert()`, `save()`, `toMarkdown()`
-and `read()`. What the round trip does not keep is written down in
+in again under a different theme. `PresentationRenderer` has three methods, `render()`,
+`overflows()` and `unknownFonts()`; the reader is `PowerPointToMarkdown`, with `convert()`,
+`save()`, `toMarkdown()` and `read()`. What the round trip does not keep is written down in
 [Reading a deck back](#reading-a-deck-back).
 
 ---
@@ -94,7 +94,7 @@ do.
 
 ### Extended: directives
 
-Four, and the set is closed — anything outside it is refused by name rather than drawn as a
+Four markers, and the set is closed — anything outside it is refused by name rather than drawn as a
 paragraph.
 
 | Written | Does |
@@ -106,6 +106,10 @@ paragraph.
 | `::note` … `::` | the slide's speaker note |
 
 All must be alone on their line. Names are case-insensitive.
+
+**`:name[…]`** is the inline one — a word in one of the theme's named styles, in the middle of a
+sentence. It is the only inline directive a deck has, and a name the theme does not have is
+refused by name like any other marker: [the text styles](/presentation/directives/#a-word-in-a-style).
 
 {% example "A slide that builds up, with a speaker note" %}
 ````md presentation

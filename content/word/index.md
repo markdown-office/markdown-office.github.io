@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 permalink: /word/
 title: Markdown Word
-summary: CommonMark and GitHub Flavored Markdown into .docx, .odt and .rtf — extended with frontmatter and themes, and with two directives — and back out again.
+summary: CommonMark and GitHub Flavored Markdown into .docx, .odt and .rtf — extended with frontmatter and themes, and with three directives — and back out again.
 section: Markdown Word
 order: 0
 ---
@@ -138,10 +138,10 @@ rather than parsed as Markdown. There are no attributes.
 > the body. This page says so rather than describing the intended behaviour, because the build on
 > this site checks the difference.
 
-**`:style[…]`** — a word in one of the theme's named styles. The text in the brackets is the
-word, and the style is named by the directive's own name: `:brand[Bakery]` is "Bakery" in the
-theme's `brand` style. Attributes on the directive override the style's own properties for that
-word alone.
+**`:style[…]`** — a word in a style. The text in the brackets is the word, and the name is the
+style: `:brand[Bakery]` is "Bakery" in the theme's `brand` style, and `:style[Bakery]{color=00B4D8}`
+is "Bakery" in teal with no theme style behind it. Attributes on a directive override the style's
+own properties for that word alone.
 
 **Everything else** parses and is written into the document as the text the author typed.
 `Status :green[go] before lunch.` parses, and reaches the document exactly as written. That is the
