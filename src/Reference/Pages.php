@@ -24,110 +24,129 @@ final class Pages
     private const MARKER = '/^<!--\s*reference:\s*([a-z0-9]+(?:-[a-z0-9]+)*(?:\.[a-z0-9]+(?:-[a-z0-9]+)*)*)\s*-->$/';
 
     /**
-     * Every block under a directory: a table or a fenced list, with the names in it.
+     * The blocks of the pages under a directory, and the ones that carry a vocabulary.
      *
-     * @return list<Block>
-     */
-    public static function blocks(string $directory): array
-    {
-        $blocks = [];
-
-        foreach (self::files($directory) as $file) {
-            $lines = \explode("\n", (string) \file_get_contents($file));
-
-            for ($number = 0; $number < \count($lines); $number++) {
-                $line = \trim($lines[$number]);
-
-                if ($line === '' || \preg_match(self::MARKER, $line) === 1) {
-                    continue;
-                }
-
-                if (\str_starts_with($line, '|')) {
-                    $table = self::table($lines, $number);
-                    $blocks[] = new Block($file, $number + 1, $table['names'], $table['values']);
-
-                    continue;
-                }
-
-                if (\str_starts_with($line, '```')) {
-                    $blocks[] = new Block($file, $number + 1, self::fence($lines, $number));
-                }
-            }
-        }
-
-        return $blocks;
-    }
-
-    /**
-     * The blocks that carry a vocabulary, keyed by the vocabulary they carry.
+     * One walk for both, because a check that reads the pages twice reads two copies of
+     * the site and compares them.
      *
      * A vocabulary with two blocks is two homes for one list, and both of them are about
      * to drift: the caller is told about it rather than being handed one of them.
      *
-     * @return array<string, list<Block>>
+     * @return array{blocks: list<Block>, marked: array<string, list<Block>>}
      */
-    public static function marked(string $directory): array
+    public static function of(string $directory): array
     {
+        $blocks = [];
         $marked = [];
 
         foreach (self::files($directory) as $file) {
-            $lines = \explode("\n", (string) \file_get_contents($file));
+            $walk = self::walk($file, \explode("\n", (string) \file_get_contents($file)));
 
-            for ($number = 0; $number < \count($lines); $number++) {
-                if (\preg_match(self::MARKER, \trim($lines[$number]), $match) !== 1) {
-                    continue;
-                }
+            $blocks = [...$blocks, ...$walk['blocks']];
 
-                $block = self::blockAfter($lines, $number, $file);
-
-                $marked[$match[1]][] = $block ?? new Block($file, $number + 1, [], []);
+            foreach ($walk['markers'] as $marker) {
+                $marked[$marker['name']][] = $marker['block'];
             }
         }
 
         \ksort($marked);
 
-        return $marked;
+        return ['blocks' => $blocks, 'marked' => $marked];
     }
 
     /**
-     * The block that follows a marker, and the names in it.
+     * The blocks of a file and the markers that name the vocabulary they carry.
      *
-     * Two shapes are read: a table, whose names are the backticked words in the first
-     * cell of each row, and a fenced list, whose names are the words in it. A page
-     * carries whichever of the two fits what it has to say.
+     * @param list<string> $lines
+     *
+     * @return array{
+     *     blocks: list<Block>,
+     *     markers: list<array{name: string, block: Block}>
+     * }
+     */
+    private static function walk(string $file, array $lines): array
+    {
+        $blocks = [];
+        $markers = [];
+
+        for ($number = 0; $number < \count($lines); $number++) {
+            $line = \trim($lines[$number]);
+
+            if (\preg_match(self::MARKER, $line, $match) === 1) {
+                $markers[] = [
+                    'name' => $match[1],
+                    'block' => self::blockAfter($file, $lines, $number),
+                ];
+
+                continue;
+            }
+
+            if ($line === '') {
+                continue;
+            }
+
+            $block = self::blockAt($file, $lines, $number);
+
+            if ($block !== null) {
+                $blocks[] = $block;
+            }
+        }
+
+        return ['blocks' => $blocks, 'markers' => $markers];
+    }
+
+    /**
+     * The block that starts at a line, if one does.
+     *
+     * A table and a fenced list are the two shapes a page carries a vocabulary in, and
+     * both of them are read here, so that a page cannot grow a third.
+     *
+     * @param list<string> $lines
+     */
+    private static function blockAt(string $file, array $lines, int $number): ?Block
+    {
+        $line = \trim($lines[$number]);
+
+        if (\str_starts_with($line, '|')) {
+            $table = self::table($lines, $number);
+
+            return new Block($file, $number + 1, $table['names'], $table['values']);
+        }
+
+        if (\str_starts_with($line, '```')) {
+            return new Block($file, $number + 1, self::fence($lines, $number), []);
+        }
+
+        return null;
+    }
+
+    /**
+     * The block that follows a marker.
      *
      * Another marker is stepped over rather than ending the search, so that a marker
      * written twice is two homes for one list rather than one home and a silence.
      *
      * @param list<string> $lines
      */
-    private static function blockAfter(array $lines, int $number, string $file): ?Block
+    private static function blockAfter(string $file, array $lines, int $number): Block
     {
         for ($next = $number + 1; $next < \count($lines); $next++) {
             $trimmed = \trim($lines[$next]);
 
-            if ($trimmed === '') {
+            if ($trimmed === '' || \preg_match(self::MARKER, $trimmed) === 1) {
                 continue;
             }
 
-            if (\preg_match(self::MARKER, $trimmed) === 1) {
-                continue;
+            $block = self::blockAt($file, $lines, $next);
+
+            if ($block === null) {
+                break;
             }
 
-            if (\str_starts_with($trimmed, '|')) {
-                $table = self::table($lines, $next);
-
-                return new Block($file, $next + 1, $table['names'], $table['values']);
-            }
-
-            if (\str_starts_with($trimmed, '```')) {
-                return new Block($file, $next + 1, self::fence($lines, $next));
-            }
-
-            return null;
+            return $block;
         }
 
-        return null;
+        return new Block($file, $number + 1, [], []);
     }
 
     /**
@@ -145,21 +164,11 @@ final class Pages
         $names = [];
         $values = [];
 
-        for ($next = $number; $next < \count($lines); $next++) {
-            $line = \trim($lines[$next]);
-
-            if (!\str_starts_with($line, '|')) {
-                break;
-            }
-
+        foreach (self::blockLines($lines, $number, static fn (string $line): bool => !\str_starts_with($line, '|')) as $offset => $line) {
             $cells = self::cells($line);
 
             // The header and the rule under it are not rows.
-            if (\count($cells) < 2) {
-                continue;
-            }
-
-            if ($next === $number + 1) {
+            if (\count($cells) < 2 || $offset === 1) {
                 continue;
             }
 
@@ -185,13 +194,7 @@ final class Pages
     {
         $names = [];
 
-        for ($next = $number + 1; $next < \count($lines); $next++) {
-            $line = \trim($lines[$next]);
-
-            if (\str_starts_with($line, '```')) {
-                break;
-            }
-
+        foreach (self::blockLines($lines, $number + 1, static fn (string $line): bool => \str_starts_with($line, '```')) as $line) {
             foreach (\preg_split('/\s+/', $line) ?: [] as $word) {
                 if ($word !== '') {
                     $names[] = $word;
@@ -205,11 +208,36 @@ final class Pages
     }
 
     /**
+     * The lines of a block, from the line it starts at.
+     *
+     * @param list<string>          $lines
+     * @param callable(string): bool $ends Whether a line ends the block.
+     *
+     * @return list<string>
+     */
+    private static function blockLines(array $lines, int $number, callable $ends): array
+    {
+        $found = [];
+
+        for ($next = $number; $next < \count($lines); $next++) {
+            $line = \trim($lines[$next]);
+
+            if ($ends($line)) {
+                break;
+            }
+
+            $found[] = $line;
+        }
+
+        return $found;
+    }
+
+    /**
      * The cells of a table row.
      *
      * @return list<string>
      */
-    private static function cells(string $line): array
+    public static function cells(string $line): array
     {
         return \array_map('trim', \explode('|', \trim($line, " \t|")));
     }
@@ -222,7 +250,7 @@ final class Pages
      *
      * @return list<string>
      */
-    private static function codeIn(string $cell): array
+    public static function codeIn(string $cell): array
     {
         \preg_match_all('/`([^`]+)`/', $cell, $matches);
 
@@ -230,11 +258,16 @@ final class Pages
     }
 
     /**
-     * The Markdown files under a directory.
+     * The files of a directory, of the kinds asked for.
+     *
+     * The extension is a parameter because the pages and the templates they are built
+     * from are read by different checks, and both are the same walk over one directory.
+     *
+     * @param list<string> $extensions
      *
      * @return list<string>
      */
-    private static function files(string $directory): array
+    public static function files(string $directory, array $extensions = ['md']): array
     {
         if (!\is_dir($directory)) {
             return [];
@@ -242,12 +275,12 @@ final class Pages
 
         $found = [];
 
-        foreach (\glob($directory . '/**/*.md') ?: [] as $path) {
-            $found[] = $path;
-        }
-
-        foreach (\glob($directory . '/*.md') ?: [] as $path) {
-            $found[] = $path;
+        foreach ($extensions as $extension) {
+            foreach (['/**/*.', '/*.'] as $pattern) {
+                foreach (\glob($directory . $pattern . $extension) ?: [] as $path) {
+                    $found[] = $path;
+                }
+            }
         }
 
         \sort($found);

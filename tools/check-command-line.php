@@ -40,15 +40,16 @@ declare(strict_types=1);
  * ones nothing was checking.
  */
 
-\error_reporting(\E_ALL & ~\E_DEPRECATED & ~\E_USER_DEPRECATED);
-\ini_set('display_errors', 'stderr');
+require_once __DIR__ . '/lib/Autoload.php';
 
-if (\PHP_SAPI !== 'cli') {
-    \fwrite(\STDERR, "The command-line pages are checked from the command line.\n");
-    exit(1);
-}
+use MarkdownOffice\Documentation\Reference\Pages;
+use MarkdownOffice\Documentation\Tool\Cli;
+use MarkdownOffice\Documentation\Tool\Report;
 
-$root = \dirname(__DIR__);
+Cli::guard('The command-line pages are checked from the command line.');
+Cli::autoload();
+
+$root = Cli::root();
 $checkout = $argv[1] ?? \dirname($root) . '/mdoffice';
 $binary = $checkout . '/bin/mdoffice';
 
@@ -105,30 +106,6 @@ const FORBIDDEN = [
 ];
 
 /**
- * The pages of the site: the Markdown and the templates they are built from.
- *
- * @return list<string>
- */
-function pageFiles(string $directory): array
-{
-    $files = [];
-
-    foreach (['md', 'njk'] as $extension) {
-        foreach (\glob($directory . '/**/*.' . $extension) ?: [] as $path) {
-            $files[] = $path;
-        }
-
-        foreach (\glob($directory . '/*.' . $extension) ?: [] as $path) {
-            $files[] = $path;
-        }
-    }
-
-    \sort($files);
-
-    return \array_values(\array_unique($files));
-}
-
-/**
  * Runs the command line and returns what it printed.
  *
  * @param list<string> $arguments
@@ -152,6 +129,31 @@ function runCommandLine(string $binary, array $arguments): string
 }
 
 /**
+ * The lines of a section of the help, from its heading onwards.
+ *
+ * @return list<string>
+ */
+function sectionOf(string $help, string $heading): array
+{
+    $lines = [];
+    $inside = false;
+
+    foreach (\explode("\n", $help) as $line) {
+        if (\preg_match('/^' . $heading . '\s*$/', $line) === 1) {
+            $inside = true;
+
+            continue;
+        }
+
+        if ($inside) {
+            $lines[] = $line;
+        }
+    }
+
+    return $lines;
+}
+
+/**
  * The parts and what each says it does, out of `mdoffice help`.
  *
  * @return array<string, string>
@@ -159,19 +161,8 @@ function runCommandLine(string $binary, array $arguments): string
 function partsOf(string $help): array
 {
     $parts = [];
-    $inParts = false;
 
-    foreach (\explode("\n", $help) as $line) {
-        if (\preg_match('/^PARTS\s*$/', $line) === 1) {
-            $inParts = true;
-
-            continue;
-        }
-
-        if (!$inParts) {
-            continue;
-        }
-
+    foreach (sectionOf($help, 'PARTS') as $line) {
         // A blank line ends the section, and so does anything that is not a
         // part: the list is padded to a fixed width, so the name and the
         // summary are separated by more than one space.
@@ -200,19 +191,8 @@ function partsOf(string $help): array
 function commandsOf(string $help, string $part): array
 {
     $commands = [];
-    $inUsage = false;
 
-    foreach (\explode("\n", $help) as $line) {
-        if (\preg_match('/^USAGE\s*$/', $line) === 1) {
-            $inUsage = true;
-
-            continue;
-        }
-
-        if (!$inUsage) {
-            continue;
-        }
-
+    foreach (sectionOf($help, 'USAGE') as $line) {
         // The usage block ends at the first blank line.
         if (\trim($line) === '') {
             break;
@@ -350,6 +330,26 @@ function rowsOf(string $markdown, string $heading): array
 }
 
 /**
+ * The rows of a table, without the header and the rule under it.
+ *
+ * @return list<list<string>>
+ */
+function optionRows(string $markdown, string $heading): array
+{
+    $rows = [];
+
+    foreach (rowsOf($markdown, $heading) as $row) {
+        if (\count($row) < 2 || \str_starts_with($row[0], '---')) {
+            continue;
+        }
+
+        $rows[] = $row;
+    }
+
+    return $rows;
+}
+
+/**
  * The option spellings a cell names, both the long ones and the short ones.
  *
  * @return list<string>
@@ -369,17 +369,7 @@ function optionsIn(string $cell): array
     return \array_values(\array_unique($found));
 }
 
-$failures = [];
-
-/**
- * A thing that is wrong, said once.
- */
-function fail(string $message): void
-{
-    global $failures;
-
-    $failures[] = $message;
-}
+$report = new Report();
 
 $parts = partsOf(runCommandLine($binary, ['help']));
 
@@ -391,29 +381,61 @@ if ($parts === []) {
 $basic = page($root, 'basic.md');
 $word = page($root, 'word.md');
 $presentations = page($root, 'presentations.md');
+$theme = page($root, 'theme.md');
 
 /**
- * The parts table, as the part's name and what the page says it does.
+ * The rows of the tables of a page, as their cells.
  *
- * @return array<string, string>
+ * @return list<list<string>>
+ */
+function tableRows(string $markdown): array
+{
+    $rows = [];
+
+    foreach (\explode("\n", $markdown) as $line) {
+        if (!\str_starts_with(\trim($line), '|')) {
+            continue;
+        }
+
+        $rows[] = Pages::cells($line);
+    }
+
+    return $rows;
+}
+
+/**
+ * The parts table and the commands table, as the page writes them.
  */
 $documentedParts = [];
+$documentedCommands = [];
 
-foreach (\explode("\n", $basic) as $line) {
-    if (\preg_match('/^\| `mdoffice (\w+) …` \| (.*) \|$/', \trim($line), $match) === 1) {
-        $documentedParts[$match[1]] = \str_replace('`', '', $match[2]);
+foreach (tableRows($basic) as $cells) {
+    if (\preg_match('/^`mdoffice (\w+) …`$/', $cells[0] ?? '', $match) === 1) {
+        $documentedParts[$match[1]] = \str_replace('`', '', $cells[1] ?? '');
+
+        continue;
     }
+
+    if (\preg_match('/^`(\w+)`$/', $cells[0] ?? '', $match) !== 1) {
+        continue;
+    }
+
+    if (\preg_match('/^`([\w-]+)`$/', $cells[1] ?? '', $command) !== 1) {
+        continue;
+    }
+
+    $documentedCommands[$match[1]][] = $command[1];
 }
 
 foreach ($parts as $name => $summary) {
     if (!isset($documentedParts[$name])) {
-        fail(\sprintf("The parts table does not list the part \"%s\".", $name));
+        $report->fail(\sprintf("The parts table does not list the part \"%s\".", $name));
 
         continue;
     }
 
     if ($documentedParts[$name] !== $summary) {
-        fail(\sprintf(
+        $report->fail(\sprintf(
             "The parts table says the part \"%s\" does \"%s\"; the program says \"%s\".",
             $name,
             $documentedParts[$name],
@@ -424,20 +446,7 @@ foreach ($parts as $name => $summary) {
 
 foreach (\array_keys($documentedParts) as $name) {
     if (!isset($parts[$name])) {
-        fail(\sprintf("The parts table lists the part \"%s\", which the program does not have.", $name));
-    }
-}
-
-/**
- * The commands table, as the part's name and the command's name.
- *
- * @return array<string, list<string>>
- */
-$documentedCommands = [];
-
-foreach (\explode("\n", $basic) as $line) {
-    if (\preg_match('/^\| `(\w+)` \| `([\w-]+)` \|/', \trim($line), $match) === 1) {
-        $documentedCommands[$match[1]][] = $match[2];
+        $report->fail(\sprintf("The parts table lists the part \"%s\", which the program does not have.", $name));
     }
 }
 
@@ -447,7 +456,7 @@ foreach ($parts as $part => $summary) {
 
     foreach ($commands as $command) {
         if (!\in_array($command, $documented, true)) {
-            fail(\sprintf(
+            $report->fail(\sprintf(
                 "The commands table does not list the command \"%s %s\", which the program has.",
                 $part,
                 $command,
@@ -457,7 +466,7 @@ foreach ($parts as $part => $summary) {
 
     foreach ($documented as $command) {
         if (!\in_array($command, $commands, true)) {
-            fail(\sprintf(
+            $report->fail(\sprintf(
                 "The commands table lists the command \"%s %s\", which the program does not have.",
                 $part,
                 $command,
@@ -478,6 +487,7 @@ foreach ($parts as $part => $summary) {
 $tables = [
     'word.md' => ['word', $word],
     'presentations.md' => ['slides', $presentations],
+    'theme.md' => ['theme', $theme],
 ];
 
 foreach ($tables as $file => [$part, $markdown]) {
@@ -512,14 +522,12 @@ foreach ($tables as $file => [$part, $markdown]) {
 
         $taken = \array_values(\array_unique($taken));
 
-        foreach (rowsOf($markdown, 'Options for ' . $heading) as $row) {
-            if (\count($row) < 2 || \str_starts_with($row[0], '---')) {
-                continue;
-            }
+        $rows = optionRows($markdown, 'Options for ' . $heading);
 
+        foreach ($rows as $row) {
             foreach (optionsIn($row[0]) as $option) {
                 if (!\in_array($option, $taken, true)) {
-                    fail(\sprintf(
+                    $report->fail(\sprintf(
                         "%s documents the option \"%s\" for \"%s\", which the command does not take.",
                         $file,
                         $option,
@@ -538,11 +546,7 @@ foreach ($tables as $file => [$part, $markdown]) {
 
             $named = false;
 
-            foreach (rowsOf($markdown, 'Options for ' . $heading) as $row) {
-                if (\count($row) < 2 || \str_starts_with($row[0], '---')) {
-                    continue;
-                }
-
+            foreach ($rows as $row) {
                 if (\in_array($option, optionsIn($row[0]), true)) {
                     $named = true;
 
@@ -551,7 +555,7 @@ foreach ($tables as $file => [$part, $markdown]) {
             }
 
             if (!$named) {
-                fail(\sprintf(
+                $report->fail(\sprintf(
                     "%s does not document the option \"%s\", which \"%s\" takes.",
                     $file,
                     $option,
@@ -574,9 +578,9 @@ if (\preg_match('/```text\n(mdoffice: Unknown part .*?)```/s', $basic, $match) =
 $printed = runCommandLine($binary, ['notes.md']);
 
 if ($quoted === null) {
-    fail("The basic page does not quote the error for a file that is not a part.");
+    $report->fail("The basic page does not quote the error for a file that is not a part.");
 } elseif (\rtrim($quoted) !== \rtrim($printed)) {
-    fail(\sprintf(
+    $report->fail(\sprintf(
         "The basic page quotes an error the program does not print.\n  the page says: %s\n  the program says: %s",
         \str_replace("\n", "\n    ", \rtrim($quoted)),
         \str_replace("\n", "\n    ", \rtrim($printed)),
@@ -588,24 +592,20 @@ if ($quoted === null) {
  */
 $pages = [];
 
-foreach (pageFiles($root . '/content') as $file) {
+foreach (Pages::files($root . '/content', ['md', 'njk']) as $file) {
     $pages[\str_replace($root . '/content/', '', $file)] = (string) \file_get_contents($file);
 }
 
 foreach (FORBIDDEN as $claim => $phrase) {
     foreach ($pages as $name => $markdown) {
         if (\stripos($markdown, $phrase) !== false) {
-            fail(\sprintf("The page \"%s\" says again what was corrected: \"%s\".", $name, $claim));
+            $report->fail(\sprintf("The page \"%s\" says again what was corrected: \"%s\".", $name, $claim));
         }
     }
 }
 
-if ($failures !== []) {
-    \fwrite(\STDERR, \sprintf("%d problem(s) with the pages:\n\n", \count($failures)));
-
-    foreach ($failures as $failure) {
-        \fwrite(\STDERR, '  ' . \str_replace("\n", "\n  ", $failure) . "\n\n");
-    }
+if ($report->failed()) {
+    $report->print('pages');
 
     exit(1);
 }

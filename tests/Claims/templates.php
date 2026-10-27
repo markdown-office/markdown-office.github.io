@@ -62,15 +62,10 @@ it('draws the chrome over what the slide placed itself', function () {
 });
 
 it('reads a chrome file from beside the deck', function () {
-    $root = Chrome::beside("---\ntemplate: brand\n---\n::rectangle{left=0 top=0 width=10% height=10%}\n");
-
-    try {
-        $deck = "---\nchrome: ./chrome.md\n---\n# One\n\n---\nlayout: blank\ntemplate: brand\n---\n\nWords.\n";
-
-        $shapes = Deck::shapes($deck, $root);
-    } finally {
-        Chrome::remove($root);
-    }
+    $shapes = Chrome::shapes(
+        "---\nchrome: ./chrome.md\n---\n# One\n\n---\nlayout: blank\ntemplate: brand\n---\n\nWords.\n",
+        "---\ntemplate: brand\n---\n::rectangle{left=0 top=0 width=10% height=10%}\n",
+    );
 
     expect($shapes[1])->toContain('rectangle');
 });
@@ -82,15 +77,10 @@ it('refuses a chrome file that is not there', function () {
 });
 
 it('lets the deck\'s own template override an imported one of the same name', function () {
-    $root = Chrome::beside("---\ntemplate: brand\n---\n::rectangle{left=0 top=0 width=10% height=10%}\n");
-
-    try {
-        $deck = "---\nchrome: ./chrome.md\n---\n# One\n\n---\ntemplate: brand\n---\n::circle{left=1% top=1% width=5% height=5%}\n\n---\nlayout: blank\ntemplate: brand\n---\n\nWords.\n";
-
-        $shapes = Deck::shapes($deck, $root);
-    } finally {
-        Chrome::remove($root);
-    }
+    $shapes = Chrome::shapes(
+        "---\nchrome: ./chrome.md\n---\n# One\n\n---\ntemplate: brand\n---\n::circle{left=1% top=1% width=5% height=5%}\n\n---\nlayout: blank\ntemplate: brand\n---\n\nWords.\n",
+        "---\ntemplate: brand\n---\n::rectangle{left=0 top=0 width=10% height=10%}\n",
+    );
 
     expect($shapes[1])->toContain('circle');
     expect($shapes[1])->not->toContain('rectangle');

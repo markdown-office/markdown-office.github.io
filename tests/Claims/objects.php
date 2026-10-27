@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use MarkdownOffice\Documentation\Tests\Support\Document;
-use MarkdownOffice\Documentation\Tests\Support\Site;
+use MarkdownOffice\Documentation\Tests\Support\Types;
 use MarkdownWord\Format;
 use MarkdownWord\WordToMarkdown;
 
@@ -15,45 +15,6 @@ use MarkdownWord\WordToMarkdown;
  * claims about what the library does, and each is checked against the library that has to
  * do it — the sentence the page states beside the behaviour it is about.
  */
-
-/**
- * The body of a section of a page, as the page wrote it.
- *
- * The section rather than the page, because a page carries several lists and a claim is
- * about one of them. The line breaks are gone, because the prose is wrapped and a sentence
- * a page states is broken across two lines.
- */
-function sectionOf(string $path, string $heading): string
-{
-    $body = [];
-    $inside = false;
-
-    foreach (\explode("\n", Site::page($path)) as $line) {
-        if (\str_starts_with($line, '## ')) {
-            $inside = \trim($line) === '## ' . $heading;
-
-            continue;
-        }
-
-        if ($inside) {
-            $body[] = $line;
-        }
-    }
-
-    return (string) \preg_replace('/\s+/', ' ', \implode("\n", $body));
-}
-
-/**
- * The names a sentence lists, in code font.
- *
- * @return list<string>
- */
-function listedIn(string $sentence): array
-{
-    \preg_match_all('/`([^`]+)`/', $sentence, $matches);
-
-    return $matches[1];
-}
 
 it('says that the Word half never refuses, and gives a text box back to the author', function () {
     says('word/directives.md', 'The Word half never refuses');
@@ -103,33 +64,31 @@ it('says that a page break and the columns of a section come back as nothing', f
     expect($back)->toBe("Before.\n\nAfter.");
 });
 
-it('draws every shape type the page names, and writes one it does not draw as the source text', function () {
-    \preg_match('/The type is one of (.+?)\./', sectionOf('word/directives.md', '`::shape` — a shape'), $match);
-
-    $types = listedIn($match[1] ?? '');
-
-    expect($types)->not->toBe([]);
-
-    foreach ($types as $type) {
-        expect(Document::body("::shape{type=$type width=4 height=2}"))->not->toContain('::shape');
-    }
-
-    expect(Document::body('::shape{type=triangle width=4 height=2}'))->toContain('::shape');
-});
-
-it('draws every field type the page names, and writes one it does not draw as the source text', function () {
-    \preg_match('/The type is one of (.+?)\./', sectionOf('word/directives.md', '`::field` — a form field'), $match);
-
-    $types = listedIn($match[1] ?? '');
+it('draws every type the page names, and writes one it does not draw as the source text', function (string $heading, string $marker, string $directive, string $unknown) {
+    $types = Types::drawn(
+        'word/directives.md',
+        $heading,
+        $marker,
+        static fn (string $type): string => Document::body(\sprintf($directive, $type)),
+    );
 
     expect($types)->not->toBe([]);
 
-    foreach ($types as $type) {
-        expect(Document::body("::field{name=x type=$type}"))->not->toContain('::field');
-    }
-
-    expect(Document::body('::field{name=x type=date}'))->toContain('::field');
-});
+    expect(Document::body($unknown))->toContain($marker);
+})->with([
+    'shapes' => [
+        '`::shape` — a shape',
+        '::shape',
+        '::shape{type=%s width=4 height=2}',
+        '::shape{type=triangle width=4 height=2}',
+    ],
+    'form fields' => [
+        '`::field` — a form field',
+        '::field',
+        '::field{name=x type=%s}',
+        '::field{name=x type=date}',
+    ],
+]);
 
 it('gives a shape back to the author in a format that cannot carry it', function () {
     $markdown = "::shape{type=rect width=4 height=2}\n";

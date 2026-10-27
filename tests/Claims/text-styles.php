@@ -22,13 +22,10 @@ use MarkdownWord\WordToMarkdown;
 it('refuses a theme that names a style "style"', function () {
     says('general/directives.md', 'a theme may not name a style `style`');
 
-    $root = Theme::slides("style:\n  color: FF0000\n");
-
-    try {
-        $message = Deck::refusal("---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n", $root);
-    } finally {
-        Theme::remove($root);
-    }
+    $message = Theme::slidesRefusal(
+        "---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n",
+        "style:\n  color: FF0000\n",
+    );
 
     expect($message)->toContain('reserved word');
 });
@@ -36,13 +33,10 @@ it('refuses a theme that names a style "style"', function () {
 it('refuses a Word theme that names a style "style"', function () {
     says('general/directives.md', 'a theme may not name a style `style`');
 
-    $root = Theme::word("textStyles:\n  style:\n    color: \"FF0000\"\n");
-
-    try {
-        $message = Document::refusal("---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n", $root);
-    } finally {
-        Theme::remove($root);
-    }
+    $message = Theme::wordRefusal(
+        "---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n",
+        "textStyles:\n  style:\n    color: \"FF0000\"\n",
+    );
 
     expect($message)->toContain('cannot be defined');
 });
@@ -72,13 +66,10 @@ it('reads the named styles of a theme from the file the page names', function ()
 it('refuses a text style the theme does not have, and names the styles it has', function () {
     says('presentation/directives.md', 'the message names the styles the theme does have');
 
-    $root = Theme::slides("brand:\n  color: FF0000\n  bold: true\nmuted:\n  color: accent1\n  size: 10\n");
-
-    try {
-        $message = Deck::refusal("---\ntheme: mine\n---\n\nResilience :bakery[Bakery] is open.\n", $root);
-    } finally {
-        Theme::remove($root);
-    }
+    $message = Theme::slidesRefusal(
+        "---\ntheme: mine\n---\n\nResilience :bakery[Bakery] is open.\n",
+        "brand:\n  color: FF0000\n  bold: true\nmuted:\n  color: accent1\n  size: 10\n",
+    );
 
     expect($message)->toContain('The styles are: brand, muted.');
 });
@@ -94,13 +85,9 @@ it('refuses an inline directive in a deck that names no style', function () {
 it('says that a theme without named styles has none', function () {
     says('presentation/themes.md', 'a theme without one has no named styles');
 
-    $root = Theme::slides();
-
-    try {
-        $message = Deck::refusal("---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n", $root);
-    } finally {
-        Theme::remove($root);
-    }
+    $message = Theme::slidesRefusal(
+        "---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n",
+    );
 
     expect($message)->toContain('The theme has no text styles');
 });
@@ -122,38 +109,29 @@ it('refuses a label that holds Markdown in a deck', function () {
 });
 
 it('draws a word in a named style, in the colour the theme gives it', function () {
-    $root = Theme::slides("brand:\n  color: FF0000\n  bold: true\n");
-
-    try {
-        $slide = Deck::slide("---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n", $root);
-    } finally {
-        Theme::remove($root);
-    }
+    $slide = Theme::slidesSlide(
+        "---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n",
+        "brand:\n  color: FF0000\n  bold: true\n",
+    );
 
     expect(Deck::run($slide, 'Bakery'))->toContain('<a:srgbClr val="FF0000"');
 });
 
 it('overrides a named style with the attributes on the directive', function () {
-    $root = Theme::slides("brand:\n  color: FF0000\n  bold: true\n");
-
-    try {
-        $slide = Deck::slide("---\ntheme: mine\n---\n\nA :brand[Bakery]{color=00B4D8} B\n", $root);
-    } finally {
-        Theme::remove($root);
-    }
+    $slide = Theme::slidesSlide(
+        "---\ntheme: mine\n---\n\nA :brand[Bakery]{color=00B4D8} B\n",
+        "brand:\n  color: FF0000\n  bold: true\n",
+    );
 
     expect(Deck::run($slide, 'Bakery'))->toContain('<a:srgbClr val="00B4D8"');
     expect(Deck::run($slide, 'Bakery'))->not->toContain('<a:srgbClr val="FF0000"');
 });
 
 it('leaves a property off the run of a deck when an attribute is false', function () {
-    $root = Theme::slides("brand:\n  color: FF0000\n  bold: true\n");
-
-    try {
-        $slide = Deck::slide("---\ntheme: mine\n---\n\nA :brand[Bakery]{bold=false} B\n", $root);
-    } finally {
-        Theme::remove($root);
-    }
+    $slide = Theme::slidesSlide(
+        "---\ntheme: mine\n---\n\nA :brand[Bakery]{bold=false} B\n",
+        "brand:\n  color: FF0000\n  bold: true\n",
+    );
 
     expect(Deck::run($slide, 'Bakery'))->not->toContain('b="1"');
 });

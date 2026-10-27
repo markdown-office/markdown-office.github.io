@@ -39,38 +39,18 @@ final class Document
 
     /**
      * The run of a document that holds the given text, as the XML it holds.
-     *
-     * The run rather than the body, because a body carries the words around the one a claim
-     * is about, and those are the ones that did not change.
      */
     public static function run(string $body, string $text): string
     {
-        \preg_match_all('#<w:r(?: [^>]*)?>.*?</w:r>#s', $body, $matches);
-
-        foreach ($matches[0] as $run) {
-            if (\preg_match('#<w:t(?: [^>]*)?>' . \preg_quote($text, '#') . '</w:t>#', $run) === 1) {
-                return $run;
-            }
-        }
-
-        return '';
+        return Run::of($body, $text, 'w');
     }
 
     /**
      * The message the library gives for a document it refuses.
-     *
-     * An empty string where the document was not refused at all, so a test that expects a
-     * message fails on the absence of one rather than on something else.
      */
     public static function refusal(string $markdown, ?string $directory = null): string
     {
-        try {
-            self::path($markdown, $directory);
-        } catch (\Throwable $error) {
-            return $error->getMessage();
-        }
-
-        return '';
+        return Refusal::of(static fn (): string => self::path($markdown, $directory));
     }
 
     /**

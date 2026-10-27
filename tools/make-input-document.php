@@ -22,24 +22,15 @@ declare(strict_types=1);
  * the reader makes of it has nothing to compare against.
  */
 
-\error_reporting(\E_ALL & ~\E_DEPRECATED & ~\E_USER_DEPRECATED);
-\ini_set('display_errors', 'stderr');
+require_once __DIR__ . '/lib/Autoload.php';
 
-if (\PHP_SAPI !== 'cli') {
-    \fwrite(\STDERR, "The document is written from the command line.\n");
-    exit(1);
-}
-
-$root = \dirname(__DIR__);
-
-if (! \is_file($root . '/vendor/autoload.php')) {
-    \fwrite(\STDERR, "Missing \"vendor/autoload.php\". Run `composer install` in documentation/.\n");
-    exit(1);
-}
-
-require_once $root . '/vendor/autoload.php';
-
+use MarkdownOffice\Documentation\Tool\Cli;
 use PhpOffice\PhpWord\PhpWord;
+
+Cli::guard('The document is written from the command line.');
+Cli::autoload();
+
+$root = Cli::root();
 
 $word = new PhpWord();
 $section = $word->addSection();

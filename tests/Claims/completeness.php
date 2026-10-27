@@ -24,7 +24,7 @@ use MarkdownWord\Exception\Exception as WordException;
  */
 function listed(string $vocabulary): array
 {
-    $marked = Pages::marked(Site::root() . '/content')[$vocabulary] ?? [];
+    $marked = Pages::of(Site::root() . '/content')['marked'][$vocabulary] ?? [];
 
     return $marked === [] ? [] : $marked[0]->names;
 }

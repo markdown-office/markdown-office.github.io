@@ -58,20 +58,18 @@ if (\PHP_SAPI !== 'cli') {
     exit(1);
 }
 
-$root = \dirname(__DIR__);
-
-if (!\is_file($root . '/vendor/autoload.php')) {
-    \fwrite(\STDERR, "There is no vendor/autoload.php. Run `composer install` in documentation/.\n");
-    exit(1);
-}
-
-require_once $root . '/vendor/autoload.php';
+require_once __DIR__ . '/lib/Autoload.php';
 
 use MarkdownOffice\Documentation\Reference\Block;
 use MarkdownOffice\Documentation\Reference\Pages;
-use MarkdownOffice\Documentation\Reference\Vocabulary;
 use MarkdownOffice\Documentation\Reference\Vocabularies;
+use MarkdownOffice\Documentation\Tool\Cli;
+use MarkdownOffice\Documentation\Tool\Report;
 
+Cli::guard('The reference tables are checked from the command line.');
+Cli::autoload();
+
+$root = Cli::root();
 $content = $root . '/content';
 
 if (!\is_dir($content)) {
@@ -79,17 +77,7 @@ if (!\is_dir($content)) {
     exit(1);
 }
 
-$failures = [];
-
-/**
- * A thing that is wrong, said once.
- */
-function fail(string $message): void
-{
-    global $failures;
-
-    $failures[] = $message;
-}
+$report = new Report();
 
 /**
  * The page a block is on, as the site's own path.
@@ -100,12 +88,13 @@ function where(Block $block): string
 }
 
 $vocabularies = Vocabularies::all();
-$marked = Pages::marked($content);
-$blocks = Pages::blocks($content);
+$pages = Pages::of($content);
+$marked = $pages['marked'];
+$blocks = $pages['blocks'];
 
 foreach ($marked as $name => $carried) {
     if (!isset($vocabularies[$name])) {
-        fail(\sprintf(
+        $report->fail(\sprintf(
             "%s marks a vocabulary \"%s\", which no code holds.",
             where($carried[0]),
             $name,
@@ -120,7 +109,7 @@ foreach ($vocabularies as $name => $vocabulary) {
     $carried = $marked[$name] ?? [];
 
     if ($carried === []) {
-        fail(\sprintf(
+        $report->fail(\sprintf(
             "No page carries the vocabulary \"%s\". The code has %d name(s) for it and the site lists none.",
             $name,
             \count($vocabulary->names()),
@@ -131,7 +120,7 @@ foreach ($vocabularies as $name => $vocabulary) {
 
     if (\count($carried) > 1) {
         foreach (\array_slice($carried, 1) as $block) {
-            fail(\sprintf(
+            $report->fail(\sprintf(
                 "The vocabulary \"%s\" is carried by %s as well as by %s. One list, one home.",
                 $name,
                 where($block),
@@ -147,7 +136,7 @@ foreach ($vocabularies as $name => $vocabulary) {
     $listed = $block->names;
 
     if ($listed === []) {
-        fail(\sprintf(
+        $report->fail(\sprintf(
             "%s marks the vocabulary \"%s\" and there is no table or list under it.",
             where($block),
             $name,
@@ -158,7 +147,7 @@ foreach ($vocabularies as $name => $vocabulary) {
 
     foreach ($expected as $one) {
         if (!\in_array($one, $listed, true)) {
-            fail(\sprintf(
+            $report->fail(\sprintf(
                 "%s does not list \"%s\", which the code has.",
                 where($block),
                 $one,
@@ -168,7 +157,7 @@ foreach ($vocabularies as $name => $vocabulary) {
 
     foreach ($listed as $one) {
         if (!\in_array($one, $expected, true)) {
-            fail(\sprintf(
+            $report->fail(\sprintf(
                 "%s lists \"%s\", which the code does not have.",
                 where($block),
                 $one,
@@ -177,7 +166,7 @@ foreach ($vocabularies as $name => $vocabulary) {
     }
 
     foreach ($vocabulary->disagreeing() as $source => $other) {
-        fail(\sprintf(
+        $report->fail(\sprintf(
             "The code keeps two lists of \"%s\" and they disagree: %s has %d name(s), the first list has %d.",
             $name,
             $source,
@@ -195,7 +184,7 @@ foreach ($vocabularies as $name => $vocabulary) {
             continue;
         }
 
-        fail(\sprintf(
+        $report->fail(\sprintf(
             "%s carries a second copy of \"%s\", which %s is the home of. One list, one home.",
             where($other),
             $name,
@@ -207,13 +196,13 @@ foreach ($vocabularies as $name => $vocabulary) {
         $cell = $block->values[$one] ?? null;
 
         if ($cell === null) {
-            fail(\sprintf("%s does not give \"%s\" a value, which the code has.", where($block), $one));
+            $report->fail(\sprintf("%s does not give \"%s\" a value, which the code has.", where($block), $one));
 
             continue;
         }
 
         if (!\str_contains($cell, (string) $value) && !\str_contains($cell, \number_format($value, 0, '.', ','))) {
-            fail(\sprintf(
+            $report->fail(\sprintf(
                 "%s says \"%s\" is \"%s\"; the code says %d.",
                 where($block),
                 $one,
@@ -228,15 +217,11 @@ foreach ($vocabularies as $name => $vocabulary) {
 }
 
 if ($checked === 0) {
-    fail('No vocabulary was checked, so there is nothing to say about the reference tables.');
+    $report->fail('No vocabulary was checked, so there is nothing to say about the reference tables.');
 }
 
-if ($failures !== []) {
-    \fwrite(\STDERR, \sprintf("%d problem(s) with the reference tables:\n\n", \count($failures)));
-
-    foreach ($failures as $failure) {
-        \fwrite(\STDERR, '  ' . \str_replace("\n", "\n  ", $failure) . "\n\n");
-    }
+if ($report->failed()) {
+    $report->print('reference tables');
 
     exit(1);
 }

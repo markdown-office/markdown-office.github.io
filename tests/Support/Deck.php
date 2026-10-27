@@ -14,22 +14,10 @@ final class Deck
 {
     /**
      * The message the library gives for a deck it refuses.
-     *
-     * An empty string where the deck was not refused at all, so a test that expects a
-     * message fails on the absence of one rather than on something else.
      */
     public static function refusal(string $markdown, string $directory = '.'): string
     {
-        try {
-            $deck = (new DeckParser())->parse($markdown);
-
-            (new PresentationRenderer($directory))
-                ->render($deck, (string) \tempnam(\sys_get_temp_dir(), 'deck') . '.pptx');
-        } catch (\Throwable $error) {
-            return $error->getMessage();
-        }
-
-        return '';
+        return Refusal::of(static fn (): string => self::render($markdown, $directory));
     }
 
     /**
@@ -40,31 +28,15 @@ final class Deck
      */
     public static function slide(string $markdown, string $directory = '.'): string
     {
-        $deck = (new DeckParser())->parse($markdown);
-        $path = \sys_get_temp_dir() . '/markdown-office-deck-' . \bin2hex(\random_bytes(6)) . '.pptx';
-
-        (new PresentationRenderer($directory))->render($deck, $path);
-
-        return Package::part($path, 'ppt/slides/slide1.xml');
+        return Package::part(self::render($markdown, $directory), 'ppt/slides/slide1.xml');
     }
 
     /**
      * The run of a slide that holds the given text, as the XML it holds.
-     *
-     * The run rather than the slide, because a slide carries the words around the one a
-     * claim is about, and those are the ones that did not change.
      */
     public static function run(string $slide, string $text): string
     {
-        \preg_match_all('#<a:r>.*?</a:r>#s', $slide, $matches);
-
-        foreach ($matches[0] as $run) {
-            if (\preg_match('#<a:t>(?:<!\[CDATA\[)?' . \preg_quote($text, '#') . '(?:\]\]>)?</a:t>#', $run) === 1) {
-                return $run;
-            }
-        }
-
-        return '';
+        return Run::of($slide, $text, 'a');
     }
 
     /**
@@ -77,12 +49,8 @@ final class Deck
      */
     public static function slides(string $markdown, string $directory = '.'): array
     {
-        $path = \sys_get_temp_dir() . '/markdown-office-deck-' . \bin2hex(\random_bytes(6)) . '.pptx';
-
-        (new PresentationRenderer($directory))->render((new DeckParser())->parse($markdown), $path);
-
         $zip = new \ZipArchive();
-        $zip->open($path);
+        $zip->open(self::render($markdown, $directory));
 
         $slides = [];
 
@@ -119,5 +87,17 @@ final class Deck
         }
 
         return $names;
+    }
+
+    /**
+     * The deck written out, and the path it was written to.
+     */
+    private static function render(string $markdown, string $directory): string
+    {
+        $path = \sys_get_temp_dir() . '/markdown-office-deck-' . \bin2hex(\random_bytes(6)) . '.pptx';
+
+        (new PresentationRenderer($directory))->render((new DeckParser())->parse($markdown), $path);
+
+        return $path;
     }
 }

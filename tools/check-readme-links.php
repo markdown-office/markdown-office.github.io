@@ -21,15 +21,13 @@ declare(strict_types=1);
  * because it found nothing to check is worse than no link check at all.
  */
 
-\error_reporting(\E_ALL & ~\E_DEPRECATED & ~\E_USER_DEPRECATED);
-\ini_set('display_errors', 'stderr');
+require_once __DIR__ . '/lib/Autoload.php';
 
-if (\PHP_SAPI !== 'cli') {
-    \fwrite(\STDERR, "The README links are checked from the command line.\n");
-    exit(1);
-}
+use MarkdownOffice\Documentation\Tool\Cli;
 
-$root = \dirname(__DIR__);
+Cli::guard('The README links are checked from the command line.');
+
+$root = Cli::root();
 $paths = \array_slice($argv, 1);
 
 if ($paths === []) {

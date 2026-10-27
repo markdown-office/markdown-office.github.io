@@ -36,30 +36,16 @@ declare(strict_types=1);
  * source, so an unchanged block is not rebuilt and a changed one always is.
  */
 
-\error_reporting(\E_ALL & ~\E_DEPRECATED & ~\E_USER_DEPRECATED);
-\ini_set('display_errors', 'stderr');
+require_once __DIR__ . '/lib/Autoload.php';
 
-if (\PHP_SAPI !== 'cli') {
-    \fwrite(\STDERR, "The examples are built from the command line.\n");
-    exit(1);
-}
-
-$root = \dirname(__DIR__);
-
-foreach ([
-    $root . '/vendor/autoload.php',
-    __DIR__ . '/lib/Autoload.php',
-] as $required) {
-    if (! \is_file($required)) {
-        \fwrite(\STDERR, \sprintf('Missing "%s". Run `composer install` in documentation/.' . "\n", $required));
-        exit(1);
-    }
-
-    require_once $required;
-}
-
+use MarkdownOffice\Documentation\Tool\Cli;
 use MarkdownOffice\Documentation\Tool\Preview;
 use MarkdownOffice\Documentation\Tool\Runner;
+
+Cli::guard('The examples are built from the command line.');
+Cli::autoload();
+
+$root = Cli::root();
 
 $contentDirectory = $root . '/content';
 $artifacts = $root . '/_examples';

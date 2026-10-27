@@ -18,19 +18,26 @@ final class Chrome
      */
     public static function beside(string $markdown): string
     {
-        $root = \sys_get_temp_dir() . '/markdown-office-chrome-' . \bin2hex(\random_bytes(6));
+        $root = Directory::make('chrome');
 
-        \mkdir($root, 0o777, true);
         \file_put_contents($root . '/chrome.md', $markdown);
 
         return $root;
     }
 
     /**
-     * A directory of a deck's own, removed again.
+     * The shapes of a deck drawn against a chrome file.
+     *
+     * The chrome is written beside the deck and taken away again, whatever the deck says:
+     * a file left behind is a file the next test draws against.
+     *
+     * @return list<list<string>>
      */
-    public static function remove(string $root): void
+    public static function shapes(string $markdown, string $chrome): array
     {
-        \exec(\sprintf('rm -rf %s', \escapeshellarg($root)));
+        return Directory::during(
+            self::beside($chrome),
+            static fn (string $root): array => Deck::shapes($markdown, $root),
+        );
     }
 }

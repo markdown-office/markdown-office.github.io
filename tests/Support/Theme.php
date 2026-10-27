@@ -25,7 +25,6 @@ final class Theme
     {
         $root = self::directory();
 
-        \file_put_contents($root . '/themes/mine/theme.yml', "name: Mine\n");
         \file_put_contents(
             $root . '/themes/mine/layouts.yml',
             "layouts:\n  content: Title and Content\n",
@@ -39,6 +38,31 @@ final class Theme
     }
 
     /**
+     * The message the library gives for a deck drawn against a theme of the slides half.
+     *
+     * The theme is written, the deck is drawn against it and the theme is taken away
+     * again, whatever the deck says: a theme left behind is a theme the next test finds.
+     */
+    public static function slidesRefusal(string $markdown, ?string $textStyles = null): string
+    {
+        return Directory::during(
+            self::slides($textStyles),
+            static fn (string $root): string => Deck::refusal($markdown, $root),
+        );
+    }
+
+    /**
+     * The slide a deck is drawn as, against a theme of the slides half.
+     */
+    public static function slidesSlide(string $markdown, string $textStyles): string
+    {
+        return Directory::during(
+            self::slides($textStyles),
+            static fn (string $root): string => Deck::slide($markdown, $root),
+        );
+    }
+
+    /**
      * A directory holding a theme of the Word half's shape, and the directory it is in.
      *
      * `$styles` is the theme's `styles.yml`, written as YAML because the file is what the
@@ -48,8 +72,6 @@ final class Theme
     {
         $root = self::directory();
 
-        \file_put_contents($root . '/themes/mine/theme.yml', "name: Mine\n");
-
         if ($styles !== null) {
             \file_put_contents($root . '/themes/mine/styles.yml', $styles);
         }
@@ -58,21 +80,25 @@ final class Theme
     }
 
     /**
-     * A directory of a theme, removed again.
+     * The message the library gives for a document drawn against a theme of the Word half.
      */
-    public static function remove(string $root): void
+    public static function wordRefusal(string $markdown, string $styles): string
     {
-        \exec(\sprintf('rm -rf %s', \escapeshellarg($root)));
+        return Directory::during(
+            self::word($styles),
+            static fn (string $root): string => Document::refusal($markdown, $root),
+        );
     }
 
     /**
-     * An empty directory of themes, and the directory it is in.
+     * A directory holding a theme of the slides half's shape, and the directory it is in.
      */
     private static function directory(): string
     {
-        $root = \sys_get_temp_dir() . '/markdown-office-theme-' . \bin2hex(\random_bytes(6));
+        $root = Directory::make('theme');
 
         \mkdir($root . '/themes/mine', 0o777, true);
+        \file_put_contents($root . '/themes/mine/theme.yml', "name: Mine\n");
 
         return $root;
     }

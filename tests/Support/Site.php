@@ -32,6 +32,33 @@ final class Site
     }
 
     /**
+     * The body of a section of a page, as the page wrote it.
+     *
+     * The section rather than the page, because a page carries several lists and a claim is
+     * about one of them. The line breaks are gone, because the prose is wrapped and a sentence
+     * a page states is broken across two lines.
+     */
+    public static function section(string $path, string $heading): string
+    {
+        $body = [];
+        $inside = false;
+
+        foreach (\explode("\n", self::page($path)) as $line) {
+            if (\str_starts_with($line, '## ')) {
+                $inside = \trim($line) === '## ' . $heading;
+
+                continue;
+            }
+
+            if ($inside) {
+                $body[] = $line;
+            }
+        }
+
+        return (string) \preg_replace('/\s+/', ' ', \implode("\n", $body));
+    }
+
+    /**
      * A page of the site with its line breaks gone.
      *
      * Prose is wrapped, so a sentence a page states is broken across two lines and a test
@@ -41,24 +68,6 @@ final class Site
     public static function flat(string $page): string
     {
         return (string) \preg_replace('/\s+/', ' ', $page);
-    }
-
-    /**
-     * Every page of the site, keyed by its path under `content/`.
-     *
-     * @return array<string, string>
-     */
-    public static function pages(): array
-    {
-        $pages = [];
-
-        foreach (self::files(self::root() . '/content') as $file) {
-            $pages[\str_replace(self::root() . '/content/', '', $file)] = (string) \file_get_contents($file);
-        }
-
-        \ksort($pages);
-
-        return $pages;
     }
 
     /**
@@ -94,27 +103,5 @@ final class Site
         ];
 
         return $words[$number] ?? (string) $number;
-    }
-
-    /**
-     * The Markdown files under a directory.
-     *
-     * @return list<string>
-     */
-    private static function files(string $directory): array
-    {
-        $found = [];
-
-        foreach (\glob($directory . '/**/*.md') ?: [] as $path) {
-            $found[] = $path;
-        }
-
-        foreach (\glob($directory . '/*.md') ?: [] as $path) {
-            $found[] = $path;
-        }
-
-        \sort($found);
-
-        return \array_values(\array_unique($found));
     }
 }

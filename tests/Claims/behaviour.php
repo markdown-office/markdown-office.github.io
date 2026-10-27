@@ -3,8 +3,7 @@
 declare(strict_types=1);
 
 use MarkdownOffice\Documentation\Tests\Support\Deck;
-use MarkdownPresentation\Document\DeckParser;
-use MarkdownPresentation\Render\PresentationRenderer;
+use MarkdownOffice\Documentation\Tests\Support\Theme;
 
 /**
  * The rules the pages state about what the libraries do.
@@ -41,23 +40,7 @@ it('says that a theme is found beside the deck', function () {
 });
 
 it('finds a theme that sits beside the deck', function () {
-    $root = \sys_get_temp_dir() . '/markdown-office-deck-' . \bin2hex(\random_bytes(6));
+    $message = Theme::slidesRefusal("---\ntheme: mine\n---\n\n# One\n");
 
-    \mkdir($root . '/themes/mine', 0o777, true);
-    \file_put_contents($root . '/themes/mine/theme.yml', "name: Mine\n");
-    \file_put_contents(
-        $root . '/themes/mine/layouts.yml',
-        "layouts:\n  title: Title Slide\n  content: Title and Content\n",
-    );
-
-    try {
-        $deck = (new DeckParser())->parse("---\ntheme: mine\n---\n\n# One\n");
-
-        (new PresentationRenderer($root))
-            ->render($deck, (string) \tempnam(\sys_get_temp_dir(), 'deck') . '.pptx');
-    } finally {
-        \exec(\sprintf('rm -rf %s', \escapeshellarg($root)));
-    }
-
-    expect(true)->toBeTrue();
+    expect($message)->toBe('');
 });
