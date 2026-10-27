@@ -91,20 +91,22 @@ const FORBIDDEN = [
 ];
 
 /**
- * The Markdown files under a directory.
+ * The pages of the site: the Markdown and the templates they are built from.
  *
  * @return list<string>
  */
-function markdownFiles(string $directory): array
+function pageFiles(string $directory): array
 {
     $files = [];
 
-    foreach (\glob($directory . '/**/*.md') ?: [] as $path) {
-        $files[] = $path;
-    }
+    foreach (['md', 'njk'] as $extension) {
+        foreach (\glob($directory . '/**/*.' . $extension) ?: [] as $path) {
+            $files[] = $path;
+        }
 
-    foreach (\glob($directory . '/*.md') ?: [] as $path) {
-        $files[] = $path;
+        foreach (\glob($directory . '/*.' . $extension) ?: [] as $path) {
+            $files[] = $path;
+        }
     }
 
     \sort($files);
@@ -572,7 +574,7 @@ if ($quoted === null) {
  */
 $pages = [];
 
-foreach (markdownFiles($root . '/content') as $file) {
+foreach (pageFiles($root . '/content') as $file) {
     $pages[\str_replace($root . '/content/', '', $file)] = (string) \file_get_contents($file);
 }
 
