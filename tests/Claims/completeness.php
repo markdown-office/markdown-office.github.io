@@ -56,7 +56,9 @@ it('says how many exceptions sit beside InvalidInput, as the code does', functio
         }
     }
 
-    says('presentation/errors.md', words($beside) . ' sit beside `InvalidInput`');
-    says('presentation/index.md', words($beside) . ' sit beside `InvalidInput`');
-    says('general/errors.md', words($beside) . ' sit beside `InvalidInput`');
+    $phrase = words($beside) . ' sit beside `InvalidInput`';
+
+    says('presentation/errors.md', $phrase);
+    says(Site::PRESENTATION_INDEX, $phrase);
+    says('general/errors.md', $phrase);
 });

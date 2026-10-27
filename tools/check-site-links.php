@@ -86,6 +86,14 @@ function addressesOf(string $file): array
 }
 
 /**
+ * The file that serves a directory.
+ *
+ * A directory is served by a file of this name and everything else by itself, so the
+ * address of a page depends on it.
+ */
+const DIRECTORY_INDEX = 'index.html';
+
+/**
  * The address a page is served at, from where it sits in the built site.
  *
  * `guides/command-line/index.html` is served at `/guides/command-line/`, and the file itself
@@ -93,8 +101,8 @@ function addressesOf(string $file): array
  */
 function addressOf(string $relative, string $mount): string
 {
-    $path = \str_ends_with($relative, 'index.html')
-        ? \substr($relative, 0, -\strlen('index.html'))
+    $path = \str_ends_with($relative, DIRECTORY_INDEX)
+        ? \substr($relative, 0, -\strlen(DIRECTORY_INDEX))
         : $relative;
 
     return $mount . $path;
@@ -148,7 +156,7 @@ function resolve(string $address, string $host, string $mount, string $directory
 function fileFor(string $site, string $relative): string
 {
     if ($relative === '' || \str_ends_with($relative, '/')) {
-        $relative .= 'index.html';
+        $relative .= DIRECTORY_INDEX;
     }
 
     return $site . '/' . $relative;

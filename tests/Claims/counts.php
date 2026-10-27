@@ -19,40 +19,40 @@ use MarkdownPresentation\Theme\Theme;
  */
 
 it('counts the colour slots as the code does', function () {
-    says('presentation/themes.md', 'The ' . words(\count(Theme::COLOURS)) . ' colour slots');
+    says(Site::PRESENTATION_THEMES, 'The ' . words(\count(Theme::COLOURS)) . ' colour slots');
 });
 
 it('counts the style keys as the code does', function () {
-    says('presentation/themes.md', 'the ' . words(\count(StyleMapping::KEYS)) . ' style keys');
+    says(Site::PRESENTATION_THEMES, 'the ' . words(\count(StyleMapping::KEYS)) . ' style keys');
 });
 
 it('counts the layout roles as the code does', function () {
-    says('presentation/themes.md', words(\count(LayoutRole::names())) . ', and only these');
+    says(Site::PRESENTATION_THEMES, words(\count(LayoutRole::names())) . ', and only these');
 });
 
 it('counts the colour aliases as the code does', function () {
     $aliases = Vocabularies::all()['presentation.theme-aliases']->names();
 
-    says('presentation/themes.md', words(\count($aliases)) . ' read-friendly aliases are accepted');
+    says(Site::PRESENTATION_THEMES, words(\count($aliases)) . ' read-friendly aliases are accepted');
 });
 
 it('counts the frontmatter keys as the code does', function () {
     $count = \count(PresentationRenderer::DIRECTIVES);
 
-    says('presentation/index.md', 'a **closed set of ' . words($count) . '**');
-    says('presentation/directives.md', 'one of these ' . words($count));
+    says(Site::PRESENTATION_INDEX, 'a **closed set of ' . words($count) . '**');
+    says(Site::PRESENTATION_DIRECTIVES, 'one of these ' . words($count));
 });
 
 it('counts the free shapes as the code does', function () {
     $shapes = Vocabularies::all()['presentation.free-shapes']->names();
 
-    says('presentation/directives.md', words(\count($shapes)) . ' of them and no others');
+    says(Site::PRESENTATION_DIRECTIVES, words(\count($shapes)) . ' of them and no others');
 });
 
 it('counts the themes that ship as the code does', function () {
     $themes = Vocabularies::all()['presentation.themes']->names();
 
-    says('presentation/themes.md', words(\count($themes)) . ' themes ship');
+    says(Site::PRESENTATION_THEMES, words(\count($themes)) . ' themes ship');
 });
 
 it('counts the Word themes that ship as the code does', function () {
@@ -64,21 +64,21 @@ it('counts the Word themes that ship as the code does', function () {
 it('counts the Word directives as the code does', function () {
     $directives = Vocabularies::all()['word.directives']->names();
 
-    says('word/directives.md', 'draws **' . words(\count($directives)) . '** directives');
+    says(Site::WORD_DIRECTIVES, 'draws **' . words(\count($directives)) . '** directives');
     says('word/index.md', words(\count($directives)) . ' directives');
-    says('general/directives.md', words(\count($directives)) . ' directives');
+    says(Site::GENERAL_DIRECTIVES, words(\count($directives)) . ' directives');
 });
 
 it('counts the inline style attributes as the code does', function () {
     $attributes = Vocabularies::all()['text-style-attributes']->names();
 
-    says('general/directives.md', words(\count($attributes)) . ' attributes');
+    says(Site::GENERAL_DIRECTIVES, words(\count($attributes)) . ' attributes');
 });
 
 it('counts the things that do not survive as the page lists them', function () {
-    $sections = (int) \preg_match_all('/^### /m', Site::page('word/round-trip.md'));
+    $sections = (int) \preg_match_all('/^### /m', Site::page(Site::WORD_ROUND_TRIP));
 
-    says('word/round-trip.md', words($sections) . ' things that do not');
+    says(Site::WORD_ROUND_TRIP, words($sections) . ' things that do not');
 });
 
 it('counts the renderer\'s methods as the code does', function () {
@@ -87,5 +87,5 @@ it('counts the renderer\'s methods as the code does', function () {
         static fn (\ReflectionMethod $method): bool => $method->getName() !== '__construct',
     );
 
-    says('presentation/index.md', words(\count($methods)) . ' methods');
+    says(Site::PRESENTATION_INDEX, words(\count($methods)) . ' methods');
 });

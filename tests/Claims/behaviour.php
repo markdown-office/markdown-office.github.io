@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use MarkdownOffice\Documentation\Tests\Support\Deck;
 use MarkdownOffice\Documentation\Tests\Support\Theme;
+use MarkdownOffice\Documentation\Tests\Support\Site;
 
 /**
  * The rules the pages state about what the libraries do.
@@ -15,7 +16,7 @@ use MarkdownOffice\Documentation\Tests\Support\Theme;
  */
 
 it('says that a note has to be the last thing on the slide', function () {
-    says('presentation/directives.md', 'a note has to be the last thing on the slide');
+    says(Site::PRESENTATION_DIRECTIVES, 'a note has to be the last thing on the slide');
 });
 
 it('refuses a note that is closed but is not last, and says why', function () {
@@ -25,7 +26,7 @@ it('refuses a note that is closed but is not last, and says why', function () {
 });
 
 it('says that attributes are separated by a space', function () {
-    says('presentation/directives.md', 'Attributes are separated by a space');
+    says(Site::PRESENTATION_DIRECTIVES, 'Attributes are separated by a space');
 });
 
 it('says how the attributes of a shape are separated when one of them cannot be read', function () {
@@ -35,8 +36,8 @@ it('says how the attributes of a shape are separated when one of them cannot be 
 });
 
 it('says that a theme is found beside the deck', function () {
-    says('presentation/themes.md', 'beside the deck');
-    says('presentation/index.md', 'beside the deck');
+    says(Site::PRESENTATION_THEMES, 'beside the deck');
+    says(Site::PRESENTATION_INDEX, 'beside the deck');
 });
 
 it('finds a theme that sits beside the deck', function () {

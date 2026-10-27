@@ -6,6 +6,7 @@ use MarkdownOffice\Documentation\Tests\Support\Document;
 use MarkdownOffice\Documentation\Tests\Support\Types;
 use MarkdownWord\Format;
 use MarkdownWord\WordToMarkdown;
+use MarkdownOffice\Documentation\Tests\Support\Site;
 
 /**
  * The claims the pages make about the objects a Word document may hold.
@@ -17,7 +18,7 @@ use MarkdownWord\WordToMarkdown;
  */
 
 it('says that the Word half never refuses, and gives a text box back to the author', function () {
-    says('word/directives.md', 'The Word half never refuses');
+    says(Site::WORD_DIRECTIVES, 'The Word half never refuses');
 
     $markdown = "::textbox[A note]{width=6 height=2}\n";
 
@@ -41,7 +42,7 @@ it('loses the columns of a section in an rtf and keeps them in an odt', function
 });
 
 it('says that a text box comes back without its text', function () {
-    says('word/round-trip.md', 'a text box comes back without its text');
+    says(Site::WORD_ROUND_TRIP, 'a text box comes back without its text');
 
     $back = (new WordToMarkdown(Document::path("::textbox[A note]{width=6 height=2}\n")))->convert();
 
@@ -49,7 +50,7 @@ it('says that a text box comes back without its text', function () {
 });
 
 it('says that a form field comes back as the blank field Word draws', function () {
-    says('word/round-trip.md', 'a form field comes back as the blank field Word draws');
+    says(Site::WORD_ROUND_TRIP, 'a form field comes back as the blank field Word draws');
 
     $back = (new WordToMarkdown(Document::path("::field{name=\"Customer\"}\n")))->convert();
 
@@ -57,7 +58,7 @@ it('says that a form field comes back as the blank field Word draws', function (
 });
 
 it('says that a page break and the columns of a section come back as nothing', function () {
-    says('word/round-trip.md', 'a page break and the columns of a section come back as nothing');
+    says(Site::WORD_ROUND_TRIP, 'a page break and the columns of a section come back as nothing');
 
     $back = (new WordToMarkdown(Document::path("Before.\n\n::pagebreak\n\nAfter.\n")))->convert();
 
@@ -66,7 +67,7 @@ it('says that a page break and the columns of a section come back as nothing', f
 
 it('draws every type the page names, and writes one it does not draw as the source text', function (string $heading, string $marker, string $directive, string $unknown) {
     $types = Types::drawn(
-        'word/directives.md',
+        Site::WORD_DIRECTIVES,
         $heading,
         $marker,
         static fn (string $type): string => Document::body(\sprintf($directive, $type)),

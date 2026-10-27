@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use MarkdownOffice\Documentation\Tests\Support\Chrome;
 use MarkdownOffice\Documentation\Tests\Support\Deck;
+use MarkdownOffice\Documentation\Tests\Support\Site;
 
 /**
  * The claims the pages make about the slide templates.
@@ -15,7 +16,7 @@ use MarkdownOffice\Documentation\Tests\Support\Deck;
  */
 
 it('says that a template definition is not a slide of the deck, and draws none', function () {
-    says('presentation/directives.md', 'A definition is not a slide of the deck');
+    says(Site::PRESENTATION_DIRECTIVES, 'A definition is not a slide of the deck');
 
     $deck = "---\ntemplate: brand\n---\n::line{left=5% top=72% width=30% height=0.2%}\n\n---\nlayout: blank\ntemplate: brand\n---\n\nWords.\n";
 
@@ -23,7 +24,7 @@ it('says that a template definition is not a slide of the deck, and draws none',
 });
 
 it('says that a template holds chrome and nothing else, and refuses ordinary Markdown in one', function () {
-    says('presentation/directives.md', 'A template holds chrome and nothing else');
+    says(Site::PRESENTATION_DIRECTIVES, 'A template holds chrome and nothing else');
 
     $message = Deck::refusal("---\ntemplate: brand\n---\n# A heading\n");
 
@@ -32,7 +33,7 @@ it('says that a template holds chrome and nothing else, and refuses ordinary Mar
 });
 
 it('says that a slide may name several templates, and draws the chrome of each', function () {
-    says('presentation/directives.md', 'A slide may name several templates');
+    says(Site::PRESENTATION_DIRECTIVES, 'A slide may name several templates');
 
     $deck = "---\ntemplate: brand\n---\n::rectangle{left=0 top=0 width=10% height=10%}\n\n---\ntemplate: page\n---\n::line{left=5% top=72% width=30% height=0.2%}\n\n---\nlayout: blank\ntemplate: [brand, page]\n---\n\nWords.\n";
 
@@ -43,7 +44,7 @@ it('says that a slide may name several templates, and draws the chrome of each',
 });
 
 it('says that layout and template are independent, and draws both on one slide', function () {
-    says('presentation/directives.md', '`layout:` and `template:` are independent');
+    says(Site::PRESENTATION_DIRECTIVES, '`layout:` and `template:` are independent');
 
     $deck = "---\ntemplate: brand\n---\n::rectangle{left=0 top=0 width=10% height=10%}\n\n---\nlayout: content\ntemplate: brand\n---\n\n# Words.\n";
 
@@ -87,7 +88,7 @@ it('lets the deck\'s own template override an imported one of the same name', fu
 });
 
 it('says that a slide number is a shape, and writes the number of the slide', function () {
-    says('presentation/directives.md', '`::slide-number` is a shape like any other');
+    says(Site::PRESENTATION_DIRECTIVES, '`::slide-number` is a shape like any other');
 
     $deck = "---\nlayout: blank\n---\n\n::slide-number{left=94% top=92% width=5% height=6%}\n\n---\nlayout: blank\n---\n\nTwo.\n";
 

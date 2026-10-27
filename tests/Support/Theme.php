@@ -13,6 +13,22 @@ namespace MarkdownOffice\Documentation\Tests\Support;
 final class Theme
 {
     /**
+     * A deck that names a theme of its own and writes a word in a named style.
+     *
+     * The deck every claim about a named style is drawn from: the theme is named in the
+     * deck's own front matter, and the word is written in the style the theme gives.
+     */
+    public const DECK = "---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n";
+
+    /**
+     * A theme's named styles, with one style in them.
+     *
+     * The style is the one the deck above writes in, and it is red and bold, so that a
+     * claim can look for a colour and a weight and find both.
+     */
+    public const BRAND = "brand:\n  color: FF0000\n  bold: true\n";
+
+    /**
      * A directory holding a theme of the slides half's shape, and the directory it is in.
      *
      * `$textStyles` is the theme's `text-styles.yml`, written as YAML because the file is

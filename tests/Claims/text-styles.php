@@ -8,6 +8,7 @@ use MarkdownOffice\Documentation\Tests\Support\Theme;
 use MarkdownPresentation\Theme\ThemeLoader;
 use MarkdownWord\Configuration\TextStyles;
 use MarkdownWord\WordToMarkdown;
+use MarkdownOffice\Documentation\Tests\Support\Site;
 
 /**
  * The claims the pages make about the inline styles.
@@ -20,10 +21,10 @@ use MarkdownWord\WordToMarkdown;
  */
 
 it('refuses a theme that names a style "style"', function () {
-    says('general/directives.md', 'a theme may not name a style `style`');
+    says(Site::GENERAL_DIRECTIVES, 'a theme may not name a style `style`');
 
     $message = Theme::slidesRefusal(
-        "---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n",
+        Theme::DECK,
         "style:\n  color: FF0000\n",
     );
 
@@ -31,10 +32,10 @@ it('refuses a theme that names a style "style"', function () {
 });
 
 it('refuses a Word theme that names a style "style"', function () {
-    says('general/directives.md', 'a theme may not name a style `style`');
+    says(Site::GENERAL_DIRECTIVES, 'a theme may not name a style `style`');
 
     $message = Theme::wordRefusal(
-        "---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n",
+        Theme::DECK,
         "textStyles:\n  style:\n    color: \"FF0000\"\n",
     );
 
@@ -42,7 +43,7 @@ it('refuses a Word theme that names a style "style"', function () {
 });
 
 it('refuses the raw form with no attributes in a deck', function () {
-    says('general/directives.md', 'a style with neither a named style nor a property says nothing');
+    says(Site::GENERAL_DIRECTIVES, 'a style with neither a named style nor a property says nothing');
 
     $message = Deck::refusal("A :style[Bakery] B\n");
 
@@ -50,7 +51,7 @@ it('refuses the raw form with no attributes in a deck', function () {
 });
 
 it('does not honour a label that holds Markdown', function () {
-    says('general/directives.md', 'is not honoured as emphasis');
+    says(Site::GENERAL_DIRECTIVES, 'is not honoured as emphasis');
 
     $message = Deck::refusal("A :style[**Bakery**]{color=00B4D8} B\n");
 
@@ -58,13 +59,13 @@ it('does not honour a label that holds Markdown', function () {
 });
 
 it('reads the named styles of a theme from the file the page names', function () {
-    says('presentation/themes.md', 'text-styles.yml');
+    says(Site::PRESENTATION_THEMES, 'text-styles.yml');
 
     expect(ThemeLoader::TEXT_STYLES_FILE)->toBe('text-styles.yml');
 });
 
 it('refuses a text style the theme does not have, and names the styles it has', function () {
-    says('presentation/directives.md', 'the message names the styles the theme does have');
+    says(Site::PRESENTATION_DIRECTIVES, 'the message names the styles the theme does have');
 
     $message = Theme::slidesRefusal(
         "---\ntheme: mine\n---\n\nResilience :bakery[Bakery] is open.\n",
@@ -75,7 +76,7 @@ it('refuses a text style the theme does not have, and names the styles it has', 
 });
 
 it('refuses an inline directive in a deck that names no style', function () {
-    says('presentation/directives.md', 'fails the build rather than reaching the slide as text');
+    says(Site::PRESENTATION_DIRECTIVES, 'fails the build rather than reaching the slide as text');
 
     $message = Deck::refusal("Status :green[go] before lunch.\n");
 
@@ -83,17 +84,17 @@ it('refuses an inline directive in a deck that names no style', function () {
 });
 
 it('says that a theme without named styles has none', function () {
-    says('presentation/themes.md', 'a theme without one has no named styles');
+    says(Site::PRESENTATION_THEMES, 'a theme without one has no named styles');
 
     $message = Theme::slidesRefusal(
-        "---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n",
+        Theme::DECK,
     );
 
     expect($message)->toContain('The theme has no text styles');
 });
 
 it('refuses a highlight in a deck, by name', function () {
-    says('presentation/directives.md', 'refused by name rather than accepted and quietly dropped');
+    says(Site::PRESENTATION_DIRECTIVES, 'refused by name rather than accepted and quietly dropped');
 
     $message = Deck::refusal("A :style[Bakery]{highlight=00B4D8} B\n");
 
@@ -101,7 +102,7 @@ it('refuses a highlight in a deck, by name', function () {
 });
 
 it('refuses a label that holds Markdown in a deck', function () {
-    says('presentation/directives.md', 'a complete Markdown construct in one is refused');
+    says(Site::PRESENTATION_DIRECTIVES, 'a complete Markdown construct in one is refused');
 
     $message = Deck::refusal("A :style[**Bakery**]{color=00B4D8} B\n");
 
@@ -110,8 +111,8 @@ it('refuses a label that holds Markdown in a deck', function () {
 
 it('draws a word in a named style, in the colour the theme gives it', function () {
     $slide = Theme::slidesSlide(
-        "---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n",
-        "brand:\n  color: FF0000\n  bold: true\n",
+        Theme::DECK,
+        Theme::BRAND,
     );
 
     expect(Deck::run($slide, 'Bakery'))->toContain('<a:srgbClr val="FF0000"');
@@ -120,7 +121,7 @@ it('draws a word in a named style, in the colour the theme gives it', function (
 it('overrides a named style with the attributes on the directive', function () {
     $slide = Theme::slidesSlide(
         "---\ntheme: mine\n---\n\nA :brand[Bakery]{color=00B4D8} B\n",
-        "brand:\n  color: FF0000\n  bold: true\n",
+        Theme::BRAND,
     );
 
     expect(Deck::run($slide, 'Bakery'))->toContain('<a:srgbClr val="00B4D8"');
@@ -130,7 +131,7 @@ it('overrides a named style with the attributes on the directive', function () {
 it('leaves a property off the run of a deck when an attribute is false', function () {
     $slide = Theme::slidesSlide(
         "---\ntheme: mine\n---\n\nA :brand[Bakery]{bold=false} B\n",
-        "brand:\n  color: FF0000\n  bold: true\n",
+        Theme::BRAND,
     );
 
     expect(Deck::run($slide, 'Bakery'))->not->toContain('b="1"');
@@ -143,7 +144,7 @@ it('reads the named styles of a Word theme from the key the page names', functio
 });
 
 it('draws a word in a named style in a Word document', function () {
-    says('word/directives.md', 'the named styles come from the theme');
+    says(Site::WORD_DIRECTIVES, 'the named styles come from the theme');
 
     $body = Document::body("---\ntheme: corporate\n---\n\nResilience :brand[Bakery] is open.\n");
 
@@ -164,7 +165,7 @@ it('leaves a property off the run of a Word document when an attribute is false'
 });
 
 it('writes a name the theme does not have as its own source text', function () {
-    says('word/directives.md', 'writes the directive out as its own source text');
+    says(Site::WORD_DIRECTIVES, 'writes the directive out as its own source text');
 
     $body = Document::body("Resilience :brand[Bakery] is open.\n");
 
@@ -172,7 +173,7 @@ it('writes a name the theme does not have as its own source text', function () {
 });
 
 it('writes a label that holds Markdown as the source text of a Word document', function () {
-    says('word/directives.md', 'a complete Markdown construct in one is drawn as the source text as well');
+    says(Site::WORD_DIRECTIVES, 'a complete Markdown construct in one is drawn as the source text as well');
 
     $body = Document::body("---\ntheme: corporate\n---\n\nA :brand[**Bakery**] B\n");
 
@@ -180,7 +181,7 @@ it('writes a label that holds Markdown as the source text of a Word document', f
 });
 
 it('reads a word in a text style back as the word', function () {
-    says('word/round-trip.md', 'the style is not, and neither is the name it was written under');
+    says(Site::WORD_ROUND_TRIP, 'the style is not, and neither is the name it was written under');
 
     $path = Document::path("---\ntheme: corporate\n---\n\nResilience :brand[Bakery] is open.\n");
     $markdown = (new WordToMarkdown($path))->convert();
