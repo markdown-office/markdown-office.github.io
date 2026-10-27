@@ -91,8 +91,8 @@ The `theme:` key names a look that ships with the library. Everything under `opt
 #### The keys, the options and the slots
 
 Every frontmatter key, every option, every style slot and its default, the headers and footers and
-the themes that ship are listed in [Configuration](/word/configuration/) — one list each, so a key
-that is added to the library is a key the page has.
+the themes that ship are listed in [Configuration](/word/configuration/) — one list each, and the
+options, the slots and the themes are checked against the library that holds them.
 
 Only `options:` and `styles:` are validated. Every other key is open-ended metadata, so a document
 can carry `title:` for a pipeline downstream that cares and be none the worse.
