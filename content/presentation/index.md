@@ -248,7 +248,7 @@ deck. A `.pptx` records what is on a slide, not how it was drawn.
 
 What the round trip does not keep is written down in the package's own
 [README](https://github.com/markdown-office/markdown-presentation#reading-a-deck-back): the
-design, the layout, the underline, a link inside a run, and a chart.
+design, the layout, the underline, a text style, a link inside a run, and a chart.
 
 ### The rendering pipeline
 

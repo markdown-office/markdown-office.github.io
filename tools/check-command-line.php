@@ -91,6 +91,7 @@ const FORBIDDEN = [
     'the round-trip page said five things do not survive' => 'the five things that do not',
     'the Word index said two directives' => 'with two directives',
     'the presentation index said two methods' => 'has two methods',
+    'the presentation index left a text style out of the round trip' => 'the underline, a link inside a run, and a chart',
 ];
 
 /**
