@@ -79,6 +79,13 @@ can carry `title:` or `author:` for a pipeline downstream that cares and be none
 
 Booleans may be written as `true`/`false`/`yes`/`no`/`on`/`off`, in any case.
 
+The objects a document may place — `::image`, `::caption`, `::pagebreak`, `::section`, `::textbox`,
+`::shape` and `::field` — take no options of their own. The one that reads an option is `::image`:
+its `src` is resolved against `imageBasePath`, and its size is in the centimetres `imageMaxWidth`
+is in — though a size the document names is the size the picture gets, and the cap is what happens
+to a picture that says nothing about its own size. See
+[Word directives](/word/directives/#image--a-picture-of-a-stated-size).
+
 ## Style slots
 
 Each slot holds a **style id** (a string), an **inline style** (a mapping), or `null`. A mapping

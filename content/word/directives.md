@@ -2,13 +2,13 @@
 layout: layouts/base.njk
 permalink: /word/directives/
 title: Word directives
-summary: ::toc, :footnote and :style are drawn. Everything else is written into the document exactly as the author typed it.
+summary: ::toc, :footnote, :style and seven that place objects in a document. Everything else is written into the document exactly as the author typed it.
 section: Markdown Word
 order: 1
 ---
 
-Markdown Word draws **three** directives. They are real Word features rather than Markdown
-dressed up, which is the reason they exist at all.
+Markdown Word draws **ten** directives. They are real Word features rather than Markdown dressed
+up, which is the reason they exist at all.
 
 <!-- reference: word.directives -->
 
@@ -17,6 +17,18 @@ dressed up, which is the reason they exist at all.
 | `toc` | block | a table of contents Word can build |
 | `footnote` | inline | a real Word footnote |
 | `style` | inline | a word in one of the theme's named styles |
+| `image` | block | a picture of a stated size |
+| `caption` | block | a caption under a picture |
+| `pagebreak` | block | a page break |
+| `section` | block | a section break, and the columns of the section it starts |
+| `textbox` | block | a floating box with text in it |
+| `shape` | block | a shape |
+| `field` | block | a form field |
+
+**A caller that builds its own registry draws fewer.** `Directives::standard()` takes a handler for
+each name, and the handlers that are not given are not drawn — a caller with no images to place has
+no use for a handler that places them. A conversion through `MarkdownToWord` hands over all of
+them, so all ten are drawn.
 
 ## `::toc` — a table of contents Word can build
 
@@ -112,6 +124,164 @@ Word's own footnote syntax is not what is parsed here. `:footnote[…]` is this 
 - An empty body — `:footnote` or `:footnote[]` — draws the source characters instead.
 - Only `.docx` carries it; `.odt` and `.rtf` get the text back.
 
+## `::image` — a picture of a stated size
+
+```markdown
+::image[Revenue by quarter]{src="chart.png" width=12 height=8 align=center}
+```
+
+The label is the alternative text, and a file that is not there falls back to it — the same answer
+a Markdown image gives. The file is resolved against `imageBasePath` the way a Markdown image's
+URL is.
+
+**The size is in centimetres**, the unit `imageMaxWidth` is in, so a document that names a size and
+a document that leaves it to the option are in the same unit. A size that is asked for is the size
+the picture gets: the cap is what happens to a picture that says nothing about its own size, and
+shrinking a picture to a limit the author did not know about is a quiet change this library does not
+make. One of the two sizes leaves the other to the picture's own proportions.
+
+| Attribute | Carries |
+| --- | --- |
+| `src` | the file |
+| `width`, `height` | the size in centimetres |
+| `align` | `left`, `center`, `right` |
+
+A directive with no `src` is written out as its own source text.
+
+## `::caption` — a caption under a picture
+
+```markdown
+::caption[Figure 1: Revenue by quarter]{}
+```
+
+A caption is a paragraph in the document's own look, with its text in italics.
+
+**A caption is not numbered.** PHPWord has no `SEQ` field, which is the field Word numbers a
+figure with, so a caption that numbered itself would be a number written out at conversion time —
+wrong the moment a figure is inserted above it. The number is in the caption, where a reader can
+see it and an author can change it.
+
+An empty caption is written out as its own source text.
+
+## `::pagebreak` — a page break
+
+```markdown
+::pagebreak
+```
+
+A page break belongs to a section, and a directive that stands where there is no page to break — in
+a table cell — is written out as the characters the author wrote, the same answer an unclaimed
+directive gets.
+
+## `::section{columns=…}` — a section break, and its columns
+
+```markdown
+::section{columns=2}
+```
+
+Everything after the directive belongs to the new section, and the columns are its own. The new
+section keeps the page setup of the one it follows: a section is a page, and a document whose
+second half is on a different page size from its first is a document nobody meant to write.
+
+A section break is a break between two parts of a document, and a part of a document that is a
+quote or a list item is not one — so a `::section` inside either is written out as the characters
+the author wrote.
+
+**The columns are carried by `.docx` and `.odt`, and not by `.rtf`.** RTF has no columns at all, so
+the section break survives and the columns do not. That is reported the way every other loss is.
+
+## `::textbox` — a floating box with text in it
+
+```markdown
+::textbox[A floating note]{width=6 height=2 left=1 top=1 border=00B4D8}
+```
+
+The label is the text the box holds.
+
+**The box floats**, and the text flows around it: a box that sat in the flow would be a paragraph
+with a border round it, and a paragraph is what a document can already say. `left` and `top` place
+it — from the left margin and from the top of the paragraph it stands in — and both are in
+centimetres, like every other size here. A box is given a border, because a box with nothing round
+it is a paragraph.
+
+| Attribute | Carries |
+| --- | --- |
+| `width`, `height` | the size in centimetres |
+| `left`, `top` | where it floats, in centimetres |
+| `border` | the colour of the line round it, six hexadecimal digits without a `#` |
+
+A box with no size is written out as its own source text.
+
+## `::shape` — a shape
+
+```markdown
+::shape{type=rect width=4 height=2 fill=E7E6E6 line=4472C4}
+```
+
+The type is one of the shapes a Word document can draw: `arc`, `curve`, `line`, `polyline`, `rect`
+and `oval`. A type that is not one of them is written out as the characters the author wrote,
+because an element no reader knows is not a shape.
+
+| Attribute | Carries |
+| --- | --- |
+| `type` | the shape to draw |
+| `width`, `height` | the size in centimetres |
+| `fill` | the colour inside it, six hexadecimal digits without a `#` |
+| `line` | the colour of its outline, six hexadecimal digits without a `#` |
+
+## `::field` — a form field
+
+```markdown
+::field{name="Customer" type=textinput value="Northwind"}
+```
+
+The type is one of `textinput`, `checkbox` or `dropdown`, and `textinput` is the default. A dropdown
+carries the choices it offers, separated by commas.
+
+**A dropdown turns the document into a form.** Word only lets a reader choose from one while the
+document is protected for forms, so a document with a dropdown in it is protected for forms. A
+field that cannot be answered is a field that is not there.
+
+| Attribute | Carries |
+| --- | --- |
+| `type` | `textinput`, `checkbox` or `dropdown` |
+| `name` | the name of the field |
+| `entries` | the choices a dropdown offers, separated by commas |
+| `value` | what a text field starts with |
+| `checked` | `true` leaves a checkbox ticked |
+
+## What a format cannot carry
+
+**The Word half never refuses.** A directive a writer cannot express is given the author's own
+characters back, and the loss is reported — never a refusal, and never a silent one.
+
+<!-- reference: word.object-features -->
+
+| Feature | `.docx` | `.odt` | `.rtf` |
+| --- | --- | --- | --- |
+| `text-box` | carried | lost | lost |
+| `shape` | carried | lost | lost |
+| `form-field` | carried | lost | lost |
+| `columns` | carried | carried | lost |
+
+A text box, a shape and a form field are written as VML and as Word's own `FORMTEXT`,
+`FORMCHECKBOX` and `FORMDROPDOWN` fields, and neither the ODF writer nor the RTF writer has an
+element for any of them. What the other two formats are given instead is the source form, and the
+loss is reported rather than suffered in silence:
+
+```text
+a ::textbox is left out of the document
+a ::shape is left out of the document
+a ::field is left out of the document
+the columns of a ::section are lost
+```
+
+The last of those is the RTF's alone. RTF has no columns at all, so the section break survives and
+the columns do not.
+
+`pendingLosses()` is where those sentences come from, and the command line prints them rather than
+letting the document quietly lose the thing.
+
 ## A word in a style
 
 A word in a style, in the middle of a sentence:
@@ -165,9 +335,9 @@ opt-in became on by default, which was a behaviour change and is written down as
 
 Two consequences worth knowing:
 
-- **The container form of a drawn name is also claimed.** `:::toc` … `:::` matches the block map,
-  the handler returns `true`, and the body is **silently dropped**. There is no test pinning this
-  either way, so treat `::toc` as the only supported spelling.
+- **The container form of a drawn name draws its body.** `:::toc` … `:::` is not a table of
+  contents with fences written around it: the body is drawn as ordinary Markdown and the fence is
+  gone. Write `::toc` on a line of its own.
 - **Block and inline are separate maps.** `::footnote` is not drawn — footnotes are inline — and
   comes out as the text the author wrote.
 

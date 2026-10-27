@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 permalink: /word/
 title: Markdown Word
-summary: CommonMark and GitHub Flavored Markdown into .docx, .odt and .rtf — extended with frontmatter and themes, and with three directives — and back out again.
+summary: CommonMark and GitHub Flavored Markdown into .docx, .odt and .rtf — extended with frontmatter and themes, and with ten directives — and back out again.
 section: Markdown Word
 order: 0
 ---
@@ -99,7 +99,7 @@ can carry `title:` for a pipeline downstream that cares and be none the worse.
 
 ### Extended: directives
 
-Three directives, and all of them are real Word features rather than Markdown dressed up.
+Ten directives, and all of them are real Word features rather than Markdown dressed up.
 
 **`::toc`** — a table of contents Word can build. The field goes out empty and marked dirty, with
 `w:updateFields` set, because PHPWord's cached page numbers are all `1` and a reader who never
@@ -143,10 +143,18 @@ style: `:brand[Bakery]` is "Bakery" in the theme's `brand` style, and `:style[Ba
 is "Bakery" in teal with no theme style behind it. Attributes on a directive override the style's
 own properties for that word alone.
 
+**The seven that place objects in a document** — `::image`, `::caption`, `::pagebreak`,
+`::section`, `::textbox`, `::shape` and `::field` — draw a picture, a caption, a page break, a
+section, a floating box, a shape and a form field.
+
 **Everything else** parses and is written into the document as the text the author typed.
 `Status :green[go] before lunch.` parses, and reaches the document exactly as written. That is the
 opposite of the presentation half's policy, and deliberate — a parser nobody asked to change
 should not change the syntax of every document converted after it.
+
+**A directive a format cannot carry is not refused either.** A text box, a shape and a form field
+are written by `.docx` alone, and the columns of a section are written by `.odt` but not by
+`.rtf`; the other two formats are given the author's own characters back and the loss is reported.
 
 More, including what a `:::toc` container does: [Word directives](/word/directives/).
 

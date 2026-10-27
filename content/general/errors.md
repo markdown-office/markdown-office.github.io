@@ -69,10 +69,11 @@ $converter = (new MarkdownToWord('notes.md'));
 $converter->save('notes.docx');
 
 foreach ($converter->pendingLosses() as $loss) {
-    echo $loss->feature(), ': ', $loss->explain(), "\n";
+    echo $loss->feature, ': ', $loss->message, "\n";
 }
 ```
 
 `.docx` carries everything, so `pendingLosses()` is empty. `.odt` and `.rtf` drop named features —
-every list item left out of an RTF, an SVG flattened to a raster, a `::toc` left as its text — and
-the command line prints them to standard error rather than letting the document quietly lose them.
+every list item left out of an RTF, an SVG flattened to a raster, a `::toc` left as its text, a text
+box left out of the document — and the command line prints them to standard error rather than
+letting the document quietly lose them.

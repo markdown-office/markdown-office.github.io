@@ -19,6 +19,7 @@ use MarkdownWord\Configuration\Options;
 use MarkdownWord\Configuration\Styles;
 use MarkdownWord\Configuration\TextStyles;
 use MarkdownWord\Exception\Exception as WordException;
+use MarkdownWord\Format;
 use MarkdownWord\MarkdownToWord;
 use MarkdownWord\Render\Directives;
 
@@ -79,6 +80,18 @@ final class Vocabularies
             ),
             'word.directives' => new Vocabulary([
                 'MarkdownToWord' => self::wordDirectives(),
+            ]),
+            'word.object-features' => new Vocabulary([
+                // The four features the objects in a document cost a writer that cannot carry
+                // them: a text box, a shape, a form field and the columns of a section. They
+                // are named by the format itself, so a fifth one is a constant the class
+                // grows and this list has to grow with it.
+                'Format::TEXT_BOX, Format::SHAPE, Format::FORM_FIELD, Format::COLUMNS' => [
+                    Format::TEXT_BOX,
+                    Format::SHAPE,
+                    Format::FORM_FIELD,
+                    Format::COLUMNS,
+                ],
             ]),
             'word.exceptions' => new Vocabulary([
                 'MarkdownWord\\Exception' => self::exceptions(WordException::class),

@@ -28,10 +28,10 @@ and `{…}` is a modifier available on all three shapes rather than a shape of i
 
 Here the two packages make opposite decisions, and both are defensible.
 
-**Markdown Word is permissive.** It draws exactly three directives — `::toc`, `:footnote` and
-`:style` — and every named style the theme brings, and renders every other name as its own source
-text. A document nobody intended as a set of directives keeps working, and the text an author
-wrote is what a reader sees.
+**Markdown Word is permissive.** It draws exactly ten directives — `::toc`, `:footnote`, `:style`
+and the seven that place objects in a document — and every named style the theme brings, and
+renders every other name as its own source text. A document nobody intended as a set of directives
+keeps working, and the text an author wrote is what a reader sees.
 
 **Markdown Presentation has a closed set.** Anything outside it fails the build with a message
 naming what would have worked. A deck is a thing a person presents, and a slide with the wrong
@@ -40,11 +40,26 @@ thing on it is worse than a deck that did not build. An inline directive in a de
 
 Both then agree on one thing: an unrecognised directive is never silently dropped.
 
-- [Word directives](/word/directives/) — `::toc`, `:footnote`, `:style`, and the rest rendered as
-  text.
+- [Word directives](/word/directives/) — `::toc`, `:footnote`, `:style`, the seven that place
+  objects, and the rest rendered as text.
 - [Presentation directives](/presentation/directives/) — `::click`, `:::click`, `::column`,
-  `::note`, and the refusals.
+  `::note`, the slide templates, and the refusals.
 - [The syntax itself](/directives/syntax/) — every rule, including the ones that surprise people.
+
+## What a permissive half does with a directive it cannot draw
+
+Markdown Word draws a directive by handing it to a writer, and a writer is a program with a set of
+things it can express. A directive that names something the writer has no element for is not
+refused: it is **given back to the author as the characters they wrote**, and the loss is
+reported.
+
+That is the same answer an unrecognised name gets, and it is the reason the policy is safe: a
+document nobody intended as a set of directives keeps working, and a document that *did* mean it
+still reads as the thing that was lost rather than as a document with a hole in it.
+
+The three that only a `.docx` can carry — a text box, a shape and a form field — and the columns
+of a section, which only an `.rtf` cannot, are on
+[Word directives](/word/directives/#what-a-format-cannot-carry).
 
 ## A word in a style
 

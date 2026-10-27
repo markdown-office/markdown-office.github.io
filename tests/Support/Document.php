@@ -7,6 +7,8 @@ namespace MarkdownOffice\Documentation\Tests\Support;
 use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use MarkdownOffice\CommonMark\Directive\GenericDirectiveExtension;
+use MarkdownWord\Format;
+use MarkdownWord\Loss;
 use MarkdownWord\MarkdownToWord;
 use MarkdownWord\Parser\CommonMarkParser;
 
@@ -22,7 +24,7 @@ final class Document
     {
         $path = \sys_get_temp_dir() . '/markdown-office-document-' . \bin2hex(\random_bytes(6)) . '.docx';
 
-        (new MarkdownToWord($markdown, parser: self::parser(), directory: $directory))->save($path);
+        self::converter($markdown, $directory)->save($path);
 
         return $path;
     }
@@ -69,6 +71,63 @@ final class Document
         }
 
         return '';
+    }
+
+    /**
+     * The losses a conversion into a format reports, as the feature keys.
+     *
+     * The keys rather than the sentences, because a claim about a loss is a claim about
+     * which feature was lost: the sentence is prose, and the key is what the library
+     * and the page both name.
+     *
+     * @return list<string>
+     */
+    public static function losses(string $markdown, Format $format, ?string $directory = null): array
+    {
+        $converter = self::converter($markdown, $directory);
+
+        $converter->convertTo($format, (string) \tempnam(\sys_get_temp_dir(), 'document') . $format->extension());
+
+        return \array_map(
+            static fn (Loss $loss): string => $loss->feature,
+            $converter->pendingLosses(),
+        );
+    }
+
+    /**
+     * The text a document written in a format holds, as the file holds it.
+     *
+     * The part that holds the text rather than the whole package: an `.odt` is a zip and
+     * its text is deflated into `content.xml`, and a `.rtf` is a plain file whose text is
+     * in it. What a claim is about is whether the words are there.
+     */
+    public static function written(string $markdown, Format $format, ?string $directory = null): string
+    {
+        $path = (string) \tempnam(\sys_get_temp_dir(), 'document') . $format->extension();
+
+        self::converter($markdown, $directory)->convertTo($format, $path);
+
+        if ($format === Format::Rtf) {
+            return (string) \file_get_contents($path);
+        }
+
+        $zip = new \ZipArchive();
+        $zip->open($path);
+
+        return (string) $zip->getFromName($format === Format::Odt ? 'content.xml' : 'word/document.xml');
+    }
+
+    /**
+     * A converter for the Markdown.
+     *
+     * The directory is named only where there is one: a document that has no file of its
+     * own beside it has nothing to resolve a path against.
+     */
+    private static function converter(string $markdown, ?string $directory): MarkdownToWord
+    {
+        return $directory === null
+            ? new MarkdownToWord($markdown, parser: self::parser())
+            : new MarkdownToWord($markdown, parser: self::parser(), directory: $directory);
     }
 
     /**
