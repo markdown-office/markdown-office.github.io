@@ -92,6 +92,16 @@ const FORBIDDEN = [
     'the Word index said two directives' => 'with two directives',
     'the presentation index said two methods' => 'has two methods',
     'the presentation index left a text style out of the round trip' => 'the underline, a link inside a run, and a chart',
+    'the Word directives page said three directives' => 'draws **three** directives',
+    'the general page said three directives' => 'exactly three directives',
+    'the Word index said three directives' => 'with three directives',
+    'the directives page said seven frontmatter keys' => 'one of these seven',
+    'the presentation index said seven frontmatter keys' => 'closed set of seven',
+    'the directives page said twelve free shapes' => 'twelve of them and no others',
+    'the presentation example claimed to use every frontmatter key' => 'a deck that uses all seven',
+    'the presentation index claimed to use every frontmatter key' => 'Every frontmatter key on a deck',
+    'the Word page said the container form of a drawn name is claimed' => 'the body is **silently dropped**',
+    'the errors page called a loss by a method it does not have' => '$loss->feature()',
 ];
 
 /**
