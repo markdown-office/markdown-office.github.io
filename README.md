@@ -102,7 +102,7 @@ content/
 ├── word/                    the dialect, the directives, the configuration, the round trips, the images, the errors
 ├── presentation/            the dialect, the directives, the themes, the errors
 ├── general/                 how directives work, the syntax, the images, the errors
-├── command-line/            the installation, the basic use, the options of each half
+├── command-line/            the installation, the basic use, the options of each part
 ├── suite/                   the other packages
 └── llms/                    llms.txt.njk, pages.json.njk
 ```

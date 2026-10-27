@@ -110,8 +110,8 @@ parser extension, for your own directives if you want one.</p>
 <a class="card" href="/command-line/basic/">
 <h3>mdoffice</h3>
 <p>The command line for both of them: <code>mdoffice word</code> and <code>mdoffice
-slides</code>. Requires both converters and calls them — a program, not a facade, so neither
-package depends on it.</p>
+slides</code>, and <code>mdoffice theme</code> to scaffold a theme from a deck. Requires both
+converters and calls them — a program, not a facade, so neither package depends on it.</p>
 <code>markdown-office/mdoffice</code>
 </a>
 </li>
