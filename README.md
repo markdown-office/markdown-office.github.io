@@ -63,11 +63,12 @@ So the tables are checked against the code, and a table says which vocabulary it
 
 `tools/check-reference.php` reads every vocabulary out of the library that owns it — the frontmatter
 keys, the layout roles, the free shapes, the colour slots, the theme keys, the style keys, the
-exceptions, the themes that ship, the ceilings, the Word directives, the features a Word format
-cannot carry, the Word options, the Word style slots and the inline style attributes — and reads
-the page that carries it for the names it lists. The two are compared in both directions: a name
-the code does not have is a page offering something that does not work, and a name the code has
-and the page does not is a feature nobody can find.
+exceptions, the themes that ship, the ceilings, the Word directives, the attributes each of the
+Word directives reads, the keys a Word document's frontmatter may carry, the options the reader of
+a Word document trusts, the features a Word format cannot carry, the Word options, the Word style
+slots and the inline style attributes — and reads the page that carries it for the names it lists.
+The two are compared in both directions: a name the code does not have is a page offering something
+that does not work, and a name the code has and the page does not is a feature nobody can find.
 
 A vocabulary the two halves share is read out of both of them and held to one list, so the
 attributes an inline style takes are the same eight in the deck and in the document — and the
@@ -75,13 +76,18 @@ check says so when they are not.
 
 Three rules make the lists stay lists:
 
-- **One list, one home.** A second copy of a table is a failure, because two copies drift apart and
-  the one nobody reads is the one that is wrong. Every table that lists names is marked, and the
-  marked one is the only one.
+- **One list, one home.** A second copy of a table is a failure, and so is a copy of part of one:
+  two copies drift apart and the one nobody reads is the one that is wrong. Every table that lists
+  names is marked, and the marked one is the only one.
 - **The code is the only source.** The lists are read out of the libraries, not written down in the
-  site, so there is no second copy for the check to compare against.
+  site, so there is no second copy for the check to compare against. Where a library holds no list
+  of its own — the attributes a directive reads, the keys a frontmatter may carry — the code is
+  read for the names, and a name the code stops reading is a name the page may not list.
 - **A vocabulary with no home is a failure.** A check that passes because it found nothing to check
   is worse than no check at all.
+
+A table may also carry a value the code holds, and then the value is checked too: the numbers in
+the table of ceilings, and the exceptions that sit beside `InvalidInput` rather than under it.
 
 What a table cannot hold is prose — what a key does, what an exception means — and a count written
 out in a sentence ("Eight, and only these"). Those are claims too, and they are checked by the
