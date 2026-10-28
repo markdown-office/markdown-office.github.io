@@ -21,15 +21,13 @@ declare(strict_types=1);
  * from, and the built site has to agree with it.
  */
 
-\error_reporting(\E_ALL & ~\E_DEPRECATED & ~\E_USER_DEPRECATED);
-\ini_set('display_errors', 'stderr');
+require_once __DIR__ . '/lib/Autoload.php';
 
-if (\PHP_SAPI !== 'cli') {
-    \fwrite(\STDERR, "The site's links are checked from the command line.\n");
-    exit(1);
-}
+use MarkdownOffice\Documentation\Tool\Cli;
 
-$root = \dirname(__DIR__);
+Cli::guard("The site's links are checked from the command line.");
+
+$root = Cli::root();
 $site = $argv[1] ?? $root . '/_site';
 
 /**
@@ -88,6 +86,14 @@ function addressesOf(string $file): array
 }
 
 /**
+ * The file that serves a directory.
+ *
+ * A directory is served by a file of this name and everything else by itself, so the
+ * address of a page depends on it.
+ */
+const DIRECTORY_INDEX = 'index.html';
+
+/**
  * The address a page is served at, from where it sits in the built site.
  *
  * `guides/command-line/index.html` is served at `/guides/command-line/`, and the file itself
@@ -95,8 +101,8 @@ function addressesOf(string $file): array
  */
 function addressOf(string $relative, string $mount): string
 {
-    $path = \str_ends_with($relative, 'index.html')
-        ? \substr($relative, 0, -\strlen('index.html'))
+    $path = \str_ends_with($relative, DIRECTORY_INDEX)
+        ? \substr($relative, 0, -\strlen(DIRECTORY_INDEX))
         : $relative;
 
     return $mount . $path;
@@ -150,7 +156,7 @@ function resolve(string $address, string $host, string $mount, string $directory
 function fileFor(string $site, string $relative): string
 {
     if ($relative === '' || \str_ends_with($relative, '/')) {
-        $relative .= 'index.html';
+        $relative .= DIRECTORY_INDEX;
     }
 
     return $site . '/' . $relative;

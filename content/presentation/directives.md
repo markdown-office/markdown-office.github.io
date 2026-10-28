@@ -11,6 +11,9 @@ Markdown Presentation splits its vocabulary in two: **frontmatter keys**, which 
 and **in-body colon markers**, which are instructions. Both are closed sets, and both fail the
 build with a message naming what would have worked.
 
+The one marker whose names are not closed is the inline one: a name in a deck is a
+[text style](#a-word-in-a-style), and the names are the theme's own.
+
 ## In-body markers
 
 | Written | Shape | What it does |
@@ -113,8 +116,77 @@ Read this out loud.
 ::
 ```
 
-Case-insensitive, whitespace-tolerant, and the closer is anchored to the end of the slide, so two
-`::note` blocks on one slide become **one** note carrying both. An unclosed note is refused.
+Case-insensitive and whitespace-tolerant. A note has to be the last thing on the slide: the
+closer is anchored to the end of it, so two `::note` blocks on one slide become **one** note
+carrying both. An unclosed note is refused.
+
+## A word in a style
+
+A box carries one colour, one size and one face, and every word in it takes them or does not. A
+**text style** is a name the theme gives to a set of those, and a word written in one is drawn in
+it.
+
+The three forms and the eight attributes are the suite's, and are on
+[How directives work](/directives/#a-word-in-a-style). The named styles come from the theme's
+`text-styles.yml` — see [Text styles](/presentation/themes/#text-styles).
+
+**What this half does with a name it does not know is the opposite of the Word half's: it refuses
+it**, and the message names the styles the theme does have. Every inline directive in a deck is a
+text style, so `Status :green[go]` — which reads like a status — names a style the theme does not
+have, and it fails the build rather than reaching the slide as text.
+
+A label is **plain text** — the directives package stores a label as a string rather than parsing
+it as Markdown — so a complete Markdown construct in one is refused, and the message names the two
+ways out: give the style the weight, or write the emphasis in the paragraph around it. A bare `*`
+or `_` is a character and not an intent, so `2 * 3` and `snake_case` are drawn as they are.
+
+{% example "A word in a colour of its own, inside a box" %}
+````md presentation
+---
+layout: blank
+---
+
+:::content{left=8% top=40% width=60% height=20% fill=none font-size=20}
+Resilience :style[Bakery]{color=00B4D8} is open.
+:::
+````
+{% endexample %}
+
+The `highlight` attribute is **not drawn by this half**. PHPPresentation's font has no setter for
+one, so the attribute is refused by name rather than accepted and quietly dropped.
+
+## Free shapes
+
+A **free shape** is one you place yourself, in pixels or in fractions of the slide, rather than one
+the layout puts where it wants it. It is written in the body of a slide with the same two-colon
+directives the step markers use, and there are thirteen of them and no others — a name outside them
+is refused with a message that lists all thirteen.
+
+<!-- reference: presentation.free-shapes -->
+
+| Shape | Written | Draws |
+| --- | --- | --- |
+| `rectangle` | `::rectangle` | a rectangle |
+| `roundrect` | `::roundrect` | a rounded one, with `border-radius` |
+| `ellipse` | `::ellipse` | an ellipse |
+| `circle` | `::circle` | an ellipse that is as wide as it is tall |
+| `triangle` | `::triangle` | an isosceles triangle |
+| `diamond` | `::diamond` | a diamond |
+| `chevron` | `::chevron` | a chevron |
+| `hexagon` | `::hexagon` | a hexagon |
+| `arrow` | `::arrow` | a right-pointing arrow |
+| `line` | `::line` | a hairline rule as thick as its `stroke-width` |
+| `image` | `::image` | a picture |
+| `content` | `:::content` … `:::` | Markdown, in a box you sized |
+| `slide-number` | `::slide-number` | the number of the slide it is drawn on |
+
+**Attributes are separated by a space.** `::circle{left=8% top=10% width=6% height=6%}` is one
+attribute after another, not a list with commas in it — a comma is part of the value, so
+`{fill=red,stroke=blue}` is one attribute called `fill` whose value is `red,stroke=blue`.
+
+`layout: blank` is what most of them want: a slide whose whole content is free shapes has no title
+to place them around. Every attribute each of them reads is in the package's own
+[README](https://github.com/markdown-office/markdown-presentation#free-shapes).
 
 ## Slidev, and where it differs
 
@@ -174,27 +246,31 @@ splits here the way it does there.
 
 ## Frontmatter directives
 
-Every key of every slide's frontmatter must be one of these seven:
+Every key of every slide's frontmatter must be one of these nine:
+
+<!-- reference: presentation.frontmatter -->
 
 | Key | Type | Default | Slide |
 | --- | --- | --- | --- |
 | `title` | string | `null` | any |
 | `name` | string | `null` | any — a fallback for `title` |
 | `level` | integer ≥ 1 | the heading's own depth | any |
-| `layout` | one of eight roles | `content` | any |
+| `layout` | a role name | `content` | any |
 | `theme` | string | `default` | **first only** |
 | `author` | string | the theme's, else `markdown-presentation` | **first only** |
 | `description` | string | `null` | **first only** |
+| `template` | string, or a list of them | none | any |
+| `chrome` | string | none | **first only** |
 
-The eight layout roles: `title`, `content`, `two-column`, `section`, `blank`, `image-text`,
-`image-title`, `image-slide`. Anything else — including Slidev's own `two-cols` — is refused with
-the list of what would have worked.
+The layout roles are listed with the [themes](/presentation/themes/#layout-roles). Anything else —
+including Slidev's own `two-cols` — is refused with the list of what would have worked.
 
 A deck directive on a later slide is refused by name, because it is nearly always a slide that
-was meant to be the first one.
+was meant to be the first one. The deck's own frontmatter **is the first slide's**, so `theme:`,
+`author:`, `description:` and `chrome:` belong on the slide that opens the deck.
 
 {% example %}
-````md presentation "Every frontmatter key, on a deck that uses all seven"
+````md presentation "The four keys that describe a deck"
 ---
 theme: corporate-dark
 title: The quarter in three slides
@@ -219,6 +295,118 @@ Lead with the renewal number. It is the one people remember.
 ::
 ````
 {% endexample %}
+
+## Slide templates
+
+The furniture of a deck — the wordmark (a company's name on a slide, with its mark), the rule, the
+page number — is the same on every slide, and
+writing it out on every slide means changing it on every slide. A **template** is that furniture
+written once.
+
+A template is a slide of the deck's own Markdown whose frontmatter names a template and **nothing
+else**:
+
+```markdown
+---
+template: brand
+---
+:::content{left=4.5% top=3.913% width=29.996% height=4.969% fill=none padding=0 color=FFFFFF font-size=11 font-family=Calibri align=left vertical-align=middle}
+Resilience
+:::
+
+::line{left=5% top=72.889% width=30% height=0.185% stroke=00B4D8 stroke-width=1}
+```
+
+and every slide that wants that furniture names it:
+
+```markdown
+---
+layout: blank
+template: brand
+---
+```
+
+{% example "A deck whose wordmark is written once" %}
+````md presentation
+---
+template: brand
+---
+:::content{left=4.5% top=3.913% width=29.996% height=4.969% fill=none padding=0 color=FFFFFF font-size=11 font-family=Calibri align=left vertical-align=middle}
+Resilience
+:::
+
+::line{left=5% top=72.889% width=30% height=0.185% stroke=00B4D8 stroke-width=1}
+
+---
+layout: blank
+template: brand
+---
+
+# A deck with a wordmark
+````
+{% endexample %}
+
+Four things decide what a template is.
+
+**A definition is not a slide of the deck.** It is not drawn, it has no number, and it does not
+count towards the number of slides — so one definition and many slides add up to one slide each,
+and the deck is numbered as though the definition were not there.
+
+**A template holds chrome and nothing else.** The free shapes it draws, and the words a
+`:::content` block carries. Ordinary Markdown in a template is refused by name, because a template
+is drawn on every slide that names it, and the words of a slide written into one would be on every
+one of them.
+
+**A slide may name several templates**, and the chrome of each of them is drawn on it:
+
+```markdown
+---
+layout: blank
+template: [brand, page]
+---
+```
+
+**`layout:` and `template:` are independent.** `layout:` chooses the geometry — the role the
+theme's `layouts.yml` maps onto a box on the page — and `template:` adds furniture on top of it.
+`layout: blank` with `template: brand` is a slide with no furniture of its own and the wordmark
+drawn where the template puts it.
+
+The chrome is drawn **over** what the slide placed itself, so a full-bleed picture is behind the
+wordmark and not over it.
+
+### The chrome file
+
+A deck may keep its templates in a file beside it and name it in the deck's frontmatter:
+
+```markdown
+---
+theme: ./theme.yml
+chrome: ./chrome.md
+---
+```
+
+`chrome.md` is a Markdown file of template definitions in the same syntax as a deck, and it is
+resolved against the deck's own directory — so a deck and the furniture it shares travel together.
+A file that is not there is a failure, and so is a file outside the directories the render may
+read: a path a deck wrote is held to the same scope as a picture in it. A file that holds a slide
+rather than a definition is a failure too.
+
+**The deck's own templates override the imported ones of the same name** — the same rule the theme
+resolver applies by search order, and the reason a deck can change one word of a house style
+without changing the house style.
+
+## `::slide-number` — the number of the slide
+
+`::slide-number` is a shape like any other: it takes the same placement attributes as every other
+shape and is in the layer order with them. The renderer fills in the number of the slide it is
+drawn on, and `of=true` writes the number of the deck after it.
+
+```markdown
+::slide-number{left=94% top=92% width=5% height=6% color=94A3B8 font-size=10 font-family=Calibri align=right vertical-align=middle}
+```
+
+"3 / 28" is the third slide of a deck of twenty-eight, and the twenty-eight is the number of the
+slides: a template definition is not one of them.
 
 ## What is refused, and why
 

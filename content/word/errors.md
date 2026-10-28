@@ -12,6 +12,8 @@ about both libraries, is on [Errors in general](/errors/).
 
 ## Word
 
+<!-- reference: word.exceptions -->
+
 | Exception | Means |
 | --- | --- |
 | `InvalidConfiguration` | the key half; the base for the next one |
@@ -22,12 +24,12 @@ about both libraries, is on [Errors in general](/errors/).
 | `UnreadableFile` | the input is not a file |
 | `UnreadableDocument` | the bytes are not a Word document |
 | `MalformedDocument` | it is one, and it is broken |
-| `FileNotWritable` | the target cannot be written |
+| `FileNotWritable` | **not** `InvalidInput`; the target cannot be written |
 | `TemplateNotFound` | `template_file:` names nothing |
 | `NoContentControl` | `--require-control`, and the template has none |
 | `MalformedTheme` | a theme file is not shaped like one |
 | `ThemeNotFound` | a theme name resolves to nothing — the message lists the ones that do |
 | `UnknownStyleSlot` | `styles:` names a slot that does not exist |
-| `UnsupportedElement` | something in the document cannot be drawn |
+| `UnsupportedElement` | **not** `InvalidInput`; something in the document cannot be drawn |
 | `UnsupportedImageFormat` | see [Images](/images/) |
 

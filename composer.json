@@ -76,11 +76,13 @@
         "examples": "@php tools/render-examples.php",
         "build": "npm run build",
         "serve": "npm run serve",
-        "test": "@php tools/check-command-line.php ../mdoffice",
+        "test": "pest",
         "check": [
             "@php tools/render-examples.php --strict",
             "@php tools/check-command-line.php ../mdoffice",
-            "@php tools/check-readme-links.php ../markdown-word ../markdown-presentation ../mdoffice"
+            "@php tools/check-reference.php",
+            "@php tools/check-readme-links.php ../markdown-word ../markdown-presentation ../mdoffice",
+            "@test"
         ],
         "check:site": "@php tools/check-site-links.php",
         "check:links": "@php tools/check-readme-links.php ../markdown-word ../markdown-presentation ../mdoffice"

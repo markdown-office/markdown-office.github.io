@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 permalink: /word/
 title: Markdown Word
-summary: CommonMark and GitHub Flavored Markdown into .docx, .odt and .rtf — extended with frontmatter and themes, and with two directives — and back out again.
+summary: CommonMark and GitHub Flavored Markdown into .docx, .odt and .rtf — extended with frontmatter and themes, and with ten directives — and back out again.
 section: Markdown Word
 order: 0
 ---
@@ -88,106 +88,29 @@ The `theme:` key names a look that ships with the library. Everything under `opt
 ````
 {% endexample %}
 
-#### Every frontmatter key
+#### The keys, the options and the slots
 
-| Key | Type | Default | |
-| --- | --- | --- | --- |
-| `options:` | mapping | absent | handed to `Options::fromArray()` |
-| `styles:` | mapping | absent | handed to `new Styles(...)` |
-| `theme:` | string | absent | a named look, or a path to one |
-| `template_file:` | string | absent | a `.docx` or `.dotx` to render into |
-| `fields:` | mapping | `{}` | values for the template's `MERGEFIELD`s |
-| `header:` | mapping | empty | the running head |
-| `footer:` | mapping | empty | the running foot |
+Every frontmatter key, every option, every style slot and its default, the headers and footers and
+the themes that ship are listed in [Configuration](/word/configuration/) — one list each, and the
+options, the slots and the themes are checked against the library that holds them.
 
 Only `options:` and `styles:` are validated. Every other key is open-ended metadata, so a document
 can carry `title:` for a pipeline downstream that cares and be none the worse.
 
-#### Every option
-
-| Key | Type | Default | Values |
-| --- | --- | --- | --- |
-| `softBreak` | string | `space` | `space`, `lineBreak`, `paragraph` |
-| `hardBreak` | string | `line` | `remove`, `line`, `paragraph` |
-| `html` | string | `strip` | `strip`, `preserve`, `drop` |
-| `images` | string | `embed` | `embed`, `placeholder`, `skip` |
-| `imageBasePath` | string | `null` | where relative paths resolve from |
-| `imageMaxWidth` | number | `15.0` | centimetres, ≥ 0 |
-| `svgFallback` | string | `raster` | `raster`, `none` |
-| `maxHeadingLevel` | integer | `6` | clamped to 1–6 |
-| `orderedListFormat` | string | `decimal` | any OOXML `w:numFmt` |
-| `orderedListSuffix` | string | `tab` | `tab`, `space`, `nothing` |
-| `tableBorders` | boolean | `true` | |
-| `tableHeaderBold` | boolean | `true` | off makes a round trip honest about headers |
-| `tableWidth` | integer | `5000` | fiftieths of a percent, 0–5000 |
-| `codeBlockShading` | boolean | `true` | |
-| `linkTarget` | string | `_blank` | |
-| `thematicBreak` | string | `border` | `border`, `text` |
-| `deferredHyperlinks` | boolean | `false` | |
-
-#### Style slots
-
-Each slot holds a **style id** (a string), an **inline style** (a mapping), or `null`. A mapping
-merges recursively into the default; a style id or `null` replaces the slot whole.
-
-| Slot | Default |
-| --- | --- |
-| `heading.1` … `heading.6` | `Heading1`…`Heading6`, bold, 16/13/12/11/11/11pt, `2F5496` |
-| `paragraph` | 6pt after, 1.15 line height |
-| `blockQuote` | `IntenseQuote`, italic, `404040`, 720 twips either side |
-| `codeBlock` | 360 twips left, no space above or below |
-| `listParagraph` | 3pt after |
-| `codeFont` | Consolas 9pt `A31515` |
-| `linkFont` | `0563C1`, underlined |
-
-Font properties are `name`, `size`, `color`, `bold`, `italic`, `strikethrough`, `underline`.
-Paragraph properties are `indentation`, `space`, `shading`, `keepNext`, `alignment`, `styleName`,
-`lineHeight`.
-
-A colour is **six hex digits with no `#`** and no colour name. A size is a number ≥ 0.001, and `0`
-is refused with the reason: it is a size in points, and 0 makes the text invisible in Word.
-
-#### Headers and footers
-
-Both take `body`, `align` (`left`/`center`/`right`), `border` (`top`/`bottom`/`both`), and the
-switches `page`, `total`, `chapter`, `filename`, `date`, `firstPage`, `even`. A `body` may contain
-`{page}`, `{total}`, `{filename}`, `{chapter}` and `{date}`.
-
-```yaml
-footer:
-  align: center
-  border: top
-  body: "Page {page} of {total}"
-  page: true
-  total: true
-```
-
-#### Themes
-
-A theme is a directory: `theme.yml` — `name` required, plus `description` and `author` — and an
-optional `styles.yml`. Four ship: `default`, `minimal`, `corporate`, `report`. Resolution is a
-path, then `<cwd>/themes/<name>`, then the package's own `themes/<name>`, and **there is no silent
-fallback** — a name that does not resolve raises `ThemeNotFound` listing the ones that do.
-
 ### Extended: directives
 
-Two directives, and both are real Word features rather than Markdown dressed up.
+Ten directives, and all of them are real Word features rather than Markdown dressed up.
 
 **`::toc`** — a table of contents Word can build. The field goes out empty and marked dirty, with
 `w:updateFields` set, because PHPWord's cached page numbers are all `1` and a reader who never
-updates a field shows them as they are.
-
-| Attribute | Type | Default |
-| --- | --- | --- |
-| `depth` | integer | `maxHeadingLevel`, which is `6`, clamped to 1–6 |
-| `numbers` | boolean | `true`; `false` is Word's `\n` |
-| `title` | string | none — a heading drawn above the field |
+updates a field shows them as they are. The attributes it takes are on
+[Word directives](/word/directives/#toc--a-table-of-contents-word-can-build).
 
 {% example "A table of contents Word can build" %}
 ````md word
 # Quarterly report
 
-::toc{depth=2, title="Contents"}
+::toc{depth=2 title="Contents"}
 
 ## Highlights
 
@@ -205,16 +128,29 @@ The field instruction it writes is exactly `TOC \o "1-2" \h \z \u`, and with `nu
 **`:footnote[…]`** — a Word footnote. The text in the brackets is the note, inserted as text
 rather than parsed as Markdown. There are no attributes.
 
-> **Measured, and it does not currently reach a footnote.** Building
-> `Body with a note:footnote[Source: the ledger.]` produced a `.docx` with **no
-> `word/footnotes.xml` in it at all**, and the literal text `:footnote[Source: the ledger.]` in
-> the body. This page says so rather than describing the intended behaviour, because the build on
-> this site checks the difference.
+> **A directive needs the whitespace in front of it.** `Body with a note:footnote[Source: the
+> ledger.]` is prose — a name that follows a word is not a directive — and the `.docx` carries the
+> literal text in the body. Written `Body with a note :footnote[Source: the ledger.]`, it is a real
+> Word footnote, and the `.docx` carries `word/footnotes.xml`.
+
+**`:style[…]`** — a word in a style. The text in the brackets is the word, and the name is the
+style: `:brand[Bakery]` is "Bakery" in the theme's `brand` style, and `:style[Bakery]{color=00B4D8}`
+is "Bakery" in teal with no theme style behind it. Attributes on a directive override the style's
+own properties for that word alone.
+
+**The seven that place objects in a document** — `::image`, `::caption`, `::pagebreak`,
+`::section`, `::textbox`, `::shape` and `::field` — draw a picture, a caption, a page break, a
+section, a floating box, a shape and a form field.
 
 **Everything else** parses and is written into the document as the text the author typed.
 `Status :green[go] before lunch.` parses, and reaches the document exactly as written. That is the
 opposite of the presentation half's policy, and deliberate — a parser nobody asked to change
 should not change the syntax of every document converted after it.
+
+**A directive a format cannot carry is not refused either.** A text box, a shape and a form field
+are written by `.docx` alone: the other two formats are given the author's own characters back, and
+the loss is reported. The columns of a section are written by `.docx` and `.odt`, and not by
+`.rtf` — the section break survives there, and the columns do not.
 
 More, including what a `:::toc` container does: [Word directives](/word/directives/).
 
@@ -234,31 +170,9 @@ mdoffice word README.docx        # writes README.md
 It decides which way the data has to go **from the content, not the name**: a Word document is a
 zip and Markdown is text, and the four bytes that say which is which are part of the format.
 
-| Command | Does |
-| --- | --- |
-| `to-docx` | Markdown to `.docx` |
-| `to-odt` | Markdown to `.odt` |
-| `to-rtf` | Markdown to `.rtf` |
-| `to-markdown` | a Word document to Markdown |
-
-| Option | Value | Default |
-| --- | --- | --- |
-| `-o, --output <file>` | path | beside the input; `-` for standard output |
-| `-c, --config <file.php>` | path | none |
-| `--theme <name>` | name or path | the frontmatter's `theme:` |
-| `-t, --template <file>` | `.docx` or `.dotx` | none |
-| `--require-control` | flag | off |
-| `--images <mode>` | `embed`, `placeholder` or `alt`, `skip` or `none` | `embed` |
-| `--no-images` | flag | shorthand for `--images skip` |
-| `--image-base <dir>` | path | the input's directory; the working directory for standard input |
-| `--svg-fallback <mode>` | `raster`, `none` | `raster` |
-| `--table-width <n>` | fiftieths of a percent; 0–5000 | `5000` |
-| `--plain` | flag | off |
-| `--to <format>` | `docx`, `word` for `to-docx`; `odt` for `to-odt`; `rtf` for `to-rtf` | the command names the direction |
-| `-h, --help` | flag | off |
-
-`to-markdown` takes `--media <dir>`, `--line-ending <lf|crlf>`, `--setext`, `--no-fence` and
-`--no-header` instead.
+The commands are `to-docx`, `to-odt`, `to-rtf` and `to-markdown` — they are listed with the
+others on [Basic use](/command-line/basic/#commands) — and the options each of them takes are on
+[For word](/command-line/word/).
 
 A filter, not a command that needs a filename:
 
@@ -301,29 +215,24 @@ $converter->convertTo(Format::Rtf, 'notes.rtf');
 
 ### The parser, if you want frontmatter
 
+`withFrontMatter()` is the one — the default flavour and the front matter, and nothing else:
+
 ```php
-use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
-use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
-use MarkdownOffice\CommonMark\Directive\GenericDirectiveExtension;
 use MarkdownWord\MarkdownToWord;
 use MarkdownWord\Parser\CommonMarkParser;
 
-$parser = new CommonMarkParser([
-    GithubFlavoredMarkdownExtension::class,
-    GenericDirectiveExtension::class,
-    FrontMatterExtension::class,
-]);
+$parser = CommonMarkParser::withFrontMatter();
 
 (new MarkdownToWord($markdown, parser: $parser))->save('out.docx');
 ```
 
-Both, named. `withAllExtensions()` is not the answer either — it reads frontmatter and drops
-directives, so `::toc` and `:footnote` stop being directives and become the text an author wrote.
+`withAllExtensions()` is not the answer either — it reads frontmatter and drops directives, so
+`::toc` and `:footnote` stop being directives and become the text an author wrote.
 
-The available flavours are `commonMarkOnly()`, `extended()`, `directives()` (the default) and
-`withAllExtensions()`. Strict mode — a `DirectiveRegistry` that refuses unknown names — is **not
-reachable** from `CommonMarkParser`, because the extension list is a list of class names and each
-is built with `new`.
+The available flavours are `commonMarkOnly()`, `extended()`, `directives()` (the default),
+`withAllExtensions()` and `withFrontMatter()`. Strict mode — a `DirectiveRegistry` that refuses
+unknown names — is **not reachable** from `CommonMarkParser`, because the extension list is a list
+of class names and each is built with `new`.
 
 ### Back the other way
 

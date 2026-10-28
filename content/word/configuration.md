@@ -17,7 +17,18 @@ carry ignored.
 `withAllExtensions()` is not the answer either: it does read frontmatter, but it leaves directives
 out, so `::toc` and `:footnote` stop being directives and become the text an author wrote.
 
-So both, named:
+So both, named — `withFrontMatter()` is the default flavour and the front matter, and nothing else:
+
+```php
+use MarkdownWord\MarkdownToWord;
+use MarkdownWord\Parser\CommonMarkParser;
+
+$parser = CommonMarkParser::withFrontMatter();
+
+(new MarkdownToWord($markdown, parser: $parser))->save('out.docx');
+```
+
+The same two things by hand are the extension list the constructor takes:
 
 ```php
 use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
@@ -40,20 +51,24 @@ flavour — which is why this catches people writing PHP and not people using th
 
 ## Top-level keys
 
+<!-- reference: word.frontmatter -->
+
 | Key | Type | Default | What it does |
 | --- | --- | --- | --- |
-| `options:` | mapping | absent | handed to `Options::fromArray()` |
-| `styles:` | mapping | absent | handed to `new Styles(...)` |
-| `theme:` | string | absent | a named look, or a path to one |
-| `template_file:` | string | absent | a `.docx` or `.dotx` to render into |
-| `fields:` | mapping | `{}` | values for the template's `MERGEFIELD`s |
-| `header:` | mapping | empty | the running head |
-| `footer:` | mapping | empty | the running foot |
+| `options` | mapping | absent | handed to `Options::fromArray()` |
+| `styles` | mapping | absent | handed to `new Styles(...)` |
+| `theme` | string | absent | a named look, or a path to one |
+| `template_file` | string | absent | a `.docx` or `.dotx` to render into |
+| `fields` | mapping | `{}` | values for the template's `MERGEFIELD`s |
+| `header` | mapping | empty | the running head |
+| `footer` | mapping | empty | the running foot |
 
 Only `options:` and `styles:` are validated. Every other key is open-ended metadata, so a document
 can carry `title:` or `author:` for a pipeline downstream that cares and be none the worse.
 
 ## Every option
+
+<!-- reference: word.options -->
 
 | Key | Type | Default | Values |
 | --- | --- | --- | --- |
@@ -77,20 +92,41 @@ can carry `title:` or `author:` for a pipeline downstream that cares and be none
 
 Booleans may be written as `true`/`false`/`yes`/`no`/`on`/`off`, in any case.
 
+The objects a document may place — `::image`, `::caption`, `::pagebreak`, `::section`, `::textbox`,
+`::shape` and `::field` — take no options of their own. The one that reads an option is `::image`:
+its `src` is resolved against `imageBasePath`, and its size is in the centimetres `imageMaxWidth`
+is in — though a size the document names is the size the picture gets, and the cap is what happens
+to a picture that says nothing about its own size. See
+[Word directives](/word/directives/#image--a-picture-of-a-stated-size).
+
 ## Style slots
 
 Each slot holds a **style id** (a string), an **inline style** (a mapping), or `null`. A mapping
 merges recursively into the default; a style id or `null` replaces the slot whole.
 
+<!-- reference: style-slots -->
+
 | Slot | Default |
 | --- | --- |
-| `heading.1` … `heading.6` | `Heading1`…`Heading6`, bold, 16/13/12/11/11/11pt, `2F5496` |
+| `heading.1` | `Heading1`, bold, 16pt, `2F5496` |
+| `heading.2` | `Heading2`, bold, 13pt, `2F5496` |
+| `heading.3` | `Heading3`, bold, 12pt, `1F3763` |
+| `heading.4` | `Heading4`, bold and italic, 11pt, `2F5496` |
+| `heading.5` | `Heading5`, bold, 11pt, `2F5496` |
+| `heading.6` | `Heading6`, italic, 11pt, `1F3763` |
 | `paragraph` | 6pt after, 1.15 line height |
 | `blockQuote` | `IntenseQuote`, italic, `404040`, 720 twips either side |
 | `codeBlock` | 360 twips left, no space above or below |
+| `thematicBreak` | nothing |
+| `htmlFallback` | nothing |
 | `listParagraph` | 3pt after |
 | `codeFont` | Consolas 9pt `A31515` |
 | `linkFont` | `0563C1`, underlined |
+| `bulletList` | `MarkdownWord-Bullet` |
+| `orderedList` | `MarkdownWord-Ordered` |
+| `table` | nothing — a table carries its own |
+| `tableHeaderRow` | nothing — a row carries its own |
+| `tableCell` | nothing — a cell carries its own |
 
 Font properties are `name`, `size`, `color`, `bold`, `italic`, `strikethrough`, `underline`.
 Paragraph properties are `indentation`, `space`, `shading`, `keepNext`, `alignment`, `styleName`,
@@ -113,10 +149,9 @@ it.
 ## Headers and footers
 
 Both take `body`, `align` (`left`/`center`/`right`), `border` (`top`/`bottom`/`both`), and the
-switches `page`, `total`, `chapter`, `filename`, `date`, `firstPage`, `even`.
-
-A `body` may contain `{page}`, `{total}`, `{filename}`, `{chapter}` and `{date}`. With
-`dateFormat` set, `{date}` becomes a Word `DATE` field with that picture rather than a fixed date.
+switches `page`, `total`, `chapter`, `filename`, `date`, `firstPage`, `even`. A `body` may contain
+`{page}`, `{total}`, `{filename}`, `{chapter}` and `{date}`. With `dateFormat` set, `{date}` becomes
+a Word `DATE` field with that picture rather than a fixed date.
 
 ```yaml
 footer:
@@ -132,3 +167,28 @@ footer:
 `template_file:` names a `.dotx`. `fields:` fills its merge fields, with `true` and `false`
 spelled as strings because that is what Word stores. The command line adds `--require-control`,
 which refuses a template with no content control instead of appending to it.
+
+## Themes
+
+A theme is a directory: `theme.yml` — `name` required, plus `description` and `author` — and an
+optional `styles.yml` holding the same slot names as above. One key of that file is not a slot:
+`textStyles` holds the named styles a document may write a word in — see
+[Word directives](/word/directives/#a-word-in-a-style). A `theme:` may also name the
+`theme.yml` itself, in which case the `styles.yml` beside it is the theme's.
+
+Four themes ship, and a document names one with `theme:`:
+
+<!-- reference: word.themes -->
+
+| Theme | What it is |
+| --- | --- |
+| `default` | the built-in look — blue headings, Consolas code on a light grey panel |
+| `minimal` | monochrome and quiet — headings in the ink, code on the page, no colour anywhere |
+| `corporate` | serif headings in navy, wide spacing, ruled tables |
+| `report` | serif body on an open leading, understated headings — for something meant to be read to the end |
+
+Resolution is a path — written from beside the document, the way a relative image path is —
+then `themes/<name>` beside the document, then `themes/<name>` beside the working directory,
+then the package's own `themes/<name>`, and
+**there is no silent fallback** — a name that does not resolve raises `ThemeNotFound` listing the
+ones that do.

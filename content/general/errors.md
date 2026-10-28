@@ -32,8 +32,9 @@ try {
 so one `catch` does not also catch the failures of the libraries underneath. The failures a deck
 author can fix by naming something else extend `Exception\InvalidInput` below it.
 
-One sits beside those two rather than under `InvalidInput`: `Exception\UnreadablePackage`. Nothing
-a deck names fixes a package that is not a package.
+Five sit beside `InvalidInput` rather than under it, and nothing a deck names fixes any of them: a
+file that cannot be read, a target that cannot be written, a conversion with nothing to convert, or
+a dependency installed without the fixes the library needs.
 
 ## The two `UnknownDirective`
 
@@ -68,10 +69,11 @@ $converter = (new MarkdownToWord('notes.md'));
 $converter->save('notes.docx');
 
 foreach ($converter->pendingLosses() as $loss) {
-    echo $loss->feature(), ': ', $loss->explain(), "\n";
+    echo $loss->feature, ': ', $loss->message, "\n";
 }
 ```
 
 `.docx` carries everything, so `pendingLosses()` is empty. `.odt` and `.rtf` drop named features —
-every list item left out of an RTF, an SVG flattened to a raster, a `::toc` left as its text — and
-the command line prints them to standard error rather than letting the document quietly lose them.
+every list item left out of an RTF, an SVG flattened to a raster, a `::toc` left as its text, a text
+box left out of the document — and the command line prints them to standard error rather than
+letting the document quietly lose them.

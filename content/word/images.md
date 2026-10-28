@@ -13,11 +13,10 @@ the deck's, and are on [Images](/images/).
 
 ## The options
 
-| Option | Default | |
-| --- | --- | --- |
-| `images` | `embed` | `embed`, `placeholder`, `skip` |
-| `imageMaxWidth` | `15.0` | centimetres |
-| `svgFallback` | `raster` | `none` for readers that can take the vector |
+The three options that decide what happens to a picture are on
+[Configuration](/word/configuration/#every-option): `images`, which says whether the picture is
+embedded, left out or replaced by its name, `imageMaxWidth`, the cap on a picture that says nothing
+about its own size, and `svgFallback`, which says what happens to a vector.
 
 `pendingImageConversions()` reports what was converted, and `pendingLosses()` says when the vector
 was written with no raster beside it — which means a reader that does not prefer the vector draws

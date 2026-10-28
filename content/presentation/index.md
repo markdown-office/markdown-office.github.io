@@ -19,10 +19,12 @@ PHP 8.2 or newer, with `ext-dom`, `ext-gd` and `ext-zip`. `ext-imagick` is optio
 
 **Both directions.** Markdown to `.pptx`, and a `.pptx` back to Markdown — what comes back is
 the Markdown this package writes decks in, so a deck can be taken apart, edited as text and put
-in again under a different theme. `PresentationRenderer` has two methods, `render()` and
-`overflows()`; the reader is `PowerPointToMarkdown`, with `convert()`, `save()`, `toMarkdown()`
-and `read()`. What the round trip does not keep is written down in
-[Reading a deck back](#reading-a-deck-back).
+in again under a different theme. `PresentationRenderer` has three methods, `render()`,
+`overflows()` and `unknownFonts()`; the reader is `PowerPointToMarkdown`, with `convert()`,
+`save()`, `toMarkdown()` and `read()`. The two that report rather than write are
+`overflows()` — every block that had to be made smaller than it asked for — and `unknownFonts()`
+— every face the deck named that there is no table of advance widths for. What the round trip
+does not keep is written down in [Reading a deck back](#reading-a-deck-back).
 
 ---
 
@@ -59,22 +61,10 @@ slides and **cannot be a thematic break** — use `***`.
 ### Extended: frontmatter and themes
 
 The deck's own configuration goes in the frontmatter of slide 1. Every key is in a **closed set of
-seven**, and anything outside it fails the build with a message naming what would have worked.
+nine**, and anything outside it fails the build with a message naming what would have worked. The
+nine are listed with the [directives](/presentation/directives/#frontmatter-directives).
 
-| Key | Type | Default | |
-| --- | --- | --- | --- |
-| `title` | string | `null` | the slide's title |
-| `name` | string | `null` | a fallback for `title` |
-| `level` | integer ≥ 1 | the heading's own depth | the depth a title is drawn at |
-| `layout` | one of eight roles | `content` | which layout to use |
-| `theme` | string | `default` | **slide 1 only** |
-| `author` | string | the theme's | **slide 1 only** |
-| `description` | string | `null` | **slide 1 only** |
-
-The eight layout roles: `title`, `content`, `two-column`, `section`, `blank`, `image-text`,
-`image-title`, `image-slide`.
-
-{% example "Every frontmatter key on a deck" %}
+{% example "The four keys that describe a deck" %}
 ````md presentation
 ---
 theme: corporate-dark
@@ -92,51 +82,29 @@ description: What changed, what it cost, and what happens next.
 ````
 {% endexample %}
 
-#### The whole of `theme.yml`
+#### A theme
 
-| Key | Type | Default |
-| --- | --- | --- |
-| `name` | string | **required**, non-empty |
-| `description` | string | `null` |
-| `author` | string | `null` |
-| `dark` | boolean | `false` — boolean only; `dark: yes` is refused |
-| `colors:` | mapping | the twelve slots below |
-| `fonts:` | mapping | Calibri / Calibri / Consolas |
-| `style:` | mapping | the geometry below |
+A theme is a directory, and `theme.yml` is what it has to hold: the name, an optional description
+and author, the colours, the fonts and the geometry. A `theme:` may also name the `theme.yml`
+itself, in which case the theme's other files are the ones beside it. The keys it takes, the
+colour slots, the geometry and the themes that ship are all on
+[Themes and layout](/presentation/themes/).
 
-The twelve colour slots — `dk1` `lt1` `dk2` `lt2` `accent1`…`accent6` `hlink` `folHlink` — with
-four readable aliases accepted: `dark1`, `light1`, `dark2`, `light2`, `hyperlink`,
-`followedHyperlink`.
+Resolution is a path, then `themes/<name>` beside the deck, then the package's own. **No silent
+fallback to `default`**: a name that does not resolve raises `ThemeNotFound` listing the ones that
+do.
 
-#### The whole of `style:`
+#### A template
 
-| Key | Type | Default | Minimum |
-| --- | --- | --- | --- |
-| `margin` | int, px | 40 | 1 |
-| `gutter` | int, px | 20 | 1 |
-| `block` | int, px | 12 | 1 |
-| `rule` | int, px | 2 | 1 |
-| `body` | int, pt | 16 | 1 |
-| `title` | int, pt | 28 | 1 |
-| `cover` | int, pt | 40 | 1 |
-| `section` | int, pt | 44 | 1 |
-| `headings` | list of int, pt | `[22, 20, 18, 16, 14]` | each ≥ 1 |
-| `leading` | number | 1.2 | 1.0 |
-| `heading-weight` | `bold` or `regular` | `bold` | |
-| `heading-ink` | `ink` or `accent` | `ink` | |
-
-Four themes ship: `default`, `corporate-dark`, `minimal`, `dense`. `minimal` has more margin and
-less ink; `dense` has less margin and smaller type — those are the two axes a deck is usually
-fighting over, and they are separate keys so you can move one.
-
-Resolution is a path, then `<cwd>/themes/<name>`, then the package's own. **No silent fallback to
-`default`**: a name that does not resolve raises `ThemeNotFound` listing the ones that do.
-
-More, including `layouts.yml` and every built-in theme's numbers: [Themes and layout](/presentation/themes/).
+A **template** is the furniture of a deck — the wordmark (a company's name on a slide, with its
+mark), the rule, the page number — written
+once and drawn on every slide that names it. It is a slide of the deck's own Markdown, marked by
+its own frontmatter, and it is not a slide of the deck: it does not appear and it does not count
+towards the number of slides. See [Presentation directives](/presentation/directives/#slide-templates).
 
 ### Extended: directives
 
-Four, and the set is closed — anything outside it is refused by name rather than drawn as a
+Four markers, and the set is closed — anything outside it is refused by name rather than drawn as a
 paragraph.
 
 | Written | Does |
@@ -148,6 +116,10 @@ paragraph.
 | `::note` … `::` | the slide's speaker note |
 
 All must be alone on their line. Names are case-insensitive.
+
+**`:name[…]`** is the inline one — a word in one of the theme's named styles, in the middle of a
+sentence. It is the only inline directive a deck has, and a name the theme does not have is
+refused by name like any other marker: [the text styles](/presentation/directives/#a-word-in-a-style).
 
 {% example "A slide that builds up, with a speaker note" %}
 ````md presentation
@@ -286,7 +258,7 @@ deck. A `.pptx` records what is on a slide, not how it was drawn.
 
 What the round trip does not keep is written down in the package's own
 [README](https://github.com/markdown-office/markdown-presentation#reading-a-deck-back): the
-design, the layout, the underline, a link inside a run, and a chart.
+design, the layout, the underline, a text style, a link inside a run, and a chart.
 
 ### The rendering pipeline
 
@@ -301,11 +273,16 @@ PowerPoint open the deck as `[Repaired]`.
 
 ### Ceilings
 
+<!-- reference: presentation.ceilings -->
+
 | | |
 | --- | --- |
 | `MAX_SLIDES` | 1000 |
 | `MAX_STEP` | 500 |
 | `MAX_PIXELS` | 16,777,216 — 4096 × 4096, enforced on the file header |
+| `MAX_BYTES` | 1,048,576 — the size of a chrome file |
+| `MAX_SHAPES` | 100 — the shapes one slide may carry |
+| `MAX_PART_BYTES` | 4,194,304 — one part of a theme's template |
 
 The pixel ceiling is worth a moment. The obvious implementation of it is wrong: measuring a
 raster means decoding it, and decoding is what allocates the memory you were trying to bound. Both
@@ -331,8 +308,9 @@ try {
 }
 ```
 
-One sits beside those two rather than under `InvalidInput`: `Exception\UnreadablePackage`. Nothing
-a deck names fixes a package that is not a package.
+Five sit beside `InvalidInput` rather than under it: nothing a deck names fixes a file that cannot
+be read, a target that cannot be written, a conversion with nothing to convert, or a dependency
+installed without the fixes the library needs.
 
 The whole catalogue is on [Errors](/presentation/errors/).
 

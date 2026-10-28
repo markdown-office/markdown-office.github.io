@@ -11,23 +11,26 @@ order: 1
 [`markdown-office/mdoffice`](https://github.com/markdown-office/mdoffice), which requires both
 converter packages and calls them — so what it does is what those libraries do.
 
-The options of each half are on a page of their own: [For word](/command-line/word/) and [For
-presentations](/command-line/presentations/). How to get the tool is on [Installation](/command-line/installation/).
+The options of each part are on a page of their own: [For word](/command-line/word/), [For
+presentations](/command-line/presentations/) and [For themes](/command-line/theme/). How to get the
+tool is on [Installation](/command-line/installation/).
 
 ```bash
 mdoffice word README.md          # writes README.docx
 mdoffice word README.docx        # writes README.md
 mdoffice slides deck.md          # writes deck.pptx
+mdoffice theme deck.pptx         # writes deck/, a theme to edit
 ```
 
 ## Parts
 
-The first argument says which converter the run is for.
+The first argument says which part the run is for.
 
 | Part | Does |
 | --- | --- |
 | `mdoffice word …` | Markdown to `.docx`, `.odt` and `.rtf`, and `.docx` back to Markdown |
 | `mdoffice slides …` | Markdown to `.pptx`, and back |
+| `mdoffice theme …` | A theme scaffolded from a deck |
 
 **A bare file is not a run.** `mdoffice notes.md` is refused, and the parts are listed:
 
@@ -38,6 +41,7 @@ mdoffice: Unknown part "notes.md".
 
   word       Markdown to .docx, .odt and .rtf, and .docx back to Markdown
   slides     Markdown to .pptx, and back
+  theme      A theme scaffolded from a deck
 ```
 
 The Word half decides the direction from the file's first bytes, but with more than one converter
@@ -47,6 +51,9 @@ half the time and wrong the other half.
 Only a `.docx` is read back. An `.odt` is a zip archive as well, so it is read as a Word
 document and refused — the reader knows the Word document format and not the OpenDocument one.
 The two are written, not read.
+
+The theme part is the one that converts nothing: it reads a deck and writes a theme directory,
+which is a first draft of a theme and is meant to be edited.
 
 ## Commands
 
@@ -58,15 +65,23 @@ The two are written, not read.
 | `word` | `to-markdown` | a Word document to Markdown |
 | `slides` | `to-pptx` | Markdown to `.pptx` |
 | `slides` | `to-markdown` | a deck to Markdown |
+| `slides` | `diff` | two decks, and what changed between them |
+| `theme` | `init` | a theme scaffolded from a deck |
 
 In the Word part, with no command, the direction is detected. `--to` overrides it: `docx` or
 `word` for a Word document, `odt` for an OpenDocument Text, `rtf` for Rich Text Format, and
 `markdown` or `md` for Markdown. Those are the spellings it takes; `opendocument` and `rich
 text` are refused, because the command that runs says which format it reads.
 
-The slides part has two commands, and the first is the default: `mdoffice slides deck.md` is
+The slides part has three commands, and the first is the default: `mdoffice slides deck.md` is
 the same run as `mdoffice slides to-pptx deck.md`. The second reads a deck back, and it is
-named — a deck is a `.pptx`, and the part does not work the direction out for itself.
+named — a deck is a `.pptx`, and the part does not work the direction out for itself. The third
+compares two decks and says what changed between them; its options are on [For
+presentations](/command-line/presentations/).
+
+The theme part has one command, and it is the default: `mdoffice theme deck.pptx` is the same
+run as `mdoffice theme init deck.pptx`. Its options are on [For
+themes](/command-line/theme/).
 
 A command named on the command line decides the direction itself, and `--to` is then only allowed
 to agree with it:
@@ -95,6 +110,7 @@ mdoffice help
 mdoffice word help
 mdoffice word to-docx --help
 mdoffice slides to-pptx --help
+mdoffice theme help
 ```
 
 ## Exit codes
@@ -111,6 +127,10 @@ mdoffice word:   Name the file to read, or omit it to read standard input.
 A defect is printed with its class and the line it happened on, because it is nobody's to fix and
 somebody's to see: `mdoffice word: <ExceptionClass>: <message>`, and then the file and the line
 underneath it.
+
+**A diff that finds differences has done what it was asked.** It exits `0`, because comparing two
+decks and reporting the difference is the whole of the work; `--exit-code` is what turns the
+difference into a failure, for a build to act on.
 
 ## Things it is easy to get wrong
 

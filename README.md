@@ -18,6 +18,11 @@ npm run serve        # the same, with a watcher
 ```
 
 ```bash
+composer check       # the examples, the command-line pages, the reference tables, the claims
+composer test        # the claims on their own
+```
+
+```bash
 npm run build:strict # ...and exit non-zero if an example does not build
 ```
 
@@ -41,6 +46,60 @@ fails the build rather than the reader's afternoon.
 That is not decoration — it caught three real errors in these pages while they were being written,
 including one where an example claimed a Word footnote that the converter did not produce.
 
+## The reference tables
+
+The tables are claims too, and they drift: the site said four themes shipped when five did, and
+its error page said it listed every exception the package throws and left five of them out.
+
+So the tables are checked against the code, and a table says which vocabulary it carries:
+
+```markdown
+<!-- reference: presentation.layout-roles -->
+
+| Role | Title box |
+| --- | --- |
+| `title` | yes |
+```
+
+`tools/check-reference.php` reads every vocabulary out of the library that owns it — the frontmatter
+keys, the layout roles, the free shapes, the colour slots, the theme keys, the style keys, the
+exceptions, the themes that ship, the ceilings, the Word directives, the attributes each of the
+Word directives reads, the keys a Word document's frontmatter may carry, the options the reader of
+a Word document trusts, the features a Word format cannot carry, the Word options, the Word style
+slots and the inline style attributes — and reads the page that carries it for the names it lists.
+The two are compared in both directions: a name the code does not have is a page offering something
+that does not work, and a name the code has and the page does not is a feature nobody can find.
+
+A vocabulary the two halves share is read out of both of them and held to one list, so the
+attributes an inline style takes are the same eight in the deck and in the document — and the
+check says so when they are not.
+
+Three rules make the lists stay lists:
+
+- **One list, one home.** A second copy of a table is a failure, and so is a copy of part of one:
+  two copies drift apart and the one nobody reads is the one that is wrong. Every table that lists
+  names is marked, and the marked one is the only one.
+- **The code is the only source.** The lists are read out of the libraries, not written down in the
+  site, so there is no second copy for the check to compare against. Where a library holds no list
+  of its own — the attributes a directive reads, the keys a frontmatter may carry — the code is
+  read for the names, and a name the code stops reading is a name the page may not list.
+- **A vocabulary with no home is a failure.** A check that passes because it found nothing to check
+  is worse than no check at all.
+
+A table may also carry a value the code holds, and then the value is checked too: the numbers in
+the table of ceilings, and the exceptions that sit beside `InvalidInput` rather than under it.
+
+What a table cannot hold is prose — what a key does, what an exception means — and a count written
+out in a sentence ("Eight, and only these"). Those are claims too, and they are checked by the
+suite in `tests/`: the counts against the code, the claims of completeness against the code, and the
+rules against the library that has to behave that way. A sentence that was wrong and has been
+corrected goes into the `FORBIDDEN` map of `tools/check-command-line.php`, and a page that says it
+again is a failure.
+
+The tables are not generated. Their other columns are prose that no code holds, and moving that
+prose into a generator would make a second copy of the documentation in a file that is not a page —
+the same drift, one repository further away.
+
 ## Writing a page
 
 ```text
@@ -49,7 +108,7 @@ content/
 ├── word/                    the dialect, the directives, the configuration, the round trips, the images, the errors
 ├── presentation/            the dialect, the directives, the themes, the errors
 ├── general/                 how directives work, the syntax, the images, the errors
-├── command-line/            the installation, the basic use, the options of each half
+├── command-line/            the installation, the basic use, the options of each part
 ├── suite/                   the other packages
 └── llms/                    llms.txt.njk, pages.json.njk
 ```
@@ -178,7 +237,9 @@ to it, and the site is published at the GitHub Pages address until then.
 content/          the pages, one directory per chapter
 _includes/        the layout, the stylesheet, the wordmark
 _documents/       the documents the examples read. Committed: an input must not change.
-tools/            render-examples.php, make-input-document.php, the two link checks, and lib/
+src/              the reference tables, read out of the libraries and compared with the pages
+tests/            the claims the pages make in prose
+tools/            render-examples.php, make-input-document.php, the three checks, and lib/
 _examples/        built artifacts, published under the site's own path. Not committed.
 _data/            examples.json, written by the example builder. Not committed.
 _site/            the built site. Not committed.

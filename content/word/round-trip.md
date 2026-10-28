@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 permalink: /word/round-trip/
 title: Round trips
-summary: Markdown to a document and back. What comes out the same, and the five things that do not.
+summary: Markdown to a document and back. What comes out the same, and the six things that do not.
 section: Markdown Word
 order: 3
 ---
@@ -47,18 +47,42 @@ Checked, rather than assumed:
 | Written | Comes back as |
 | --- | --- |
 | `::toc{depth=2}` | `Press F9 to build the table of contents.` |
-| `:footnote[Source: the ledger.]` | `:footnote[Source: the ledger.]` |
+| `:footnote[Source: the ledger.]` | nothing |
+| `:brand[Bakery]` | `Bakery` |
+| `::image[Revenue by quarter]{src="chart.png" width=4 height=2}` | a Markdown image with the alt text — the picture, without the size it was placed at |
+| `::caption[Figure 1: Revenue by quarter]{}` | `*Figure 1: Revenue by quarter*` — the text, in italics |
+| `::pagebreak` | nothing |
+| `::section{columns=2}` | nothing |
+| `::textbox[A floating note]{width=6 height=2}` | nothing |
+| `::shape{type=rect width=4 height=2}` | nothing |
+| `::field{name="Customer" type=textinput}` | thirty spaces |
 
 The first is **not** a directive and never was on the way back — the document really does contain
 that sentence, inside the table-of-contents field, waiting for Word to build it. The reader reads
 the field's content and finds a sentence.
 
-The second round trips only by accident: `:footnote[…]` does not currently produce a
-`footnotes.xml` at all, so what the reader finds is the source text that was always in the body.
-See [Word directives](/word/directives/).
+The second is a real Word footnote, and none of it comes back: the reader reads the body and not
+the footnotes, so neither the mark nor the note is in what it finds. See
+[Word directives](/word/directives/).
 
-**Neither is a round trip you should build on.** A pipeline that edits documents in Word and reads
-them back should treat directives as one-way.
+The third keeps the word and loses the style: `:brand[Bakery]` is written as direct formatting — a
+colour, a weight, a size — and the reader reads bold, italic and strike and no colour. The word is
+there; the style is not, and neither is the name it was written under.
+
+The seven that place objects in a document keep none of their own syntax: **a text box comes back
+without its text**, because the text of a box is in a `w:txbxContent` inside the run that holds it
+and the reader reads the paragraphs of the body and not the boxes inside them — and a shape has no
+text at all, so it comes back as nothing. **A form field comes back as the blank field Word
+draws**: a `FORMTEXT` is a field with a run of thirty spaces in it, and that is what the reader
+finds. **A page break and the columns of a section come back as nothing**: both are in the file —
+`w:br` and `w:cols` — and the reader reads neither.
+
+A picture and a caption are the two that keep what they carried — the picture and the text. The
+size a picture was placed at and the alignment it was given do not come back, and a caption comes
+back as the italic paragraph it was drawn as.
+
+**None of them is a round trip you should build on.** A pipeline that edits documents in Word and
+reads them back should treat directives as one-way.
 
 ## What else does not survive
 
@@ -130,6 +154,8 @@ document, an existing path is read and must start with it, and anything else is 
 
 `Reverse\Options` is the whole vocabulary. It is worth knowing because two of its defaults are
 decisions rather than facts:
+
+<!-- reference: word.reverse-options -->
 
 | Key | Default | Notes |
 | --- | --- | --- |

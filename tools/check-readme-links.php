@@ -21,15 +21,14 @@ declare(strict_types=1);
  * because it found nothing to check is worse than no link check at all.
  */
 
-\error_reporting(\E_ALL & ~\E_DEPRECATED & ~\E_USER_DEPRECATED);
-\ini_set('display_errors', 'stderr');
+require_once __DIR__ . '/lib/Autoload.php';
 
-if (\PHP_SAPI !== 'cli') {
-    \fwrite(\STDERR, "The README links are checked from the command line.\n");
-    exit(1);
-}
+use MarkdownOffice\Documentation\Tool\Cli;
+use MarkdownOffice\Documentation\Tool\UnreadableSite;
 
-$root = \dirname(__DIR__);
+Cli::guard('The README links are checked from the command line.');
+
+$root = Cli::root();
 $paths = \array_slice($argv, 1);
 
 if ($paths === []) {
@@ -49,13 +48,13 @@ function commandLineUrl(string $root): string
     $page = $root . '/content/command-line/basic.md';
 
     if (! \is_file($page)) {
-        throw new RuntimeException(\sprintf('The page "%s" is not there.', $page));
+        throw new UnreadableSite(\sprintf('The page "%s" is not there.', $page));
     }
 
     $read = (string) \file_get_contents($page);
 
     if (! \preg_match('/^permalink:\s*(\S+)\s*$/m', $read, $permalink)) {
-        throw new RuntimeException(\sprintf('The page "%s" has no permalink.', $page));
+        throw new UnreadableSite(\sprintf('The page "%s" has no permalink.', $page));
     }
 
     $host = \getenv('MARKDOWN_OFFICE_CANONICAL');
@@ -64,14 +63,14 @@ function commandLineUrl(string $root): string
         $config = $root . '/eleventy.config.js';
 
         if (! \is_file($config)) {
-            throw new RuntimeException(\sprintf('The file "%s" is not there.', $config));
+            throw new UnreadableSite(\sprintf('The file "%s" is not there.', $config));
         }
 
         $source = (string) \file_get_contents($config);
 
         // The default the site falls back to, which is the one the site publishes under.
         if (! \preg_match('/MARKDOWN_OFFICE_CANONICAL\s*\?\?\s*"([^"]+)"/', $source, $published)) {
-            throw new RuntimeException(\sprintf('The file "%s" does not say what the canonical host is.', $config));
+            throw new UnreadableSite(\sprintf('The file "%s" does not say what the canonical host is.', $config));
         }
 
         $host = $published[1];
@@ -146,7 +145,7 @@ $target = null;
 
 try {
     $target = commandLineUrl($root);
-} catch (RuntimeException $e) {
+} catch (UnreadableSite $e) {
     \fwrite(\STDERR, '  fail  ' . $e->getMessage() . "\n");
     exit(1);
 }

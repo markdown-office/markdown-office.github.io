@@ -5,4 +5,5 @@
 /_data/examples.json
 /patches.lock.json
 /.worktrees/
+/.phpunit.cache/
 .DS_Store

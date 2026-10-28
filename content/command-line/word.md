@@ -8,8 +8,9 @@ order: 3
 ---
 
 The Word part decides the direction from the file's first bytes, and `--to` overrides it. The
-options it takes are here; the slides part has two commands and two sets of options, on [For
-presentations](/command-line/presentations/).
+options it takes are here; the slides part has three commands and three sets of options, on [For
+presentations](/command-line/presentations/), and the theme part is on [For
+themes](/command-line/theme/).
 
 ## Options for `to-docx`, `to-odt` and `to-rtf`
 
