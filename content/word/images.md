@@ -4,7 +4,7 @@ permalink: /word/images/
 title: Image options
 summary: The three options that decide what happens to a picture, and the two calls that report what happened to it.
 section: Markdown Word
-order: 4
+order: 5
 ---
 
 Word holds a picture one of three ways, and the option says which. The formats themselves — what
