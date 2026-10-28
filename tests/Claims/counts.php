@@ -79,13 +79,16 @@ it('counts the inline style attributes as the code does', function () {
 it('counts the things that do not survive as the page lists them', function () {
     $lost = RoundTrip::losses();
 
-    expect(\count($lost))->toBe((int) \preg_match_all('/^### /m', Site::page(Site::WORD_ROUND_TRIP)));
+    \preg_match_all('/^### (.+)$/m', Site::page(Site::WORD_ROUND_TRIP), $matches, \PREG_SET_ORDER);
+
+    $listed = \array_map(static fn (array $match): string => $match[1], $matches);
+
+    \sort($lost);
+    \sort($listed);
+
+    expect($listed)->toBe($lost);
 
     says(Site::WORD_ROUND_TRIP, words(\count($lost)) . ' things that do not');
-
-    foreach ($lost as $heading) {
-        says(Site::WORD_ROUND_TRIP, $heading);
-    }
 });
 
 it('counts the renderer\'s methods as the code does', function () {

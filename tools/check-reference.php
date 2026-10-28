@@ -204,7 +204,23 @@ foreach ($vocabularies as $name => $vocabulary) {
             continue;
         }
 
-        if (!\str_contains($cell, (string) $value) && !\str_contains($cell, \number_format((float) $value, 0, '.', ','))) {
+        // A number is written the way the code writes it and the way a reader writes
+        // it: `16777216` and `16,777,216` are the same number.
+        $forms = \is_int($value) || \is_float($value)
+            ? [(string) $value, \number_format((float) $value, 0, '.', ',')]
+            : [(string) $value];
+
+        $found = false;
+
+        foreach ($forms as $form) {
+            if (\str_contains($cell, $form)) {
+                $found = true;
+
+                break;
+            }
+        }
+
+        if (!$found) {
             $report->fail(\sprintf(
                 "%s says \"%s\" is \"%s\"; the code says %s.",
                 where($block),

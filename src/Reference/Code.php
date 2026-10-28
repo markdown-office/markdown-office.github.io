@@ -69,7 +69,7 @@ final class Code
     /**
      * The classes that draw the Word half's directives.
      *
-     * Asked of the registry that holds them: the factory takes the two that are always
+     * Asked of the registry that holds them: the factory takes the ones that are always
      * drawn, and the handlers hold the rest — and the type of a handler's property is
      * the class that draws it.
      *
@@ -119,8 +119,8 @@ final class Code
      *
      * The name is in the docblock of the method that draws it, or — for a class that
      * draws one directive and is called for it — in the docblock of the class. A
-     * docblock that names no directive draws none: the inline styles are one, and they
-     * read the attributes of a style rather than those of a directive.
+     * docblock that names no directive draws none: the inline styles read the
+     * attributes of a style rather than those of a directive.
      */
     private static function directiveOf(
         \ReflectionClass $class,
@@ -228,8 +228,8 @@ final class Code
      * The keys a class reads out of a mapping.
      *
      * A key is read by name, or by a loop over a list of them: the frontmatter block
-     * hands the sections it understands over as a list, and the two sections it hands
-     * over are keys of the block.
+     * hands the sections it understands over as a list, and each of them is a key of
+     * the block.
      *
      * Read through the class itself, because a key of the block is one the block's own
      * reader asks for. The name the parser keeps the block under is not one of them.
