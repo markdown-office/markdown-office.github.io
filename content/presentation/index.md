@@ -279,6 +279,9 @@ PowerPoint open the deck as `[Repaired]`.
 | `MAX_SLIDES` | 1000 |
 | `MAX_STEP` | 500 |
 | `MAX_PIXELS` | 16,777,216 — 4096 × 4096, enforced on the file header |
+| `MAX_BYTES` | 1,048,576 — the size of a chrome file |
+| `MAX_SHAPES` | 100 — the shapes one slide may carry |
+| `MAX_PART_BYTES` | 4,194,304 — one part of a theme's template |
 
 The pixel ceiling is worth a moment. The obvious implementation of it is wrong: measuring a
 raster means decoding it, and decoding is what allocates the memory you were trying to bound. Both
