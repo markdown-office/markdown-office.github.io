@@ -46,8 +46,12 @@ so the document carries a field that starts nowhere. The field is therefore buil
 | `title` | string | none | a heading drawn above the field |
 
 ```markdown
-::toc{depth=2, title="Contents"}
+::toc{depth=2 title="Contents"}
 ```
+
+**Attributes are separated by a space.** A comma is part of the value rather than a separator, so
+`{depth=2, title="Contents"}` reads the depth as `2,` — which is not a number, and the depth falls
+back to the default.
 
 Names are matched case-insensitively and trimmed, so `::TOC` and `:: toc` both work.
 
@@ -77,7 +81,7 @@ and with `numbers=false`, a `\n` before the `\h`.
 
 Contents below are built by Word on open.
 
-::toc{depth=2, title="Contents"}
+::toc{depth=2 title="Contents"}
 
 ## Highlights
 
@@ -111,13 +115,11 @@ The figure was provisional[^1] and has since been confirmed.
 
 Word's own footnote syntax is not what is parsed here. `:footnote[…]` is this suite's spelling.
 
-> **Measured, and it does not currently reach a footnote.** Building
-> `Body with a note:footnote[Source: the ledger.]` with the library's own default parser produced
-> a `.docx` with **no `word/footnotes.xml` in it at all**, and the literal text
-> `:footnote[Source: the ledger.]` in the body. The same happened with an explicit parser
-> carrying `GenericDirectiveExtension`. This page says so rather than describing the intended
-> behaviour, because the build on this site checks the difference and would fail the example
-> otherwise.
+> **A directive needs the whitespace in front of it.** `Body with a note:footnote[Source: the
+> ledger.]` is prose — a name that follows a word is not a directive — and the `.docx` carries the
+> literal text `:footnote[Source: the ledger.]` in the body. Written
+> `Body with a note :footnote[Source: the ledger.]`, it is a real Word footnote: the `.docx`
+> carries `word/footnotes.xml`, and a `w:footnoteReference` stands where the note was written.
 
 - The mark sits in the run the directive stood in, so no post-pass is needed.
 - The note is set in the `paragraph` slot's character half, not in whatever heading the mark sits in.
@@ -238,9 +240,10 @@ because an element no reader knows is not a shape.
 The type is one of `textinput`, `checkbox` or `dropdown`, and `textinput` is the default. A dropdown
 carries the choices it offers, separated by commas.
 
-**A dropdown turns the document into a form.** Word only lets a reader choose from one while the
-document is protected for forms, so a document with a dropdown in it is protected for forms. A
-field that cannot be answered is a field that is not there.
+**A dropdown with entries turns the document into a form.** Word only lets a reader choose from one
+while the document is protected for forms, so a document with a dropdown that offers choices is
+protected for forms. A dropdown without entries is written as a field with nothing to choose from,
+and nothing is protected: there is nothing to choose.
 
 | Attribute | Carries |
 | --- | --- |

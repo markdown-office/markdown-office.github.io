@@ -47,7 +47,7 @@ Checked, rather than assumed:
 | Written | Comes back as |
 | --- | --- |
 | `::toc{depth=2}` | `Press F9 to build the table of contents.` |
-| `:footnote[Source: the ledger.]` | `:footnote[Source: the ledger.]` |
+| `:footnote[Source: the ledger.]` | nothing |
 | `:brand[Bakery]` | `Bakery` |
 | `::image[Revenue by quarter]{src="chart.png" width=4 height=2}` | a Markdown image with the alt text — the picture, without the size it was placed at |
 | `::caption[Figure 1: Revenue by quarter]{}` | `*Figure 1: Revenue by quarter*` — the text, in italics |
@@ -61,9 +61,9 @@ The first is **not** a directive and never was on the way back — the document 
 that sentence, inside the table-of-contents field, waiting for Word to build it. The reader reads
 the field's content and finds a sentence.
 
-The second round trips only by accident: `:footnote[…]` does not currently produce a
-`footnotes.xml` at all, so what the reader finds is the source text that was always in the body.
-See [Word directives](/word/directives/).
+The second is a real Word footnote, and none of it comes back: the reader reads the body and not
+the footnotes, so neither the mark nor the note is in what it finds. See
+[Word directives](/word/directives/).
 
 The third keeps the word and loses the style: `:brand[Bakery]` is written as direct formatting — a
 colour, a weight, a size — and the reader reads bold, italic and strike and no colour. The word is

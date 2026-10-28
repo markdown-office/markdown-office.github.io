@@ -17,7 +17,18 @@ carry ignored.
 `withAllExtensions()` is not the answer either: it does read frontmatter, but it leaves directives
 out, so `::toc` and `:footnote` stop being directives and become the text an author wrote.
 
-So both, named:
+So both, named — `withFrontMatter()` is the default flavour and the front matter, and nothing else:
+
+```php
+use MarkdownWord\MarkdownToWord;
+use MarkdownWord\Parser\CommonMarkParser;
+
+$parser = CommonMarkParser::withFrontMatter();
+
+(new MarkdownToWord($markdown, parser: $parser))->save('out.docx');
+```
+
+The same two things by hand are the extension list the constructor takes:
 
 ```php
 use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;

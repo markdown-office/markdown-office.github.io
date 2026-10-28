@@ -103,18 +103,14 @@ Ten directives, and all of them are real Word features rather than Markdown dres
 
 **`::toc`** — a table of contents Word can build. The field goes out empty and marked dirty, with
 `w:updateFields` set, because PHPWord's cached page numbers are all `1` and a reader who never
-updates a field shows them as they are.
-| Attribute | Type | Default |
-| --- | --- | --- |
-| `depth` | integer | `maxHeadingLevel`, which is `6`, clamped to 1–6 |
-| `numbers` | boolean | `true`; `false` is Word's `\n` |
-| `title` | string | none — a heading drawn above the field |
+updates a field shows them as they are. The attributes it takes are on
+[Word directives](/word/directives/#toc--a-table-of-contents-word-can-build).
 
 {% example "A table of contents Word can build" %}
 ````md word
 # Quarterly report
 
-::toc{depth=2, title="Contents"}
+::toc{depth=2 title="Contents"}
 
 ## Highlights
 
@@ -132,11 +128,10 @@ The field instruction it writes is exactly `TOC \o "1-2" \h \z \u`, and with `nu
 **`:footnote[…]`** — a Word footnote. The text in the brackets is the note, inserted as text
 rather than parsed as Markdown. There are no attributes.
 
-> **Measured, and it does not currently reach a footnote.** Building
-> `Body with a note:footnote[Source: the ledger.]` produced a `.docx` with **no
-> `word/footnotes.xml` in it at all**, and the literal text `:footnote[Source: the ledger.]` in
-> the body. This page says so rather than describing the intended behaviour, because the build on
-> this site checks the difference.
+> **A directive needs the whitespace in front of it.** `Body with a note:footnote[Source: the
+> ledger.]` is prose — a name that follows a word is not a directive — and the `.docx` carries the
+> literal text in the body. Written `Body with a note :footnote[Source: the ledger.]`, it is a real
+> Word footnote, and the `.docx` carries `word/footnotes.xml`.
 
 **`:style[…]`** — a word in a style. The text in the brackets is the word, and the name is the
 style: `:brand[Bakery]` is "Bakery" in the theme's `brand` style, and `:style[Bakery]{color=00B4D8}`
@@ -153,8 +148,9 @@ opposite of the presentation half's policy, and deliberate — a parser nobody a
 should not change the syntax of every document converted after it.
 
 **A directive a format cannot carry is not refused either.** A text box, a shape and a form field
-are written by `.docx` alone, and the columns of a section are written by `.odt` but not by
-`.rtf`; the other two formats are given the author's own characters back and the loss is reported.
+are written by `.docx` alone: the other two formats are given the author's own characters back, and
+the loss is reported. The columns of a section are written by `.docx` and `.odt`, and not by
+`.rtf` — the section break survives there, and the columns do not.
 
 More, including what a `:::toc` container does: [Word directives](/word/directives/).
 
@@ -241,29 +237,24 @@ $converter->convertTo(Format::Rtf, 'notes.rtf');
 
 ### The parser, if you want frontmatter
 
+`withFrontMatter()` is the one — the default flavour and the front matter, and nothing else:
+
 ```php
-use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
-use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
-use MarkdownOffice\CommonMark\Directive\GenericDirectiveExtension;
 use MarkdownWord\MarkdownToWord;
 use MarkdownWord\Parser\CommonMarkParser;
 
-$parser = new CommonMarkParser([
-    GithubFlavoredMarkdownExtension::class,
-    GenericDirectiveExtension::class,
-    FrontMatterExtension::class,
-]);
+$parser = CommonMarkParser::withFrontMatter();
 
 (new MarkdownToWord($markdown, parser: $parser))->save('out.docx');
 ```
 
-Both, named. `withAllExtensions()` is not the answer either — it reads frontmatter and drops
-directives, so `::toc` and `:footnote` stop being directives and become the text an author wrote.
+`withAllExtensions()` is not the answer either — it reads frontmatter and drops directives, so
+`::toc` and `:footnote` stop being directives and become the text an author wrote.
 
-The available flavours are `commonMarkOnly()`, `extended()`, `directives()` (the default) and
-`withAllExtensions()`. Strict mode — a `DirectiveRegistry` that refuses unknown names — is **not
-reachable** from `CommonMarkParser`, because the extension list is a list of class names and each
-is built with `new`.
+The available flavours are `commonMarkOnly()`, `extended()`, `directives()` (the default),
+`withAllExtensions()` and `withFrontMatter()`. Strict mode — a `DirectiveRegistry` that refuses
+unknown names — is **not reachable** from `CommonMarkParser`, because the extension list is a list
+of class names and each is built with `new`.
 
 ### Back the other way
 
