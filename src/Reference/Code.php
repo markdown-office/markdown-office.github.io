@@ -12,14 +12,11 @@ use MarkdownWord\Render\Handlers;
  * The names the Word half reads out of what it is given.
  *
  * The lists the site checks are read out of the library's own code rather than written
- * down here: a name written down here is a second copy of the thing this checks, and a
- * second copy is what this whole mechanism exists to remove.
+ * down here: a name written down here is a second copy of the thing this checks.
  *
  * The code is read rather than asked, because the library holds no list of the names it
- * reads. A directive reads the attributes it needs one accessor at a time, and the name
- * is in the call; a frontmatter key is read the same way. A read that moves to another
- * class leaves the name out of the list here, and the check says so — which is the
- * answer a reader of this class wants.
+ * reads — the name is in the call that reads it. A read that moves to another class
+ * leaves the name out of the list here, and the check says so.
  */
 final class Code
 {
@@ -70,8 +67,8 @@ final class Code
      * The classes that draw the Word half's directives.
      *
      * Asked of the registry that holds them: the factory takes the ones that are always
-     * drawn, and the handlers hold the rest — and the type of a handler's property is
-     * the class that draws it.
+     * drawn, and the handlers hold the rest — the type of a handler's property is the
+     * class that draws it.
      *
      * @return list<class-string>
      */
@@ -101,8 +98,6 @@ final class Code
     /**
      * The class a type names, or null when it names no class.
      *
-     * @param \ReflectionType|null $type
-     *
      * @return class-string|null
      */
     private static function namedTypeOf(?\ReflectionType $type): ?string
@@ -117,10 +112,10 @@ final class Code
     /**
      * The directive a method draws, as the code names it.
      *
-     * The name is in the docblock of the method that draws it, or — for a class that
-     * draws one directive and is called for it — in the docblock of the class. A
-     * docblock that names no directive draws none: the inline styles read the
-     * attributes of a style rather than those of a directive.
+     * The name is in the docblock of the method that draws it, or — for a class drawn
+     * through `__invoke` — in the docblock of the class. A docblock that names no
+     * directive draws none: the inline styles read a style's attributes, not those of
+     * a directive.
      */
     private static function directiveOf(
         \ReflectionClass $class,
@@ -173,9 +168,8 @@ final class Code
     /**
      * The methods of a class a method reaches, itself included.
      *
-     * A method that reads an attribute in a helper of its own reads it for the caller
-     * too: the table of contents asks for its depth in a helper, and the depth is an
-     * attribute of the directive.
+     * A helper's reads are the caller's too: the table of contents asks for its depth
+     * in a helper, and the depth is an attribute of the directive.
      *
      * @return list<string>
      */
@@ -208,8 +202,6 @@ final class Code
 
     /**
      * The source of a method, without its comments.
-     *
-     * A comment names things in prose, and only a call says what the code reads.
      */
     private static function bodyOf(string $class, string $method): string
     {
@@ -232,7 +224,7 @@ final class Code
      * the block.
      *
      * Read through the class itself, because a key of the block is one the block's own
-     * reader asks for. The name the parser keeps the block under is not one of them.
+     * reader asks for; the name the parser keeps the block under is not one of them.
      *
      * @return list<string>
      */

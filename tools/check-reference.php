@@ -180,9 +180,9 @@ foreach ($vocabularies as $name => $vocabulary) {
             continue;
         }
 
-        // A copy of the list, or of part of it. A table that lists nothing but names
+        // A copy of the list, or of part of it: a table that lists nothing but names
         // of the list is a copy of it, and a copy is a second home for a list that is
-        // meant to have one — and the copy nobody reads is the one that is wrong.
+        // meant to have one.
         if ($other->names === [] || \array_diff($other->names, $expected) !== []) {
             continue;
         }

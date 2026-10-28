@@ -77,8 +77,7 @@ final class Site
      * The paragraphs of a section of a page, as the page wrote them.
      *
      * A paragraph rather than a section, because a section carries a table and a fence as
-     * well as prose, and the names in code font are the ones the prose lists: a table's
-     * names are its own.
+     * well as prose, and a table's names in code font are its own.
      *
      * @return list<string>
      */

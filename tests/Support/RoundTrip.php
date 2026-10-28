@@ -11,8 +11,7 @@ use MarkdownWord\WordToMarkdown;
  *
  * The reader is asked, and its answer is what the page has to say: a thing that comes
  * back whole is not a thing that does not survive. The page's count of them is the
- * number of answers that say so — which is what the library knows, and not what the
- * page lists.
+ * number of answers that say so, not what the page lists.
  */
 final class RoundTrip
 {

@@ -94,7 +94,7 @@ final class Pages
             $blocks[] = $found['block'];
 
             // Past the block, so that its rows are not read as blocks of their own: a
-            // table is one table, and a row of it is not a second copy of anything.
+            // row of a table is not a second copy of the list.
             $number = $found['end'];
         }
 

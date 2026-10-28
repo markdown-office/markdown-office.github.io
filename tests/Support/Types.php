@@ -53,7 +53,7 @@ final class Types
     /**
      * The types the paragraphs name, in the paragraph that names them.
      *
-     * The paragraph rather than the sentence: a list that goes on after the first full
+     * The paragraph rather than the sentence: a list that goes on past the first full
      * stop is the list the page names all the same, and a sentence that ends at the
      * first period is how a type nobody draws slips in unlooked-at.
      *

@@ -214,8 +214,7 @@ final class Vocabularies
     /**
      * The exceptions that sit beside `InvalidInput` rather than under it.
      *
-     * The phrase is the one the pages write, and the exceptions it is written for are the
-     * ones the code does not put under `InvalidInput`: a page that calls one of them an
+     * The value is the phrase the pages write: a page that calls one of them an
      * `InvalidInput` says the caller can fix it, and there are failures nobody can.
      *
      * @param class-string $base
