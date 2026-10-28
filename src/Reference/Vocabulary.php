@@ -16,7 +16,7 @@ final class Vocabulary
 {
     /**
      * @param array<string, list<string>> $lists  The code's lists, keyed by where each is kept.
-     * @param array<string, int>           $values A value per name, where the code has one.
+     * @param array<string, string|int>    $values A value per name, where the code has one.
      */
     public function __construct(
         public readonly array $lists,

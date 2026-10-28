@@ -204,9 +204,9 @@ foreach ($vocabularies as $name => $vocabulary) {
             continue;
         }
 
-        if (!\str_contains($cell, (string) $value) && !\str_contains($cell, \number_format($value, 0, '.', ','))) {
+        if (!\str_contains($cell, (string) $value) && !\str_contains($cell, \number_format((float) $value, 0, '.', ','))) {
             $report->fail(\sprintf(
-                "%s says \"%s\" is \"%s\"; the code says %d.",
+                "%s says \"%s\" is \"%s\"; the code says %s.",
                 where($block),
                 $one,
                 $cell,

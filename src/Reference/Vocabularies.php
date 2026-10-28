@@ -64,9 +64,12 @@ final class Vocabularies
             'presentation.style-keys' => new Vocabulary([
                 'StyleMapping::KEYS' => StyleMapping::KEYS,
             ]),
-            'presentation.exceptions' => new Vocabulary([
-                'MarkdownPresentation\\Exception' => self::exceptions(PresentationException::class),
-            ]),
+            'presentation.exceptions' => new Vocabulary(
+                [
+                    'MarkdownPresentation\\Exception' => self::exceptions(PresentationException::class),
+                ],
+                self::besideInput(PresentationException::class),
+            ),
             'presentation.themes' => new Vocabulary([
                 'themes/' => self::themes(PresentationRenderer::class),
             ]),
@@ -117,9 +120,12 @@ final class Vocabularies
                     Format::COLUMNS,
                 ],
             ]),
-            'word.exceptions' => new Vocabulary([
-                'MarkdownWord\\Exception' => self::exceptions(WordException::class),
-            ]),
+            'word.exceptions' => new Vocabulary(
+                [
+                    'MarkdownWord\\Exception' => self::exceptions(WordException::class),
+                ],
+                self::besideInput(WordException::class),
+            ),
             'word.options' => new Vocabulary([
                 'Options::toArray()' => \array_keys((new Options())->toArray()),
             ]),
@@ -189,6 +195,33 @@ final class Vocabularies
         \sort($names);
 
         return $names;
+    }
+
+    /**
+     * The exceptions that sit beside `InvalidInput` rather than under it.
+ *
+ * The phrase is the one the pages write, and the exceptions it is written for are the
+ * ones the code does not put under `InvalidInput`: a page that calls one of them an
+ * `InvalidInput` says the caller can fix it, and there are failures nobody can.
+ *
+ * @param class-string $base
+ *
+ * @return array<string, string>
+ */
+public static function besideInput(string $base): array
+    {
+        $namespace = \substr($base, 0, (int) \strrpos($base, '\\'));
+        $beside = [];
+
+        foreach (self::exceptions($base) as $name) {
+            if ($name === 'InvalidInput' || \is_subclass_of($namespace . '\\' . $name, $namespace . '\\InvalidInput')) {
+                continue;
+            }
+
+            $beside[$name] = '**not** `InvalidInput`';
+        }
+
+        return $beside;
     }
 
     /**
