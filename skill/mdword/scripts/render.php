@@ -34,6 +34,16 @@ declare(strict_types=1);
 const HOST = '127.0.0.1';
 
 /**
+ * A render that did not happen, and why.
+ *
+ * A dedicated class rather than the generic one, because the message is the whole of what a
+ * caller gets: a script that says "something went wrong" has said nothing.
+ */
+final class RenderFailed extends RuntimeException
+{
+}
+
+/**
  * The settings folder each application keeps its control key in.
  *
  * The file is named after the port it belongs to, so two applications on two ports do not
@@ -61,7 +71,7 @@ function application(int $port): array
     $home = (string) (\getenv('HOME') ?: \getenv('USERPROFILE') ?: '');
 
     if ($home === '') {
-        throw new RuntimeException('The home folder could not be found, so the control key could not be.');
+        throw new RenderFailed('The home folder could not be found, so the control key could not be.');
     }
 
     $system = \PHP_OS_FAMILY;
@@ -88,7 +98,7 @@ function application(int $port): array
         return ['app' => $app, 'key' => $key];
     }
 
-    throw new RuntimeException(\sprintf(
+    throw new RenderFailed(\sprintf(
         'No control key was found for port %d. Start the application with `--control %d` and try again.',
         $port,
         $port,
@@ -103,7 +113,7 @@ function connect(int $port): mixed
     $socket = @\stream_socket_client(\sprintf('tcp://%s:%d', HOST, $port), $errno, $error, 10);
 
     if ($socket === false) {
-        throw new RuntimeException(\sprintf(
+        throw new RenderFailed(\sprintf(
             'Nothing is listening on port %d (%s). Start the application with `--control %d` first.',
             $port,
             $error,
@@ -134,17 +144,17 @@ function ask(mixed $socket, string $key, string $method, array $params = []): ar
     $line = \fgets($socket);
 
     if ($line === false) {
-        throw new RuntimeException(\sprintf('The application closed the connection during %s.', $method));
+        throw new RenderFailed(\sprintf('The application closed the connection during %s.', $method));
     }
 
     $reply = \json_decode(\line, true);
 
     if (! \is_array($reply)) {
-        throw new RuntimeException(\sprintf('The reply to %s was not JSON.', $method));
+        throw new RenderFailed(\sprintf('The reply to %s was not JSON.', $method));
     }
 
     if (($reply['ok'] ?? false) !== true) {
-        throw new RuntimeException(\sprintf(
+        throw new RenderFailed(\sprintf(
             '%s: %s',
             $method,
             (string) ($reply['error'] ?? 'the application said nothing about why'),
@@ -186,7 +196,7 @@ function open(mixed $socket, string $key, string $document): array
         return ['app' => $app, 'opened' => (string) ($reply['path'] ?? $document)];
     }
 
-    throw new RuntimeException('The application answered, but it knows neither `file.open` nor `app.open`.');
+    throw new RenderFailed('The application answered, but it knows neither `file.open` nor `app.open`.');
 }
 
 /**
@@ -217,7 +227,7 @@ function pages(mixed $socket, string $key): int
 function render(mixed $socket, string $key, string $document, string $directory, string $app): array
 {
     if (! \is_dir($directory) && ! @\mkdir($directory, 0o777, true) && ! \is_dir($directory)) {
-        throw new RuntimeException(\sprintf('The directory "%s" could not be made.', $directory));
+        throw new RenderFailed(\sprintf('The directory "%s" could not be made.', $directory));
     }
 
     open($socket, $key, $document);
@@ -238,7 +248,7 @@ function render(mixed $socket, string $key, string $document, string $directory,
         ask($socket, $key, 'ui.render', $params);
 
         if (! \is_file($path)) {
-            throw new RuntimeException(\sprintf('The application wrote no picture for page %d.', $page));
+            throw new RenderFailed(\sprintf('The application wrote no picture for page %d.', $page));
         }
 
         $written[] = $path;
@@ -256,20 +266,29 @@ $document = null;
 $directory = \sys_get_temp_dir();
 $port = null;
 
-for ($at = 0; $at < \count($arguments); $at++) {
-    if ($arguments[$at] === '--out') {
-        $directory = $arguments[$at + 1] ?? $directory;
-        $at++;
+// The arguments are read with a cursor rather than by moving the loop's own counter: a
+// counter that moves twice is a counter that is wrong once.
+$cursor = 0;
+
+while ($cursor < \count($arguments)) {
+    $argument = $arguments[$cursor];
+
+    if ($argument === '--out') {
+        $directory = $arguments[$cursor + 1] ?? $directory;
+        $cursor += 2;
+
         continue;
     }
 
-    if ($arguments[$at] === '--port') {
-        $port = (int) ($arguments[$at + 1] ?? 0);
-        $at++;
+    if ($argument === '--port') {
+        $port = (int) ($arguments[$cursor + 1] ?? 0);
+        $cursor += 2;
+
         continue;
     }
 
-    $document ??= $arguments[$at];
+    $document ??= $argument;
+    $cursor++;
 }
 
 if ($document === null) {

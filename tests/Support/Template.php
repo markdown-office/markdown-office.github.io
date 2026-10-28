@@ -28,6 +28,31 @@ final class Template
     private const W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 
     /**
+     * The part a Word document holds its body in.
+     */
+    private const BODY_PART = 'word/document.xml';
+
+    /**
+     * The part that says what the package holds.
+     */
+    private const TYPES_PART = '[Content_Types].xml';
+
+    /**
+     * The name the templates this builds are given.
+     */
+    private const STEM = '/markdown-office-template-';
+
+    /**
+     * The extension a Word document has.
+     */
+    private const EXTENSION = '.docx';
+
+    /**
+     * The extension a Word template has.
+     */
+    private const TEMPLATE_EXTENSION = '.dotx';
+
+    /**
      * A template with a content control and a field for a value.
      */
     public static function withControl(string $tag = 'body', string $alias = 'Not the tag'): string
@@ -58,18 +83,18 @@ final class Template
      */
     public static function dotx(string $source): string
     {
-        $path = \sys_get_temp_dir() . '/markdown-office-template-' . \bin2hex(\random_bytes(6)) . '.dotx';
+        $path = \sys_get_temp_dir() . self::STEM . \bin2hex(\random_bytes(6)) . self::TEMPLATE_EXTENSION;
 
         \copy($source, $path);
 
         $zip = new \ZipArchive();
         $zip->open($path);
 
-        $declared = (string) $zip->getFromName('[Content_Types].xml');
+        $declared = (string) $zip->getFromName(self::TYPES_PART);
 
-        $zip->deleteName('[Content_Types].xml');
+        $zip->deleteName(self::TYPES_PART);
         $zip->addFromString(
-            '[Content_Types].xml',
+            self::TYPES_PART,
             \str_replace(
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml',
@@ -87,7 +112,7 @@ final class Template
      */
     public static function written(MarkdownTemplate $template): string
     {
-        $path = \sys_get_temp_dir() . '/markdown-office-written-' . \bin2hex(\random_bytes(6)) . '.docx';
+        $path = \sys_get_temp_dir() . '/markdown-office-written-' . \bin2hex(\random_bytes(6)) . self::EXTENSION;
 
         $template->save($path);
 
@@ -99,7 +124,7 @@ final class Template
      */
     public static function textOf(string $path): string
     {
-        return Package::part($path, 'word/document.xml');
+        return Package::part($path, self::BODY_PART);
     }
 
     /**
@@ -107,7 +132,7 @@ final class Template
      */
     public static function xmlOf(string $path): string
     {
-        return Package::part($path, 'word/document.xml');
+        return Package::part($path, self::BODY_PART);
     }
 
     /**
@@ -122,7 +147,7 @@ final class Template
         $section->addText('@@reference@@');
         $section->addText('PLACEHOLDER');
 
-        $path = \sys_get_temp_dir() . '/markdown-office-template-' . \bin2hex(\random_bytes(6)) . '.docx';
+        $path = \sys_get_temp_dir() . self::STEM . \bin2hex(\random_bytes(6)) . self::EXTENSION;
 
         $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
         $writer->save($path);
@@ -221,7 +246,7 @@ final class Template
         $zip = new \ZipArchive();
         $zip->open($path);
 
-        $xml = (string) $zip->getFromName('word/document.xml');
+        $xml = (string) $zip->getFromName(self::BODY_PART);
         $zip->close();
 
         $dom = new \DOMDocument();
@@ -229,14 +254,14 @@ final class Template
 
         $change($dom);
 
-        $written = \sys_get_temp_dir() . '/markdown-office-template-' . \bin2hex(\random_bytes(6)) . '.docx';
+        $written = \sys_get_temp_dir() . self::STEM . \bin2hex(\random_bytes(6)) . self::EXTENSION;
 
         \copy($path, $written);
 
         $out = new \ZipArchive();
         $out->open($written);
-        $out->deleteName('word/document.xml');
-        $out->addFromString('word/document.xml', (string) $dom->saveXML());
+        $out->deleteName(self::BODY_PART);
+        $out->addFromString(self::BODY_PART, (string) $dom->saveXML());
         $out->close();
 
         return $written;
@@ -247,7 +272,7 @@ final class Template
      */
     private static function copied(string $path, string $name): string
     {
-        $written = \sys_get_temp_dir() . '/markdown-office-' . $name . '-' . \bin2hex(\random_bytes(6)) . '.docx';
+        $written = \sys_get_temp_dir() . '/markdown-office-' . $name . '-' . \bin2hex(\random_bytes(6)) . self::EXTENSION;
 
         \copy($path, $written);
 

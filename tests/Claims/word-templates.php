@@ -19,6 +19,14 @@ use MarkdownWord\Template\MarkdownTemplate;
  * that has to do it.
  */
 
+/**
+ * The content the claims put into a template.
+ *
+ * The same words every time, because a claim is about where the words went and not about
+ * what they were.
+ */
+const CONTENT = 'The content.';
+
 it('says that body is this library own convention, and names the constant', function () {
     says(Site::WORD_TEMPLATES, '`body` is this library\'s convention, not Word\'s');
 
@@ -33,9 +41,9 @@ it('matches a control on its tag rather than on its alias', function () {
     // instead of into the control.
     $template = Template::withControl('body', 'A different label');
 
-    $output = Template::written((new MarkdownTemplate($template))->insert('The content.'));
+    $output = Template::written((new MarkdownTemplate($template))->insert(CONTENT));
 
-    expect(Template::xmlOf($output))->toContain('The content.')
+    expect(Template::xmlOf($output))->toContain(CONTENT)
         ->and(Template::xmlOf($output))->not->toContain('w:alias w:val="A different label"');
 });
 
@@ -47,7 +55,7 @@ it('says that filled fields are unlinked, and takes the field away', function ()
     $output = Template::written(
         (new MarkdownTemplate($template))
             ->fields(['reference' => 'REF-1'])
-            ->insert('The content.'),
+            ->insert(CONTENT),
     );
 
     $xml = Template::xmlOf($output);
@@ -61,9 +69,9 @@ it('says that a template with no control takes the content at the end of its bod
 
     $template = Template::withoutControl();
 
-    $output = Template::written((new MarkdownTemplate($template))->insert('The content.'));
+    $output = Template::written((new MarkdownTemplate($template))->insert(CONTENT));
 
-    expect(Template::textOf($output))->toContain('The content.');
+    expect(Template::textOf($output))->toContain(CONTENT);
 });
 
 it('says that a template with no control can be refused instead, and refuses it by name', function () {
@@ -76,7 +84,7 @@ it('says that a template with no control can be refused instead, and refuses it 
     expect(
         fn () => (new MarkdownTemplate($template))
             ->contentFallback(ContentFallback::Error)
-            ->insert('The content.')
+            ->insert(CONTENT)
             ->toString(),
     )->toThrow(NoContentControl::class);
 });
@@ -86,7 +94,7 @@ it('says that a filled-in template is always a document, and writes one', functi
 
     $template = Template::dotx(Template::withControl());
 
-    $output = Template::written((new MarkdownTemplate($template))->insert('The content.'));
+    $output = Template::written((new MarkdownTemplate($template))->insert(CONTENT));
 
     // The result is a document whatever went in, and the file says so: the content type
     // is the one a document has and not the one a template has.

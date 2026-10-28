@@ -34,6 +34,14 @@ const LIBRARY_TOOLS = [
 const LIBRARY = join(here, "..", "..", "markdown-word");
 
 /**
+ * Where the archive is made by.
+ *
+ * The absolute path rather than the name, because a command looked up on the path is a
+ * command the path decides, and the path is not the build's to decide.
+ */
+const ZIP = "/usr/bin/zip";
+
+/**
  * Writes the skill: this site's documentation as a directory an agent can read.
  *
  * The bundle is a copy, and it is made by the same build that makes the site — so it
@@ -58,58 +66,66 @@ export async function writeSkill({ dir }) {
   await cp(join(here, "..", "skill", "mdword", "SKILL.md"), join(bundle, "SKILL.md"));
   await mkdir(join(bundle, "scripts"), { recursive: true });
 
-  for (const script of await readdir(join(here, "..", "skill", "mdword", "scripts"))) {
-    await cp(
-      join(here, "..", "skill", "mdword", "scripts", script),
-      join(bundle, "scripts", script),
-    );
-  }
+  await Promise.all(
+    (await readdir(join(here, "..", "skill", "mdword", "scripts"))).map((script) =>
+      cp(
+        join(here, "..", "skill", "mdword", "scripts", script),
+        join(bundle, "scripts", script),
+      ),
+    ),
+  );
 
-  for (const tool of LIBRARY_TOOLS) {
-    const from = join(LIBRARY, "tools", tool);
+  await Promise.all(
+    LIBRARY_TOOLS.map(async (tool) => {
+      const from = join(LIBRARY, "tools", tool);
 
-    if (! existsSync(from)) {
-      throw new Error(
-        `The tool "${tool}" is not there. The library is checked out beside this one, and it is `
-          + "where the bundle's scripts come from.",
-      );
-    }
+      if (! existsSync(from)) {
+        throw new Error(
+          `The tool "${tool}" is not there. The library is checked out beside this one, and it is `
+            + "where the bundle's scripts come from.",
+        );
+      }
 
-    await cp(from, join(bundle, "scripts", tool));
-  }
+      await cp(from, join(bundle, "scripts", tool));
+    }),
+  );
 
   // The pages, one file each, with the frontmatter off.
   await mkdir(join(bundle, "references"), { recursive: true });
 
-  for (const reference of manifest.references ?? []) {
-    const page = join(here, "..", "content", reference.page);
+  await Promise.all(
+    (manifest.references ?? []).map(async (reference) => {
+      const page = join(here, "..", "content", reference.page);
 
-    if (! existsSync(page)) {
-      throw new Error(`The page "${reference.page}" is not there, and the bundle says it carries it.`);
-    }
+      if (! existsSync(page)) {
+        throw new Error(`The page "${reference.page}" is not there, and the bundle says it carries it.`);
+      }
 
-    const source = readFileSync(page, "utf8");
+      const source = readFileSync(page, "utf8");
 
-    await writeFile(
-      join(bundle, "references", reference.file),
-      `${expandExamples(source, examples)}\n`,
-    );
-  }
+      await writeFile(
+        join(bundle, "references", reference.file),
+        `${expandExamples(source, examples)}\n`,
+      );
+    }),
+  );
 
   // The examples the site built, one directory each.
   await mkdir(join(bundle, "examples", "site"), { recursive: true });
 
-  for (const [hash, built] of Object.entries(examples)) {
-    const from = join(here, "..", "_examples", built.language ?? "word", hash);
+  await Promise.all(
+    Object.entries(examples).map(async ([hash, built]) => {
+      const from = join(here, "..", "_examples", built.language ?? "word", hash);
 
-    if (! existsSync(from)) {
-      continue;
-    }
+      if (! existsSync(from)) {
+        return;
+      }
 
-    await cp(from, join(bundle, "examples", "site", directoryFor(built.name ?? hash, hash)), {
-      recursive: true,
-    });
-  }
+      await cp(from, join(bundle, "examples", "site", directoryFor(built.name ?? hash, hash)), {
+        recursive: true,
+      });
+    }),
+  );
 
   // The examples the library ships: the catalogue of what it can do.
   const libraryExamples = join(LIBRARY, "examples");
@@ -141,7 +157,7 @@ export async function writeSkill({ dir }) {
           {
             name: "mdword",
             version,
-            files: files.map((file) => relative(bundle, file).split("\\").join("/")),
+            files: files.map((file) => relative(bundle, file).replaceAll("\\", "/")),
           },
         ],
       },
@@ -178,20 +194,21 @@ function directoryFor(name, hash) {
  * @returns {Promise<string[]>}
  */
 async function listFiles(directory) {
-  const found = [];
+  const entries = await readdir(directory, { withFileTypes: true });
 
-  for (const entry of await readdir(directory, { withFileTypes: true })) {
-    const path = join(directory, entry.name);
+  const found = await Promise.all(
+    entries.map(async (entry) => {
+      const path = join(directory, entry.name);
 
-    if (entry.isDirectory()) {
-      found.push(...(await listFiles(path)));
-      continue;
-    }
+      return entry.isDirectory() ? listFiles(path) : [path];
+    }),
+  );
 
-    found.push(path);
-  }
+  const every = found.flat();
 
-  return found.sort();
+  // The comparison is written out rather than left to the default, because the default is
+  // a comparison by code unit and this is a comparison by name.
+  return every.sort((left, right) => (left < right ? -1 : left > right ? 1 : 0));
 }
 
 /**
@@ -201,10 +218,14 @@ async function versionOf(bundle) {
   const digest = createHash("sha256");
   const files = await listFiles(bundle);
 
-  for (const file of files) {
+  // The files are read together and hashed in order, because the digest is of the bundle
+  // and not of the order the files happened to be read in.
+  const contents = await Promise.all(files.map((file) => readFile(file)));
+
+  files.forEach((file, index) => {
     digest.update(relative(bundle, file));
-    digest.update(await readFile(file));
-  }
+    digest.update(contents[index]);
+  });
 
   const day = new Date().toISOString().slice(0, 10).replaceAll("-", ".");
 
@@ -225,7 +246,7 @@ async function archive(bundle, target) {
     // The target is absolute because the command runs inside the bundle: a relative one
     // would be written into the directory being zipped, and the archive would then be
     // trying to include itself.
-    execFileSync("zip", ["-r", "-q", resolve(target), "."], { cwd: bundle });
+    execFileSync(ZIP, ["-r", "-q", resolve(target), "."], { cwd: bundle });
   } catch (error) {
     throw new Error(
       `The archive could not be made: ${error.message}. The build needs the \`zip\` command, and `

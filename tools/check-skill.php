@@ -52,6 +52,7 @@ require_once __DIR__ . '/lib/Autoload.php';
 
 use MarkdownOffice\Documentation\Tool\Cli;
 use MarkdownOffice\Documentation\Tool\Report;
+use MarkdownOffice\Documentation\Tool\UnreadableSkill;
 
 Cli::guard('The skill is checked from the command line.');
 Cli::autoload();
@@ -68,6 +69,11 @@ if (!\is_dir($bundle)) {
 $report = new Report();
 
 /**
+ * The page the skill is installed from, as the site's own path.
+ */
+const SKILL_PAGE = 'content/skills/index.md';
+
+/**
  * The manifest: the pages the bundle carries, and the files they are carried in.
  *
  * @return array{sections: list<string>, references: list<array{file: string, page: string}>}
@@ -77,13 +83,13 @@ function manifest(string $root): array
     $file = $root . '/skill/mdword/pages.json';
 
     if (!\is_file($file)) {
-        throw new RuntimeException('skill/mdword/pages.json could not be read.');
+        throw new UnreadableSkill('skill/mdword/pages.json could not be read.');
     }
 
     $parsed = \json_decode((string) \file_get_contents($file), true);
 
     if (!\is_array($parsed)) {
-        throw new RuntimeException('skill/mdword/pages.json could not be read as JSON.');
+        throw new UnreadableSkill('skill/mdword/pages.json could not be read as JSON.');
     }
 
     return [
@@ -148,7 +154,7 @@ function permalink(string $page): string
     $source = (string) \file_get_contents($page);
 
     if (\preg_match('/^permalink:\s*(\S+)\s*$/m', $source, $found) !== 1) {
-        throw new RuntimeException(\sprintf('The page "%s" has no permalink.', $page));
+        throw new UnreadableSkill(\sprintf('The page "%s" has no permalink.', $page));
     }
 
     return $found[1];
@@ -171,7 +177,7 @@ function canonical(string $root): string
     $source = (string) \file_get_contents($root . '/eleventy.config.js');
 
     if (\preg_match('/MARKDOWN_OFFICE_CANONICAL\s*\?\?\s*"([^"]+)"/', $source, $found) !== 1) {
-        throw new RuntimeException('The configuration does not say what the canonical host is.');
+        throw new UnreadableSkill('The configuration does not say what the canonical host is.');
     }
 
     return \rtrim($found[1], '/');
@@ -400,7 +406,7 @@ foreach (['render-document.php', 'render-with-word.applescript', 'render-with-wo
 }
 
 // 7. Every path the install page names exists in the built tree.
-$install = (string) \file_get_contents($root . '/content/skills/index.md');
+$install = (string) \file_get_contents($root . '/' . SKILL_PAGE);
 
 \preg_match_all('#https?://[^/\s]+/skills/([^\s`)\]",]+)#', $install, $found);
 
@@ -429,10 +435,10 @@ $readme = $root . '/../markdown-word/README.md';
 if (\is_file($readme)) {
     $text = (string) \file_get_contents($readme);
 
-    if (!\str_contains($text, canonical($root) . permalink($root . '/content/skills/index.md'))) {
+    if (!\str_contains($text, canonical($root) . permalink($root . '/' . SKILL_PAGE))) {
         $report->fail(\sprintf(
             'The library\'s README does not point at the skill page, which is at %s.',
-            canonical($root) . permalink($root . '/content/skills/index.md'),
+            canonical($root) . permalink($root . '/' . SKILL_PAGE),
         ));
     }
 }
