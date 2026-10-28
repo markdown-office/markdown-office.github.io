@@ -208,7 +208,22 @@ async function listFiles(directory) {
 
   // The comparison is written out rather than left to the default, because the default is
   // a comparison by code unit and this is a comparison by name.
-  return every.sort((left, right) => (left < right ? -1 : left > right ? 1 : 0));
+  return every.sort(byName);
+}
+
+/**
+ * How two names stand to one another.
+ */
+function byName(left, right) {
+  if (left < right) {
+    return -1;
+  }
+
+  if (left > right) {
+    return 1;
+  }
+
+  return 0;
 }
 
 /**

@@ -104,11 +104,13 @@ function expansion(name, built, fence, hash) {
  * A name a reader can recognise, from a title.
  */
 export function slug(name) {
+  // The run of characters that are not letters or digits has already collapsed into one
+  // dash, so there is one dash at each end at most and one is enough to take it off.
   return name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "")
+    .replace(/^-/, "")
+    .replace(/-$/, "")
     .slice(0, 48);
 }
 
