@@ -23,11 +23,13 @@ is about both libraries, is on [Errors in general](/errors/).
 | `UnknownTemplate` | a slide names a template the deck does not have — the message names the templates |
 | `MalformedChrome` | a template holds ordinary Markdown, or a chrome file holds a slide |
 | `ChromeNotFound` | the chrome file a deck names is not there, or is outside the roots |
+| `ChromeTooLarge` | the chrome file a deck names is over the ceiling |
 | `UnsupportedColumn` | more `::column` markers than the layout has columns |
 | `UnsupportedImageFormat` | not an image, no decoder, or over the ceiling |
 | `UnsupportedLink` | `javascript:`, `data:`, `phar://`, `file://`, a UNC share |
 | `ContentOverflow` | a block does not fit and `strict` is on |
 | `TooManySlides` | more slides than the ceiling allows |
+| `TooManyShapes` | more shapes on a slide than the ceiling allows |
 | `MalformedFrontmatter` | not a mapping, or a value of the wrong type |
 | `FencedFrontmatter` | a ```` ```yaml ```` block at the top of a slide |
 | `MalformedTheme` | a theme file is not shaped like one |
