@@ -1,19 +1,13 @@
-import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { EleventyHtmlBasePlugin } from "@11ty/eleventy";
-import { createRequire } from "node:module";
 import { createHighlighter } from "shiki";
 
-// js-yaml has moved between ESM and CommonMark across majors; going through `createRequire`
-// loads whichever it currently is rather than betting on an import shape.
-const yaml = createRequire(import.meta.url)("js-yaml");
-
-// js-yaml renamed `parse` to `load` in v5 and moved between module systems on the way, so the
-// two names are both asked for rather than betting on which one this project has installed.
-const parseYaml = yaml.parse ?? yaml.load;
+import { asMarkdown, hashOf } from "./tools/markdown.js";
+import { parseYaml } from "./tools/yaml.js";
+import { writeSkill } from "./tools/write-skill.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -52,6 +46,7 @@ const SECTIONS = [
   ["Markdown Presentation", "The dialect, the directives, the themes, and the errors."],
   ["In general", "The parts that are about both libraries."],
   ["The command line", "One command over both of them."],
+  ["The skill", "What an agent can install, and where it goes."],
   ["The suite", "The other packages, and where this is going."],
 ];
 
@@ -116,6 +111,7 @@ export default function (eleventyConfig) {
 
   eleventyConfig.on("eleventy.after", highlight);
   eleventyConfig.on("eleventy.after", writeMirrors);
+  eleventyConfig.on("eleventy.after", writeSkill);
 
   return {
     dir: {
@@ -448,19 +444,6 @@ function download(href, label, about, suffix) {
   );
 }
 
-/**
- * The key a built example is filed under, and it has to be the same on both sides of the build.
- *
- * `tools/render-examples.php` computes it as the first sixteen hex digits of
- * `hash('sha256', $block)`, where `$block` is the whole trimmed fenced block — opening fence, body
- * and closing fence. Hashing the body alone would need the body recovered from the text Eleventy
- * hands over, which is the whole block; a fence is the one thing the shortcode cannot strip
- * without re-implementing the parser that produced it.
- */
-function hashOf(block) {
-  return createHash("sha256").update(block, "utf8").digest("hex").slice(0, 16);
-}
-
 function readManifest() {
   try {
     return JSON.parse(readFileSync(join(here, "_data/examples.json"), "utf8"));
@@ -657,23 +640,6 @@ function frontmatterOf(data) {
     title: typeof data?.title === "string" ? data.title : "",
     summary: typeof data?.summary === "string" ? data.summary : "",
   };
-}
-
-/**
- * A page's body with its frontmatter off and its examples in the form a reader can paste.
- *
- * The `{% example %}` pair is the build's own machinery, and this file is not the build — so an
- * example becomes the fence it was written as. That is the whole point of including them: a
- * reader gets the document source, ready to use, rather than a reference to a picture of one.
- */
-function asMarkdown(source) {
-  const [, , body = ""] =
-    source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/) ?? [];
-
-  return body
-    .replace(/\{%\s*example[^%]*%\}\n?/g, "")
-    .replace(/\n?\{%\s*endexample\s*%\}/g, "")
-    .trim();
 }
 
 /**

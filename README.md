@@ -197,6 +197,18 @@ Those are the site's own routes. The site is served at the root of its host, so 
 files carry no path in front of them: the addresses in `llms.txt` and `pages.json` are
 absolute, and the links inside the Markdown mirrors are the routes as they are written.
 
+## The skill
+
+The site also publishes a **skill**: `/skills/mdword.zip`, and `/skills/mdword/` file by
+file, with `/skills/index.json` as the catalogue OpenCode reads over the network. It is the
+documentation above as a directory an agent can read, with the examples beside it and the
+tools that render a document so that it can be looked at.
+
+**It is built by the same build**, out of the same sources, so it cannot say anything the site
+does not say. `tools/check-skill.php` is what holds it to that: every reference file must be
+the page it carries, every page of the sections it covers must be carried, and the scripts
+must be the ones the library ships.
+
 ## Where it is published
 
 `.github/workflows/pages.yml` builds the site and publishes it to
