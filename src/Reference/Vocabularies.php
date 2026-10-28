@@ -22,6 +22,7 @@ use MarkdownWord\Exception\Exception as WordException;
 use MarkdownWord\Format;
 use MarkdownWord\MarkdownToWord;
 use MarkdownWord\Render\Directives;
+use MarkdownWord\Reverse\Options as ReverseOptions;
 
 /**
  * The vocabularies the site lists, and where the code keeps each one.
@@ -39,6 +40,8 @@ final class Vocabularies
      */
     public static function all(): array
     {
+        $attributes = Code::wordDirectiveAttributes();
+
         return [
             'presentation.frontmatter' => new Vocabulary([
                 'PresentationRenderer::DIRECTIVES' => PresentationRenderer::DIRECTIVES,
@@ -80,6 +83,27 @@ final class Vocabularies
             ),
             'word.directives' => new Vocabulary([
                 'MarkdownToWord' => self::wordDirectives(),
+            ]),
+            'word.attributes.toc' => new Vocabulary([
+                'Toc::__invoke()' => $attributes['toc'] ?? [],
+            ]),
+            'word.attributes.image' => new Vocabulary([
+                'Image::__invoke()' => $attributes['image'] ?? [],
+            ]),
+            'word.attributes.textbox' => new Vocabulary([
+                'DocxOnly::drawTextBox()' => $attributes['textbox'] ?? [],
+            ]),
+            'word.attributes.shape' => new Vocabulary([
+                'DocxOnly::drawShape()' => $attributes['shape'] ?? [],
+            ]),
+            'word.attributes.field' => new Vocabulary([
+                'DocxOnly::drawField()' => $attributes['field'] ?? [],
+            ]),
+            'word.frontmatter' => new Vocabulary([
+                'MarkdownWord\\Document\\Frontmatter' => Code::wordFrontmatterKeys(),
+            ]),
+            'word.reverse-options' => new Vocabulary([
+                'Reverse\\Options::toArray()' => \array_keys((new ReverseOptions())->toArray()),
             ]),
             'word.object-features' => new Vocabulary([
                 // The four features the objects in a document cost a writer that cannot carry

@@ -39,6 +39,8 @@ so the document carries a field that starts nowhere. The field is therefore buil
 
 ### Attributes
 
+<!-- reference: word.attributes.toc -->
+
 | Attribute | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `depth` | integer | `maxHeadingLevel`, which is `6` | clamped to 1–6 |
@@ -142,6 +144,8 @@ the picture gets: the cap is what happens to a picture that says nothing about i
 shrinking a picture to a limit the author did not know about is a quiet change this library does not
 make. One of the two sizes leaves the other to the picture's own proportions.
 
+<!-- reference: word.attributes.image -->
+
 | Attribute | Carries |
 | --- | --- |
 | `src` | the file |
@@ -206,6 +210,8 @@ it — from the left margin and from the top of the paragraph it stands in — a
 centimetres, like every other size here. A box is given a border, because a box with nothing round
 it is a paragraph.
 
+<!-- reference: word.attributes.textbox -->
+
 | Attribute | Carries |
 | --- | --- |
 | `width`, `height` | the size in centimetres |
@@ -223,6 +229,8 @@ A box with no size is written out as its own source text.
 The type is one of the shapes a Word document can draw: `arc`, `curve`, `line`, `polyline`, `rect`
 and `oval`. A type that is not one of them is written out as the characters the author wrote,
 because an element no reader knows is not a shape.
+
+<!-- reference: word.attributes.shape -->
 
 | Attribute | Carries |
 | --- | --- |
@@ -244,6 +252,8 @@ carries the choices it offers, separated by commas.
 while the document is protected for forms, so a document with a dropdown that offers choices is
 protected for forms. A dropdown without entries is written as a field with nothing to choose from,
 and nothing is protected: there is nothing to choose.
+
+<!-- reference: word.attributes.field -->
 
 | Attribute | Carries |
 | --- | --- |

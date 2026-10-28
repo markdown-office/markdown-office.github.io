@@ -170,31 +170,9 @@ mdoffice word README.docx        # writes README.md
 It decides which way the data has to go **from the content, not the name**: a Word document is a
 zip and Markdown is text, and the four bytes that say which is which are part of the format.
 
-| Command | Does |
-| --- | --- |
-| `to-docx` | Markdown to `.docx` |
-| `to-odt` | Markdown to `.odt` |
-| `to-rtf` | Markdown to `.rtf` |
-| `to-markdown` | a Word document to Markdown |
-
-| Option | Value | Default |
-| --- | --- | --- |
-| `-o, --output <file>` | path | beside the input; `-` for standard output |
-| `-c, --config <file.php>` | path | none |
-| `--theme <name>` | name or path | the frontmatter's `theme:` |
-| `-t, --template <file>` | `.docx` or `.dotx` | none |
-| `--require-control` | flag | off |
-| `--images <mode>` | `embed`, `placeholder` or `alt`, `skip` or `none` | `embed` |
-| `--no-images` | flag | shorthand for `--images skip` |
-| `--image-base <dir>` | path | the input's directory; the working directory for standard input |
-| `--svg-fallback <mode>` | `raster`, `none` | `raster` |
-| `--table-width <n>` | fiftieths of a percent; 0–5000 | `5000` |
-| `--plain` | flag | off |
-| `--to <format>` | `docx`, `word` for `to-docx`; `odt` for `to-odt`; `rtf` for `to-rtf` | the command names the direction |
-| `-h, --help` | flag | off |
-
-`to-markdown` takes `--media <dir>`, `--line-ending <lf|crlf>`, `--setext`, `--no-fence` and
-`--no-header` instead.
+The commands are `to-docx`, `to-odt`, `to-rtf` and `to-markdown` — they are listed with the
+others on [Basic use](/command-line/basic/#commands) — and the options each of them takes are on
+[For word](/command-line/word/).
 
 A filter, not a command that needs a filename:
 

@@ -85,36 +85,52 @@ final class Pages
                 continue;
             }
 
-            $block = self::blockAt($file, $lines, $number);
+            $found = self::blockAt($file, $lines, $number);
 
-            if ($block !== null) {
-                $blocks[] = $block;
+            if ($found === null) {
+                continue;
             }
+
+            $blocks[] = $found['block'];
+
+            // Past the block, so that its rows are not read as blocks of their own: a
+            // table is one table, and a row of it is not a second copy of anything.
+            $number = $found['end'];
         }
 
         return ['blocks' => $blocks, 'markers' => $markers];
     }
 
     /**
-     * The block that starts at a line, if one does.
+     * The block that starts at a line, if one does, and the line it ends at.
      *
      * A table and a fenced list are the two shapes a page carries a vocabulary in, and
      * both of them are read here, so that a page cannot grow a third.
      *
      * @param list<string> $lines
+     *
+     * @return array{block: Block, end: int}|null
      */
-    private static function blockAt(string $file, array $lines, int $number): ?Block
+    private static function blockAt(string $file, array $lines, int $number): ?array
     {
         $line = \trim($lines[$number]);
 
         if (\str_starts_with($line, '|')) {
             $table = self::table($lines, $number);
 
-            return new Block($file, $number + 1, $table['names'], $table['values']);
+            return [
+                'block' => new Block($file, $number + 1, $table['names'], $table['values']),
+                'end' => $table['end'],
+            ];
         }
 
         if (\str_starts_with($line, '```')) {
-            return new Block($file, $number + 1, self::fence($lines, $number), []);
+            $fence = self::fence($lines, $number);
+
+            return [
+                'block' => new Block($file, $number + 1, $fence['names'], []),
+                'end' => $fence['end'],
+            ];
         }
 
         return null;
@@ -137,13 +153,13 @@ final class Pages
                 continue;
             }
 
-            $block = self::blockAt($file, $lines, $next);
+            $found = self::blockAt($file, $lines, $next);
 
-            if ($block === null) {
+            if ($found === null) {
                 break;
             }
 
-            return $block;
+            return $found['block'];
         }
 
         return new Block($file, $number + 1, [], []);
@@ -157,14 +173,15 @@ final class Pages
      *
      * @param list<string> $lines
      *
-     * @return array{names: list<string>, values: array<string, string>}
+     * @return array{names: list<string>, values: array<string, string>, end: int}
      */
     private static function table(array $lines, int $number): array
     {
         $names = [];
         $values = [];
+        $block = self::blockLines($lines, $number, static fn (string $line): bool => !\str_starts_with($line, '|'));
 
-        foreach (self::blockLines($lines, $number, static fn (string $line): bool => !\str_starts_with($line, '|')) as $offset => $line) {
+        foreach ($block['lines'] as $offset => $line) {
             $cells = self::cells($line);
 
             // The header and the rule under it are not rows.
@@ -180,7 +197,11 @@ final class Pages
 
         \sort($names);
 
-        return ['names' => \array_values(\array_unique($names)), 'values' => $values];
+        return [
+            'names' => \array_values(\array_unique($names)),
+            'values' => $values,
+            'end' => $block['end'],
+        ];
     }
 
     /**
@@ -188,13 +209,14 @@ final class Pages
      *
      * @param list<string> $lines
      *
-     * @return list<string>
+     * @return array{names: list<string>, end: int}
      */
     private static function fence(array $lines, int $number): array
     {
         $names = [];
+        $block = self::blockLines($lines, $number + 1, static fn (string $line): bool => \str_starts_with($line, '```'));
 
-        foreach (self::blockLines($lines, $number + 1, static fn (string $line): bool => \str_starts_with($line, '```')) as $line) {
+        foreach ($block['lines'] as $line) {
             foreach (\preg_split('/\s+/', $line) ?: [] as $word) {
                 if ($word !== '') {
                     $names[] = $word;
@@ -204,16 +226,16 @@ final class Pages
 
         \sort($names);
 
-        return \array_values(\array_unique($names));
+        return ['names' => \array_values(\array_unique($names)), 'end' => $block['end']];
     }
 
     /**
-     * The lines of a block, from the line it starts at.
+     * The lines of a block, from the line it starts at, and the line it ends at.
      *
      * @param list<string>          $lines
      * @param callable(string): bool $ends Whether a line ends the block.
      *
-     * @return list<string>
+     * @return array{lines: list<string>, end: int}
      */
     private static function blockLines(array $lines, int $number, callable $ends): array
     {
@@ -223,13 +245,13 @@ final class Pages
             $line = \trim($lines[$next]);
 
             if ($ends($line)) {
-                break;
+                return ['lines' => $found, 'end' => $next];
             }
 
             $found[] = $line;
         }
 
-        return $found;
+        return ['lines' => $found, 'end' => \count($lines)];
     }
 
     /**

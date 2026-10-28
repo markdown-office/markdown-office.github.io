@@ -51,15 +51,17 @@ flavour — which is why this catches people writing PHP and not people using th
 
 ## Top-level keys
 
+<!-- reference: word.frontmatter -->
+
 | Key | Type | Default | What it does |
 | --- | --- | --- | --- |
-| `options:` | mapping | absent | handed to `Options::fromArray()` |
-| `styles:` | mapping | absent | handed to `new Styles(...)` |
-| `theme:` | string | absent | a named look, or a path to one |
-| `template_file:` | string | absent | a `.docx` or `.dotx` to render into |
-| `fields:` | mapping | `{}` | values for the template's `MERGEFIELD`s |
-| `header:` | mapping | empty | the running head |
-| `footer:` | mapping | empty | the running foot |
+| `options` | mapping | absent | handed to `Options::fromArray()` |
+| `styles` | mapping | absent | handed to `new Styles(...)` |
+| `theme` | string | absent | a named look, or a path to one |
+| `template_file` | string | absent | a `.docx` or `.dotx` to render into |
+| `fields` | mapping | `{}` | values for the template's `MERGEFIELD`s |
+| `header` | mapping | empty | the running head |
+| `footer` | mapping | empty | the running foot |
 
 Only `options:` and `styles:` are validated. Every other key is open-ended metadata, so a document
 can carry `title:` or `author:` for a pipeline downstream that cares and be none the worse.

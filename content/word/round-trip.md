@@ -155,6 +155,8 @@ document, an existing path is read and must start with it, and anything else is 
 `Reverse\Options` is the whole vocabulary. It is worth knowing because two of its defaults are
 decisions rather than facts:
 
+<!-- reference: word.reverse-options -->
+
 | Key | Default | Notes |
 | --- | --- | --- |
 | `headingStyles` | `['Heading', 'Title']` | case-insensitive, optional trailing level |
