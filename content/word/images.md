@@ -14,8 +14,8 @@ the deck's, and are on [Images](/images/).
 ## The options
 
 The three options that decide what happens to a picture are on
-[Configuration](/word/configuration/#every-option) — `images`, which says which of the three ways
-Word holds a picture the document takes, `imageMaxWidth`, the cap on a picture that says nothing
+[Configuration](/word/configuration/#every-option): `images`, which says whether the picture is
+embedded, left out or replaced by its name, `imageMaxWidth`, the cap on a picture that says nothing
 about its own size, and `svgFallback`, which says what happens to a vector.
 
 `pendingImageConversions()` reports what was converted, and `pendingLosses()` says when the vector

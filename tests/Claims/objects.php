@@ -102,6 +102,27 @@ it('names every type the page lists, and not only the ones its first sentence do
         ->toBe(['arc', 'curve', 'line', 'polyline', 'rect', 'oval']);
 });
 
+it('says which formats carry each of the objects and which lose them', function () {
+    says(Site::WORD_DIRECTIVES, '| Feature | `.docx` | `.odt` | `.rtf` |');
+
+    $features = [
+        Format::TEXT_BOX => 'text-box',
+        Format::SHAPE => 'shape',
+        Format::FORM_FIELD => 'form-field',
+        Format::COLUMNS => 'columns',
+    ];
+
+    foreach ($features as $feature => $name) {
+        $carried = [];
+
+        foreach ([Format::Docx, Format::Odt, Format::Rtf] as $format) {
+            $carried[] = \in_array($feature, $format->drops(), true) ? 'lost' : 'carried';
+        }
+
+        says(Site::WORD_DIRECTIVES, \sprintf('`%s` | %s', $name, \implode(' | ', $carried)));
+    }
+});
+
 it('quotes the sentences the library prints for the objects a format cannot carry', function () {
     $markdown = "::textbox[A note]{width=6 height=2}\n\n::shape{type=rect width=4 height=2}\n\n::field{name=x}\n\n::section{columns=2}\n";
     $features = [Format::TEXT_BOX, Format::SHAPE, Format::FORM_FIELD, Format::COLUMNS];

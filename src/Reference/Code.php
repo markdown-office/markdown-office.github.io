@@ -18,8 +18,8 @@ use MarkdownWord\Render\Handlers;
  * The code is read rather than asked, because the library holds no list of the names it
  * reads. A directive reads the attributes it needs one accessor at a time, and the name
  * is in the call; a frontmatter key is read the same way. A read that moves to another
- * class takes the name with it, and the list here follows — or the check fails, which
- * is the answer a reader of this class wants.
+ * class leaves the name out of the list here, and the check says so — which is the
+ * answer a reader of this class wants.
  */
 final class Code
 {
@@ -207,7 +207,9 @@ final class Code
     }
 
     /**
-     * The body of a method, without its comments.
+     * The source of a method, without its comments.
+     *
+     * A comment names things in prose, and only a call says what the code reads.
      */
     private static function bodyOf(string $class, string $method): string
     {
