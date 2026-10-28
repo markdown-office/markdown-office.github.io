@@ -68,8 +68,10 @@ final class Pages
     {
         $blocks = [];
         $markers = [];
+        $number = 0;
+        $count = \count($lines);
 
-        for ($number = 0; $number < \count($lines); $number++) {
+        while ($number < $count) {
             $line = \trim($lines[$number]);
 
             if (\preg_match(self::MARKER, $line, $match) === 1) {
@@ -77,25 +79,19 @@ final class Pages
                     'name' => $match[1],
                     'block' => self::blockAfter($file, $lines, $number),
                 ];
+            } elseif ($line !== '') {
+                $found = self::blockAt($file, $lines, $number);
 
-                continue;
+                if ($found !== null) {
+                    $blocks[] = $found['block'];
+
+                    // Past the block, so that its rows are not read as blocks of their
+                    // own: a row of a table is not a second copy of the list.
+                    $number = $found['end'];
+                }
             }
 
-            if ($line === '') {
-                continue;
-            }
-
-            $found = self::blockAt($file, $lines, $number);
-
-            if ($found === null) {
-                continue;
-            }
-
-            $blocks[] = $found['block'];
-
-            // Past the block, so that its rows are not read as blocks of their own: a
-            // row of a table is not a second copy of the list.
-            $number = $found['end'];
+            $number++;
         }
 
         return ['blocks' => $blocks, 'markers' => $markers];
