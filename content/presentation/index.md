@@ -96,7 +96,8 @@ do.
 
 #### A template
 
-A **template** is the furniture of a deck — the wordmark, the rule, the page number — written
+A **template** is the furniture of a deck — the wordmark (a company's name on a slide, with its
+mark), the rule, the page number — written
 once and drawn on every slide that names it. It is a slide of the deck's own Markdown, marked by
 its own frontmatter, and it is not a slide of the deck: it does not appear and it does not count
 towards the number of slides. See [Presentation directives](/presentation/directives/#slide-templates).

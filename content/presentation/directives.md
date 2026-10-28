@@ -298,7 +298,8 @@ Lead with the renewal number. It is the one people remember.
 
 ## Slide templates
 
-The furniture of a deck — the wordmark, the rule, the page number — is the same on every slide, and
+The furniture of a deck — the wordmark (a company's name on a slide, with its mark), the rule, the
+page number — is the same on every slide, and
 writing it out on every slide means changing it on every slide. A **template** is that furniture
 written once.
 
