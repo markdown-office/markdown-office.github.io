@@ -64,14 +64,24 @@ final class Document
      */
     public static function losses(string $markdown, Format $format, ?string $directory = null): array
     {
+        return \array_map(
+            static fn (Loss $loss): string => $loss->feature,
+            self::pendingLosses($markdown, $format, $directory),
+        );
+    }
+
+    /**
+     * The losses a conversion into a format reports, as the library reports them.
+     *
+     * @return list<Loss>
+     */
+    public static function pendingLosses(string $markdown, Format $format, ?string $directory = null): array
+    {
         $converter = self::converter($markdown, $directory);
 
         $converter->convertTo($format, (string) \tempnam(\sys_get_temp_dir(), 'document') . $format->extension());
 
-        return \array_map(
-            static fn (Loss $loss): string => $loss->feature,
-            $converter->pendingLosses(),
-        );
+        return $converter->pendingLosses();
     }
 
     /**

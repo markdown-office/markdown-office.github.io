@@ -102,6 +102,24 @@ it('names every type the page lists, and not only the ones its first sentence do
         ->toBe(['arc', 'curve', 'line', 'polyline', 'rect', 'oval']);
 });
 
+it('quotes the sentences the library prints for the objects a format cannot carry', function () {
+    $markdown = "::textbox[A note]{width=6 height=2}\n\n::shape{type=rect width=4 height=2}\n\n::field{name=x}\n\n::section{columns=2}\n";
+    $features = [Format::TEXT_BOX, Format::SHAPE, Format::FORM_FIELD, Format::COLUMNS];
+    $quoted = 0;
+
+    foreach (Document::pendingLosses($markdown, Format::Rtf) as $loss) {
+        if (!\in_array($loss->feature, $features, true)) {
+            continue;
+        }
+
+        says(Site::WORD_DIRECTIVES, $loss->message);
+
+        $quoted++;
+    }
+
+    expect($quoted)->toBe(\count($features));
+});
+
 it('gives a shape back to the author in a format that cannot carry it', function () {
     $markdown = "::shape{type=rect width=4 height=2}\n";
 
