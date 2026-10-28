@@ -70,6 +70,50 @@ final class Site
      */
     public static function section(string $path, string $heading): string
     {
+        return self::flattened(self::sectionLines($path, $heading));
+    }
+
+    /**
+     * The paragraphs of a section of a page, as the page wrote them.
+     *
+     * A paragraph rather than a section, because a section carries a table and a fence as
+     * well as prose, and the names in code font are the ones the prose lists: a table's
+     * names are its own.
+     *
+     * @return list<string>
+     */
+    public static function paragraphs(string $path, string $heading): array
+    {
+        $paragraphs = [];
+        $current = [];
+
+        foreach (self::sectionLines($path, $heading) as $line) {
+            if (\trim($line) !== '') {
+                $current[] = $line;
+
+                continue;
+            }
+
+            if ($current !== []) {
+                $paragraphs[] = self::flattened($current);
+                $current = [];
+            }
+        }
+
+        if ($current !== []) {
+            $paragraphs[] = self::flattened($current);
+        }
+
+        return $paragraphs;
+    }
+
+    /**
+     * The lines of a section of a page, as the page wrote them.
+     *
+     * @return list<string>
+     */
+    private static function sectionLines(string $path, string $heading): array
+    {
         $body = [];
         $inside = false;
 
@@ -85,7 +129,17 @@ final class Site
             }
         }
 
-        return (string) \preg_replace('/\s+/', ' ', \implode("\n", $body));
+        return $body;
+    }
+
+    /**
+     * A piece of a page with its line breaks gone.
+     *
+     * @param list<string> $lines
+     */
+    private static function flattened(array $lines): string
+    {
+        return self::flat(\implode("\n", $lines));
     }
 
     /**

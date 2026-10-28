@@ -27,9 +27,7 @@ final class Types
      */
     public static function drawn(string $page, string $heading, string $marker, callable $directive): array
     {
-        \preg_match('/The type is one of (.+?)\./', Site::section($page, $heading), $match);
-
-        $listed = Pages::codeIn($match[1] ?? '');
+        $listed = self::listed($page, $heading);
 
         if ($listed === []) {
             throw NoTypesListed::on($page);
@@ -40,5 +38,37 @@ final class Types
         }
 
         return $listed;
+    }
+
+    /**
+     * The types a page names, in the paragraph that names them.
+     *
+     * @return list<string>
+     */
+    public static function listed(string $page, string $heading): array
+    {
+        return self::listedIn(Site::paragraphs($page, $heading));
+    }
+
+    /**
+     * The types the paragraphs name, in the paragraph that names them.
+     *
+     * The paragraph rather than the sentence: a list that goes on after the first full
+     * stop is the list the page names all the same, and a sentence that ends at the
+     * first period is how a type nobody draws slips in unlooked-at.
+     *
+     * @param list<string> $paragraphs
+     *
+     * @return list<string>
+     */
+    public static function listedIn(array $paragraphs): array
+    {
+        foreach ($paragraphs as $paragraph) {
+            if (\str_contains($paragraph, 'The type is one of')) {
+                return \array_values(\array_unique(Pages::codeIn($paragraph)));
+            }
+        }
+
+        return [];
     }
 }

@@ -60,9 +60,11 @@ it('says that a form field comes back as the blank field Word draws', function (
 it('says that a page break and the columns of a section come back as nothing', function () {
     says(Site::WORD_ROUND_TRIP, 'a page break and the columns of a section come back as nothing');
 
-    $back = (new WordToMarkdown(Document::path("Before.\n\n::pagebreak\n\nAfter.\n")))->convert();
+    $break = (new WordToMarkdown(Document::path("Before.\n\n::pagebreak\n\nAfter.\n")))->convert();
+    $section = (new WordToMarkdown(Document::path("Before.\n\n::section{columns=2}\n\nAfter.\n")))->convert();
 
-    expect($back)->toBe("Before.\n\nAfter.");
+    expect($break)->toBe("Before.\n\nAfter.");
+    expect($section)->toBe("Before.\n\nAfter.");
 });
 
 it('draws every type the page names, and writes one it does not draw as the source text', function (string $heading, string $marker, string $directive, string $unknown) {
@@ -90,6 +92,15 @@ it('draws every type the page names, and writes one it does not draw as the sour
         '::field{name=x type=date}',
     ],
 ]);
+
+it('names every type the page lists, and not only the ones its first sentence does', function () {
+    expect(Types::listedIn([
+        'The type is one of `arc`. `oval` and `rect` are shapes as well.',
+    ]))->toBe(['arc', 'oval', 'rect']);
+
+    expect(Types::listed(Site::WORD_DIRECTIVES, '`::shape` — a shape'))
+        ->toBe(['arc', 'curve', 'line', 'polyline', 'rect', 'oval']);
+});
 
 it('gives a shape back to the author in a format that cannot carry it', function () {
     $markdown = "::shape{type=rect width=4 height=2}\n";

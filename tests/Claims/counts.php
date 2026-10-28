@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use MarkdownOffice\Documentation\Reference\Vocabularies;
+use MarkdownOffice\Documentation\Tests\Support\RoundTrip;
 use MarkdownOffice\Documentation\Tests\Support\Site;
 use MarkdownPresentation\Render\PresentationRenderer;
 use MarkdownPresentation\Theme\LayoutRole;
@@ -76,9 +77,15 @@ it('counts the inline style attributes as the code does', function () {
 });
 
 it('counts the things that do not survive as the page lists them', function () {
-    $sections = (int) \preg_match_all('/^### /m', Site::page(Site::WORD_ROUND_TRIP));
+    $lost = RoundTrip::losses();
 
-    says(Site::WORD_ROUND_TRIP, words($sections) . ' things that do not');
+    expect(\count($lost))->toBe((int) \preg_match_all('/^### /m', Site::page(Site::WORD_ROUND_TRIP)));
+
+    says(Site::WORD_ROUND_TRIP, words(\count($lost)) . ' things that do not');
+
+    foreach ($lost as $heading) {
+        says(Site::WORD_ROUND_TRIP, $heading);
+    }
 });
 
 it('counts the renderer\'s methods as the code does', function () {
