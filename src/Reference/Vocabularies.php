@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace MarkdownOffice\Documentation\Reference;
 
 use MarkdownPresentation\Exception\Exception as PresentationException;
+use MarkdownPresentation\Files\DiskFinder as SlidesDiskFinder;
+use MarkdownPresentation\Files\FileFinder as SlidesFileFinder;
 use MarkdownPresentation\Render\CommonMark\BlockTranslator;
 use MarkdownPresentation\Render\Free\FreeShapes;
 use MarkdownPresentation\Render\Furniture;
@@ -22,6 +24,8 @@ use MarkdownWord\Configuration\Options;
 use MarkdownWord\Configuration\Styles;
 use MarkdownWord\Configuration\TextStyles;
 use MarkdownWord\Exception\Exception as WordException;
+use MarkdownWord\Files\DiskFinder as WordDiskFinder;
+use MarkdownWord\Files\FileFinder as WordFileFinder;
 use MarkdownWord\Format;
 use MarkdownWord\MarkdownToWord;
 use MarkdownWord\Render\Directives;
@@ -153,6 +157,14 @@ final class Vocabularies
             'text-style-attributes' => new Vocabulary([
                 'MarkdownPresentation\\Theme\\TextStyle::ATTRIBUTES' => TextStyle::ATTRIBUTES,
                 'MarkdownWord\\Configuration\\TextStyles::ATTRIBUTES' => \array_keys(TextStyles::ATTRIBUTES),
+            ]),
+            'finder-methods' => new Vocabulary([
+                'MarkdownWord\\Files\\FileFinder' => Code::finderMethods(WordFileFinder::class),
+                'MarkdownPresentation\\Files\\FileFinder' => Code::finderMethods(SlidesFileFinder::class),
+            ]),
+            'finder-roles' => new Vocabulary([
+                'MarkdownWord\\Files\\DiskFinder' => Code::finderRoles(WordDiskFinder::class),
+                'MarkdownPresentation\\Files\\DiskFinder' => Code::finderRoles(SlidesDiskFinder::class),
             ]),
         ];
     }

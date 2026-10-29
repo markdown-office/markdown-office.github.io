@@ -155,11 +155,14 @@ function pendingFrom(string $file, string $directory, array $block): ?Pending
     // The same length is what lets an example that itself contains a fenced block be
     // written with four backticks.
     //
+    // A third word may follow the direction: `finder`, which says that the example's
+    // files come from a finder rather than from the disk.
+    //
     // A quoted title may follow the direction on the fence line. It is the same title the
     // paired tag can carry, and a page that writes the title once in the fence and once
     // in the tag is a page with two places to keep them in step.
     \preg_match(
-        '/^(`{3,})(md|word|presentation)[ \t]+(md|word|presentation)[ \t]*(?:"([^"]*)")?[ \t]*\n([\s\S]*?)^\1[ \t]*$/m',
+        '/^(`{3,})(md|word|presentation)[ \t]+(md|word|presentation)(?:[ \t]+(finder))?[ \t]*(?:"([^"]*)")?[ \t]*\n([\s\S]*?)^\1[ \t]*$/m',
         $block['body'],
         $fence,
     );
@@ -173,7 +176,7 @@ function pendingFrom(string $file, string $directory, array $block): ?Pending
         return null;
     }
 
-    $direction = $fence[2] . '-' . $fence[3];
+    $direction = $fence[2] . '-' . $fence[3] . (($fence[4] ?? '') === 'finder' ? '-finder' : '');
 
     if (! isset(Runner::DIRECTIONS[$direction])) {
         \fwrite(\STDERR, \sprintf(
@@ -193,12 +196,12 @@ function pendingFrom(string $file, string $directory, array $block): ?Pending
     // frontmatter is matched at the first byte of the file, so an example whose source
     // began with a blank line would put `theme:` on slide 2 and be refused for naming a
     // deck directive there.
-    $source = \trim($fence[5]);
+    $source = \trim($fence[6]);
 
     // The tag wins over the fence, because the tag is the one an author edits when they
     // are looking at the `{% example %}` and not at the fence inside it.
     $title = \trim(\trim($block['tag']), '"');
-    $title = $title === '' ? \trim($fence[4] ?? '', '"') : $title;
+    $title = $title === '' ? \trim($fence[5] ?? '', '"') : $title;
     $title = $title !== '' ? $title : Runner::DIRECTIONS[$direction] . ' example';
 
     // The key is hashed from the *whole* trimmed block, fences included, because that is

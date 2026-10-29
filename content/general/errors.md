@@ -4,7 +4,7 @@ permalink: /errors/
 title: Errors in general
 summary: The exception to catch for each package, the two classes that share a name, and what the messages say about paths and losses.
 section: In general
-order: 3
+order: 4
 ---
 
 An exception is only useful if it says what to do next. Every message in this suite names the
@@ -32,9 +32,10 @@ try {
 so one `catch` does not also catch the failures of the libraries underneath. The failures a deck
 author can fix by naming something else extend `Exception\InvalidInput` below it.
 
-Five sit beside `InvalidInput` rather than under it, and nothing a deck names fixes any of them: a
-file that cannot be read, a target that cannot be written, a conversion with nothing to convert, or
-a dependency installed without the fixes the library needs.
+Six sit beside `InvalidInput` rather than under it, and nothing a deck names fixes any of them: a
+file that cannot be read, a target that cannot be written, a conversion with nothing to convert, a
+dependency installed without the fixes the library needs, or a source that cannot serve the master
+a theme carries.
 
 ## The two `UnknownDirective`
 

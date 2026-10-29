@@ -66,9 +66,10 @@ keys, the layout roles, the free shapes, the colour slots, the theme keys, the s
 exceptions, the themes that ship, the ceilings, the Word directives, the attributes each of the
 Word directives reads, the keys a Word document's frontmatter may carry, the options the reader of
 a Word document trusts, the features a Word format cannot carry, the Word options, the Word style
-slots and the inline style attributes — and reads the page that carries it for the names it lists.
-The two are compared in both directions: a name the code does not have is a page offering something
-that does not work, and a name the code has and the page does not is a feature nobody can find.
+slots, the inline style attributes, the methods of a finder and the roles a finder resolves a name
+in — and reads the page that carries it for the names it lists. The two are compared in both
+directions: a name the code does not have is a page offering something that does not work, and a
+name the code has and the page does not is a feature nobody can find.
 
 A vocabulary the two halves share is read out of both of them and held to one list, so the
 attributes an inline style takes are the same eight in the deck and in the document — and the
@@ -154,9 +155,10 @@ when the example itself contains a fenced block.
 
 The fence's tag says which way the example runs: the format it starts in, and the format it ends
 in. `md word` builds a Word document from Markdown, `md presentation` builds a deck, and
-`word md` reads a Word document back into Markdown. The body of the fence is the input — the
-Markdown for the first two, the path of the document for the last, relative to the site's own
-directory:
+`word md` reads a Word document back into Markdown. A third word — `finder` — says where the
+example's files come from: `md word finder` builds the document with its theme in a finder rather
+than in a directory. The body of the fence is the input — the Markdown for the first two, the path
+of the document for the last, relative to the site's own directory:
 
 ````markdown
 {% example "A Word document read back to Markdown" %}
@@ -237,7 +239,7 @@ to it, and the site is published at the GitHub Pages address until then.
 content/          the pages, one directory per chapter
 _includes/        the layout, the stylesheet, the wordmark
 _documents/       the documents the examples read. Committed: an input must not change.
-src/              the reference tables, read out of the libraries and compared with the pages
+src/              the reference tables, read out of the libraries and compared with the pages, and the finder the examples are built with
 tests/            the claims the pages make in prose
 tools/            render-examples.php, make-input-document.php, the three checks, and lib/
 _examples/        built artifacts, published under the site's own path. Not committed.

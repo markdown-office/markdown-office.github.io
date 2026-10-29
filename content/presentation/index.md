@@ -19,12 +19,13 @@ PHP 8.2 or newer, with `ext-dom`, `ext-gd` and `ext-zip`. `ext-imagick` is optio
 
 **Both directions.** Markdown to `.pptx`, and a `.pptx` back to Markdown — what comes back is
 the Markdown this package writes decks in, so a deck can be taken apart, edited as text and put
-in again under a different theme. `PresentationRenderer` has three methods, `render()`,
-`overflows()` and `unknownFonts()`; the reader is `PowerPointToMarkdown`, with `convert()`,
-`save()`, `toMarkdown()` and `read()`. The two that report rather than write are
-`overflows()` — every block that had to be made smaller than it asked for — and `unknownFonts()`
-— every face the deck named that there is no table of advance widths for. What the round trip
-does not keep is written down in [Reading a deck back](#reading-a-deck-back).
+in again under a different theme. `PresentationRenderer` has five methods, `render()`,
+`overflows()`, `unknownFonts()`, `withTheme()` and `toString()`; the reader is
+`PowerPointToMarkdown`, with `convert()`, `save()`, `toMarkdown()` and `read()`. The two that
+report rather than write are `overflows()` — every block that had to be made smaller than it
+asked for — and `unknownFonts()` — every face the deck named that there is no table of advance
+widths for. What the round trip does not keep is written down in
+[Reading a deck back](#reading-a-deck-back).
 
 ---
 
@@ -260,6 +261,25 @@ What the round trip does not keep is written down in the package's own
 [README](https://github.com/markdown-office/markdown-presentation#reading-a-deck-back): the
 design, the layout, the underline, a text style, a link inside a run, and a chart.
 
+### Where a deck's files come from
+
+The theme a deck names, the pictures it shows and the templates file it imports are read from disk
+by default. A program that keeps its own files somewhere else — in a database, say — says where
+they are with a **finder**, and hands it over:
+
+```php
+use MarkdownPresentation\Render\PresentationRenderer;
+use MarkdownPresentation\Theme\ThemeResolver;
+
+$renderer = new PresentationRenderer(
+    themes: new ThemeResolver(files: $finder),
+    files: $finder,
+);
+```
+
+What a finder is, what the three roles are, and why the scope check stays with the library are on
+[Where the files come from](/files/).
+
 ### The rendering pipeline
 
 `render()` checks every slide's frontmatter **before** anything is built, so a deck whose fourth
@@ -308,9 +328,10 @@ try {
 }
 ```
 
-Five sit beside `InvalidInput` rather than under it: nothing a deck names fixes a file that cannot
-be read, a target that cannot be written, a conversion with nothing to convert, or a dependency
-installed without the fixes the library needs.
+Six sit beside `InvalidInput` rather than under it: nothing a deck names fixes a file that cannot
+be read, a target that cannot be written, a conversion with nothing to convert, a dependency
+installed without the fixes the library needs, or a source that cannot serve the master a theme
+carries.
 
 The whole catalogue is on [Errors](/presentation/errors/).
 
@@ -320,4 +341,4 @@ The whole catalogue is on [Errors](/presentation/errors/).
 
 [Markdown Word](/word/) · [The directive syntax](/directives/syntax/) ·
 [Presentation directives](/presentation/directives/) · [Themes and layout](/presentation/themes/) ·
-[Images](/images/) · [Errors](/presentation/errors/)
+[Images](/images/) · [Where the files come from](/files/) · [Errors](/presentation/errors/)

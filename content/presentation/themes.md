@@ -170,6 +170,10 @@ There is **no silent fallback to `default`**. A name that does not resolve raise
 and lists every theme that does. A deck that came out looking like something other than what was
 asked for is worse than a deck that did not build.
 
+That order is the disk's. A program that keeps its themes somewhere else — in a database, say —
+hands the library a **finder** instead, and the name is asked for through it: see
+[Where the files come from](/files/).
+
 ## Word themes
 
 The Word half has themes too, and they are the other shape: a directory with `theme.yml` —

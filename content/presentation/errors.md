@@ -47,10 +47,14 @@ is about both libraries, is on [Errors in general](/errors/).
 | `FileNotWritable` | **not** `InvalidInput`; the target cannot be written |
 | `NothingToConvert` | **not** `InvalidInput`; there was no deck to convert |
 | `UnpatchedDependency` | **not** `InvalidInput`; the installed PHPPresentation lacks the fixes |
+| `UnservedTemplate` | **not** `InvalidInput`; the source of the theme cannot serve its master |
 
-Five sit beside `InvalidInput` rather than under it: nothing a deck names fixes a file that cannot
-be read, a target that cannot be written, a conversion with nothing to convert, or a dependency
-that was installed without the fixes the library needs.
+Six sit beside `InvalidInput` rather than under it: nothing a deck names fixes a file that cannot
+be read, a target that cannot be written, a conversion with nothing to convert, a dependency that
+was installed without the fixes the library needs, or a source that cannot serve the master a
+theme carries.
 
-The four that carry a template are the deck author's to fix: a name nothing is under, a body
-that holds the wrong thing, a file that holds a slide, and a file that is not there.
+A template failure is the deck author's to fix: a name nothing is under, a body that holds the
+wrong thing, a file that holds a slide, a file that is not there and a file over the ceiling. A
+master the source cannot serve is not: that is the program's to fix, and nothing the deck names
+changes it.

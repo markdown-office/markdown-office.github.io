@@ -264,6 +264,21 @@ $converter->pendingHyperlinks();             // for deferred rendering
 `pendingLosses()` is empty for `.docx`, which carries everything. `.odt` and `.rtf` drop named
 features and report them rather than letting the document quietly lose them.
 
+### Where a document's files come from
+
+The theme a document names and the pictures it shows are read from disk by default. A program that
+keeps its own files somewhere else — in a database, say — says where they are with a **finder**,
+and hands it over:
+
+```php
+use MarkdownWord\MarkdownToWord;
+
+(new MarkdownToWord($markdown, files: $finder))->save('report.docx');
+```
+
+What a finder is, what the three roles are, and why the scope check stays with the library are
+on [Where the files come from](/files/).
+
 ### Errors
 
 One type to catch: `MarkdownWord\Exception\InvalidConfiguration`. `UnknownConfigurationKey` for
@@ -287,4 +302,5 @@ The whole catalogue is on [Errors](/word/errors/).
 
 [Markdown Presentation](/presentation/) · [The directive syntax](/directives/syntax/) ·
 [Word directives](/word/directives/) · [Images](/images/) ·
-[Round trips](/word/round-trip/) · [Errors](/word/errors/)
+[Round trips](/word/round-trip/) · [Where the files come from](/files/) ·
+[Errors](/word/errors/)

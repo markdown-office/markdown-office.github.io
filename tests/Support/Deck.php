@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace MarkdownOffice\Documentation\Tests\Support;
 
 use MarkdownPresentation\Document\DeckParser;
+use MarkdownPresentation\Files\FileFinder;
 use MarkdownPresentation\Render\PresentationRenderer;
+use MarkdownPresentation\Theme\ThemeResolver;
 
 /**
  * Decks, and the messages the library gives for the ones it refuses.
@@ -47,10 +49,10 @@ final class Deck
      *
      * @return list<string>
      */
-    public static function slides(string $markdown, string $directory = '.'): array
+    public static function slides(string $markdown, string $directory = '.', ?FileFinder $files = null): array
     {
         $zip = new \ZipArchive();
-        $zip->open(self::render($markdown, $directory));
+        $zip->open(self::render($markdown, $directory, $files));
 
         $slides = [];
 
@@ -91,12 +93,20 @@ final class Deck
 
     /**
      * The deck written out, and the path it was written to.
+     *
+     * The finder is the source of the deck's files when there is one: the theme, the
+     * pictures and the templates file are asked for by name rather than looked for on
+     * disk.
      */
-    private static function render(string $markdown, string $directory): string
+    private static function render(string $markdown, string $directory, ?FileFinder $files = null): string
     {
         $path = \sys_get_temp_dir() . '/markdown-office-deck-' . \bin2hex(\random_bytes(6)) . '.pptx';
 
-        (new PresentationRenderer($directory))->render((new DeckParser())->parse($markdown), $path);
+        $renderer = $files === null
+            ? new PresentationRenderer($directory)
+            : new PresentationRenderer($directory, themes: new ThemeResolver(files: $files), files: $files);
+
+        $renderer->render((new DeckParser())->parse($markdown), $path);
 
         return $path;
     }

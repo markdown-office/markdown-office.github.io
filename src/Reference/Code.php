@@ -9,7 +9,7 @@ use MarkdownWord\Render\Directives;
 use MarkdownWord\Render\Handlers;
 
 /**
- * The names the Word half reads out of what it is given.
+ * What the libraries have, read out of their code.
  *
  * The lists the site checks are read out of the library's own code rather than written
  * down here: a name written down here is a second copy of the thing this checks.
@@ -20,6 +20,88 @@ use MarkdownWord\Render\Handlers;
  */
 final class Code
 {
+    /**
+     * The public methods of an interface, by name.
+     *
+     * @param class-string $interface
+     *
+     * @return list<string>
+     */
+    public static function finderMethods(string $interface): array
+    {
+        $names = [];
+
+        foreach ((new \ReflectionClass($interface))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            $names[] = $method->getName();
+        }
+
+        \sort($names);
+
+        return $names;
+    }
+
+    /**
+     * The roles a finder resolves a name in.
+     *
+     * Read out of the disk finder's own bases: a finder holds one list of directories per
+     * role, and the roles are the names of those lists. The library composes the name and
+     * the role, and the finder is what turns a role into a set of places to look.
+     *
+     * @param class-string $finder
+     *
+     * @return list<string>
+     */
+    public static function finderRoles(string $finder): array
+    {
+        $roles = [];
+
+        foreach ((new \ReflectionClass($finder))->getConstructor()?->getParameters() ?? [] as $parameter) {
+            $roles[] = $parameter->getName();
+        }
+
+        \sort($roles);
+
+        return $roles;
+    }
+
+    /**
+     * The shape of an interface: every method's name, its parameters and its return type.
+     *
+     * A parameter is a type and a default rather than a name: the name is the library's
+     * own, and an adapter written for one half serves the other whatever it calls its
+     * arguments. The default is part of it, because a method that takes an optional
+     * argument and a method that does not are two shapes.
+     *
+     * @param class-string $interface
+     *
+     * @return array<string, array{parameters: list<string>, returns: string}>
+     */
+    public static function shape(string $interface): array
+    {
+        $shape = [];
+
+        foreach ((new \ReflectionClass($interface))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            $parameters = [];
+
+            foreach ($method->getParameters() as $parameter) {
+                $type = (string) ($parameter->getType() ?? 'mixed');
+
+                $parameters[] = $parameter->isDefaultValueAvailable()
+                    ? $type . ' = ' . \str_replace("\n", '', \var_export($parameter->getDefaultValue(), true))
+                    : $type;
+            }
+
+            $shape[$method->getName()] = [
+                'parameters' => $parameters,
+                'returns' => (string) ($method->getReturnType() ?? 'mixed'),
+            ];
+        }
+
+        \ksort($shape);
+
+        return $shape;
+    }
+
     /**
      * The attributes each of the Word half's directives reads.
      *
