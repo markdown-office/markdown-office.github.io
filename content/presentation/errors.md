@@ -52,6 +52,5 @@ Five sit beside `InvalidInput` rather than under it: nothing a deck names fixes 
 be read, a target that cannot be written, a conversion with nothing to convert, or a dependency
 that was installed without the fixes the library needs.
 
-The four that carry a template are about the deck rather than about a file on disk: a name
-nothing is under, a body that holds the wrong thing, a file that holds a slide, and a file that is
-not there.
+The four that carry a template are the deck author's to fix: a name nothing is under, a body
+that holds the wrong thing, a file that holds a slide, and a file that is not there.
