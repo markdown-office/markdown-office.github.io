@@ -260,14 +260,14 @@ Every key of every slide's frontmatter must be one of these nine:
 | `author` | string | the theme's, else `markdown-presentation` | **first only** |
 | `description` | string | `null` | **first only** |
 | `template` | string, or a list of them | none | any |
-| `chrome` | string | none | **first only** |
+| `templates-file` | string | none | **first only** |
 
 The layout roles are listed with the [themes](/presentation/themes/#layout-roles). Anything else —
 including Slidev's own `two-cols` — is refused with the list of what would have worked.
 
 A deck directive on a later slide is refused by name, because it is nearly always a slide that
 was meant to be the first one. The deck's own frontmatter **is the first slide's**, so `theme:`,
-`author:`, `description:` and `chrome:` belong on the slide that opens the deck.
+`author:`, `description:` and `templates-file:` belong on the slide that opens the deck.
 
 {% example %}
 ````md presentation "The four keys that describe a deck"
@@ -374,18 +374,18 @@ drawn where the template puts it.
 The chrome is drawn **over** what the slide placed itself, so a full-bleed picture is behind the
 wordmark and not over it.
 
-### The chrome file
+### The templates file
 
 A deck may keep its templates in a file beside it and name it in the deck's frontmatter:
 
 ```markdown
 ---
 theme: ./theme.yml
-chrome: ./chrome.md
+templates-file: ./templates.md
 ---
 ```
 
-`chrome.md` is a Markdown file of template definitions in the same syntax as a deck, and it is
+`templates.md` is a Markdown file of template definitions in the same syntax as a deck, and it is
 resolved against the deck's own directory — so a deck and the furniture it shares travel together.
 A file that is not there is a failure, and so is a file outside the directories the render may
 read: a path a deck wrote is held to the same scope as a picture in it. A file that holds a slide

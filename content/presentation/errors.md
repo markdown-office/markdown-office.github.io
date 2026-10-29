@@ -21,9 +21,10 @@ is about both libraries, is on [Errors in general](/errors/).
 | `UnknownMarker` | `::click=0`, backwards, over 500, unclosed, or a stray closer |
 | `UnknownLayoutRole` | `layout:` is not one of the layout roles |
 | `UnknownTemplate` | a slide names a template the deck does not have — the message names the templates |
-| `MalformedChrome` | a template holds ordinary Markdown, or a chrome file holds a slide |
-| `ChromeNotFound` | the chrome file a deck names is not there, or is outside the roots |
-| `ChromeTooLarge` | the chrome file a deck names is over the ceiling |
+| `MalformedChrome` | a template holds ordinary Markdown |
+| `MalformedTemplatesFile` | the templates file a deck names holds a slide |
+| `TemplatesFileNotFound` | the templates file a deck names is not there, or is outside the roots |
+| `TemplatesFileTooLarge` | the templates file a deck names is over the ceiling |
 | `UnsupportedColumn` | more `::column` markers than the layout has columns |
 | `UnsupportedImageFormat` | not an image, no decoder, or over the ceiling |
 | `UnsupportedLink` | `javascript:`, `data:`, `phar://`, `file://`, a UNC share |
@@ -51,5 +52,6 @@ Five sit beside `InvalidInput` rather than under it: nothing a deck names fixes 
 be read, a target that cannot be written, a conversion with nothing to convert, or a dependency
 that was installed without the fixes the library needs.
 
-The three that carry a template are about the deck rather than about a file on disk: a name
-nothing is under, a body that holds the wrong thing, and a file that is not there.
+The four that carry a template are about the deck rather than about a file on disk: a name
+nothing is under, a body that holds the wrong thing, a file that holds a slide, and a file that is
+not there.

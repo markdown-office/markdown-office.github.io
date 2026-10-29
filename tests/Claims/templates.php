@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use MarkdownOffice\Documentation\Tests\Support\Chrome;
 use MarkdownOffice\Documentation\Tests\Support\Deck;
 use MarkdownOffice\Documentation\Tests\Support\Site;
+use MarkdownOffice\Documentation\Tests\Support\TemplatesFile;
 
 /**
  * The claims the pages make about the slide templates.
@@ -62,24 +62,24 @@ it('draws the chrome over what the slide placed itself', function () {
     expect(\array_search('circle', $shapes, true))->toBeLessThan(\array_search('rectangle', $shapes, true));
 });
 
-it('reads a chrome file from beside the deck', function () {
-    $shapes = Chrome::shapes(
-        "---\nchrome: ./chrome.md\n---\n# One\n\n---\nlayout: blank\ntemplate: brand\n---\n\nWords.\n",
+it('reads a templates file from beside the deck', function () {
+    $shapes = TemplatesFile::shapes(
+        "---\ntemplates-file: ./templates.md\n---\n# One\n\n---\nlayout: blank\ntemplate: brand\n---\n\nWords.\n",
         "---\ntemplate: brand\n---\n::rectangle{left=0 top=0 width=10% height=10%}\n",
     );
 
     expect($shapes[1])->toContain('rectangle');
 });
 
-it('refuses a chrome file that is not there', function () {
-    $message = Deck::refusal("---\nchrome: ./nowhere.md\n---\n# One\n", \sys_get_temp_dir());
+it('refuses a templates file that is not there', function () {
+    $message = Deck::refusal("---\ntemplates-file: ./nowhere.md\n---\n# One\n", \sys_get_temp_dir());
 
-    expect($message)->toContain('There is no chrome file at');
+    expect($message)->toContain('There is no templates file at');
 });
 
 it('lets the deck\'s own template override an imported one of the same name', function () {
-    $shapes = Chrome::shapes(
-        "---\nchrome: ./chrome.md\n---\n# One\n\n---\ntemplate: brand\n---\n::circle{left=1% top=1% width=5% height=5%}\n\n---\nlayout: blank\ntemplate: brand\n---\n\nWords.\n",
+    $shapes = TemplatesFile::shapes(
+        "---\ntemplates-file: ./templates.md\n---\n# One\n\n---\ntemplate: brand\n---\n::circle{left=1% top=1% width=5% height=5%}\n\n---\nlayout: blank\ntemplate: brand\n---\n\nWords.\n",
         "---\ntemplate: brand\n---\n::rectangle{left=0 top=0 width=10% height=10%}\n",
     );
 

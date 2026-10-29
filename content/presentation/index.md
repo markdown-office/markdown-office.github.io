@@ -280,7 +280,7 @@ PowerPoint open the deck as `[Repaired]`.
 | `MAX_SLIDES` | 1000 |
 | `MAX_STEP` | 500 |
 | `MAX_PIXELS` | 16,777,216 — 4096 × 4096, enforced on the file header |
-| `MAX_BYTES` | 1,048,576 — the size of a chrome file |
+| `MAX_BYTES` | 1,048,576 — the size of a templates file |
 | `MAX_SHAPES` | 100 — the shapes one slide may carry |
 | `MAX_PART_BYTES` | 4,194,304 — one part of a theme's template |
 

@@ -11,7 +11,7 @@ use MarkdownPresentation\Render\Furniture;
 use MarkdownPresentation\Render\ImageConverter;
 use MarkdownPresentation\Render\PresentationRenderer;
 use MarkdownPresentation\Render\TemplateGeometry;
-use MarkdownPresentation\Template\ChromeFile;
+use MarkdownPresentation\Template\TemplatesFile;
 use MarkdownPresentation\Theme\LayoutRole;
 use MarkdownPresentation\Theme\StyleMapping;
 use MarkdownPresentation\Theme\StyleSlots;
@@ -79,7 +79,7 @@ final class Vocabularies
             'presentation.ceilings' => new Vocabulary(
                 [
                     'PresentationRenderer::MAX_SLIDES, BlockTranslator::MAX_STEP, ImageConverter::MAX_PIXELS, '
-                        . 'ChromeFile::MAX_BYTES, Furniture::MAX_SHAPES, TemplateGeometry::MAX_PART_BYTES'
+                        . 'TemplatesFile::MAX_BYTES, Furniture::MAX_SHAPES, TemplateGeometry::MAX_PART_BYTES'
                         => [
                             'MAX_SLIDES',
                             'MAX_STEP',
@@ -93,7 +93,7 @@ final class Vocabularies
                     'MAX_SLIDES' => PresentationRenderer::MAX_SLIDES,
                     'MAX_STEP' => BlockTranslator::MAX_STEP,
                     'MAX_PIXELS' => ImageConverter::MAX_PIXELS,
-                    'MAX_BYTES' => ChromeFile::MAX_BYTES,
+                    'MAX_BYTES' => TemplatesFile::MAX_BYTES,
                     'MAX_SHAPES' => Furniture::MAX_SHAPES,
                     'MAX_PART_BYTES' => TemplateGeometry::MAX_PART_BYTES,
                 ],
