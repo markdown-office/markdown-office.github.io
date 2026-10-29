@@ -193,7 +193,10 @@ jobs:
 
       # The claims the pages make in prose — the counts, the completeness, the rules —
       # which a table cannot carry and a name cannot say.
-      - name: The claims the pages make
+      # The claims the pages make, and the client the skill carries: the client is a
+      # program that talks to an application over a socket, and nothing else would say
+      # whether it asks what it should.
+      - name: The claims the pages make, and the client the skill carries
         working-directory: documentation
         run: vendor/bin/pest
 

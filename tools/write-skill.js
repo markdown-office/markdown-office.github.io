@@ -20,6 +20,7 @@ const LIBRARY_TOOLS = [
   "render-document.php",
   "render-with-word.applescript",
   "render-with-word.ps1",
+  "package-as-document.sh",
   "pdf-is-complete.sh",
 ];
 

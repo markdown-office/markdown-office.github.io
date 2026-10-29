@@ -49,24 +49,31 @@ final class RenderFailed extends RuntimeException
  * The file is named after the port it belongs to, so two applications on two ports do not
  * share one — and one application restarted on the same port writes a new key, so the key
  * is read at the moment it is used rather than once at the start.
+ *
+ * `AppData/Roaming` is where a Windows application keeps what it would keep in
+ * `Library/Application Support` on a Mac, which is the same thing under another name.
  */
 const KEY_FILES = [
     'word' => [
         'Darwin' => 'Library/Application Support/WordCraft/control-key.local-%d',
         'Linux' => '.config/wordcraft/control-key.local-%d',
+        'Windows' => 'AppData/Roaming/WordCraft/control-key.local-%d',
     ],
     'deck' => [
         'Darwin' => 'Library/Application Support/DeckCraft/control-key.local-%d',
         'Linux' => '.config/deckcraft/control-key.local-%d',
+        'Windows' => 'AppData/Roaming/DeckCraft/control-key.local-%d',
     ],
 ];
 
 /**
- * The application that answers on a port.
+ * The control key for a port.
  *
- * @return array{app: string, key: string}
+ * Which application the key belongs to is not decided here: the key file says where to
+ * look for the key, and the method that answers the socket says what is on the other end
+ * of it.
  */
-function application(int $port): array
+function control_key(int $port): string
 {
     $home = (string) (\getenv('HOME') ?: \getenv('USERPROFILE') ?: '');
 
@@ -76,8 +83,8 @@ function application(int $port): array
 
     $system = \PHP_OS_FAMILY;
 
-    foreach (['word', 'deck'] as $app) {
-        $pattern = KEY_FILES[$app][$system] ?? null;
+    foreach (KEY_FILES as $patterns) {
+        $pattern = $patterns[$system] ?? null;
 
         if ($pattern === null) {
             continue;
@@ -95,7 +102,7 @@ function application(int $port): array
             continue;
         }
 
-        return ['app' => $app, 'key' => $key];
+        return $key;
     }
 
     throw new RenderFailed(\sprintf(
@@ -125,15 +132,24 @@ function connect(int $port): mixed
 }
 
 /**
- * One request, and the reply.
+ * One request, and the reply as the application sent it.
+ *
+ * **The reply is checked before it is read.** The protocol says a reply carries the id of
+ * the request it answers, and a client is to check it: a reply to an earlier request is
+ * not the answer to this one. Every request therefore carries an id of its own, and
+ * every reply is checked against the id that was sent.
  *
  * @param array<string, mixed> $params
  *
  * @return array<string, mixed>
  */
-function ask(mixed $socket, string $key, string $method, array $params = []): array
+function send(mixed $socket, string $key, string $method, array $params = []): array
 {
-    $request = ['id' => 1, 'key' => $key, 'method' => $method];
+    static $requests = 0;
+
+    $id = ++$requests;
+
+    $request = ['id' => $id, 'key' => $key, 'method' => $method];
 
     if ($params !== []) {
         $request['params'] = $params;
@@ -147,11 +163,33 @@ function ask(mixed $socket, string $key, string $method, array $params = []): ar
         throw new RenderFailed(\sprintf('The application closed the connection during %s.', $method));
     }
 
-    $reply = \json_decode(\line, true);
+    $reply = \json_decode($line, true);
 
     if (! \is_array($reply)) {
         throw new RenderFailed(\sprintf('The reply to %s was not JSON.', $method));
     }
+
+    if (($reply['id'] ?? null) !== $id) {
+        throw new RenderFailed(\sprintf(
+            'The application answered %s while %d was asked, so the reply is not the answer to the question.',
+            \json_encode($reply['id'] ?? null),
+            $id,
+        ));
+    }
+
+    return $reply;
+}
+
+/**
+ * One request, and the result it answers with.
+ *
+ * @param array<string, mixed> $params
+ *
+ * @return array<string, mixed>
+ */
+function ask(mixed $socket, string $key, string $method, array $params = []): array
+{
+    $reply = send($socket, $key, $method, $params);
 
     if (($reply['ok'] ?? false) !== true) {
         throw new RenderFailed(\sprintf(
@@ -165,35 +203,39 @@ function ask(mixed $socket, string $key, string $method, array $params = []): ar
 }
 
 /**
- * Whether a method is one the application knows.
- */
-function knows(mixed $socket, string $key, string $method): bool
-{
-    $request = ['id' => 1, 'key' => $key, 'method' => $method];
-
-    \fwrite($socket, \json_encode($request) . "\n");
-
-    $line = \fgets($socket);
-    $reply = \is_string($line) ? \json_decode($line, true) : null;
-
-    return \is_array($reply) && \str_contains((string) ($reply['error'] ?? ''), 'unknown command') === false;
-}
-
-/**
  * Opens a document, in whichever of the two applications answers.
+ *
+ * **The method is found by asking, and not by probing.** WordCraft opens a document with
+ * `file.open` and DeckCraft with `app.open`, and the two know nothing of each other. So
+ * `file.open` is asked for with the document, and `app.open` is asked for only when the
+ * first answer says the method is unknown — which is the one failure that means "ask the
+ * other one" rather than "something is wrong".
+ *
+ * The application that answered is the one that renders: the key file says where to look
+ * for the key, and the method that answers says what is on the other end of the socket.
  *
  * @return array{app: string, opened: string}
  */
 function open(mixed $socket, string $key, string $document): array
 {
     foreach (['file.open' => 'word', 'app.open' => 'deck'] as $method => $app) {
-        if (! knows($socket, $key, $method)) {
-            continue;
+        $reply = send($socket, $key, $method, ['path' => $document]);
+
+        if (($reply['ok'] ?? false) === true) {
+            $result = (array) ($reply['result'] ?? []);
+
+            return ['app' => $app, 'opened' => (string) ($result['path'] ?? $document)];
         }
 
-        $reply = ask($socket, $key, $method, ['path' => $document]);
+        $error = (string) ($reply['error'] ?? '');
 
-        return ['app' => $app, 'opened' => (string) ($reply['path'] ?? $document)];
+        if (\stripos($error, 'unknown command') === false) {
+            throw new RenderFailed(\sprintf(
+                '%s: %s',
+                $method,
+                $error === '' ? 'the application said nothing about why' : $error,
+            ));
+        }
     }
 
     throw new RenderFailed('The application answered, but it knows neither `file.open` nor `app.open`.');
@@ -224,13 +266,14 @@ function pages(mixed $socket, string $key): int
  *
  * @param list<string> $written
  */
-function render(mixed $socket, string $key, string $document, string $directory, string $app): array
+function render(mixed $socket, string $key, string $document, string $directory): array
 {
     if (! \is_dir($directory) && ! @\mkdir($directory, 0o777, true) && ! \is_dir($directory)) {
         throw new RenderFailed(\sprintf('The directory "%s" could not be made.', $directory));
     }
 
-    open($socket, $key, $document);
+    $opened = open($socket, $key, $document);
+    $app = $opened['app'];
 
     $count = pages($socket, $key);
     $written = [];
@@ -302,11 +345,11 @@ if ($port === null || $port === 0) {
 }
 
 try {
-    $application = application($port);
+    $key = control_key($port);
     $socket = connect($port);
 
     try {
-        $written = render($socket, $application['key'], $document, $directory, $application['app']);
+        $written = render($socket, $key, $document, $directory);
     } finally {
         \fclose($socket);
     }

@@ -384,7 +384,23 @@ if (\preg_match('/^---\r?\n(.*?)\r?\n---/s', $skill, $frontmatter) !== 1) {
 // 6. The scripts are the ones the library ships.
 $library = $root . '/../markdown-word/tools';
 
-foreach (['render-document.php', 'render-with-word.applescript', 'render-with-word.ps1', 'pdf-is-complete.sh'] as $tool) {
+/**
+ * The tools the bundle carries from the library.
+ *
+ * Named once, so that the list that is checked and the count that is reported cannot
+ * disagree about what is in it.
+ *
+ * @var list<string>
+ */
+$scripts = [
+    'render-document.php',
+    'render-with-word.applescript',
+    'render-with-word.ps1',
+    'package-as-document.sh',
+    'pdf-is-complete.sh',
+];
+
+foreach ($scripts as $tool) {
     $from = $library . '/' . $tool;
     $copied = $bundle . '/scripts/' . $tool;
 
@@ -453,5 +469,5 @@ if ($report->failed()) {
     "%d reference file(s), %d page(s) and %d script(s) checked against the bundle.\n",
     \count($manifest['references']),
     \count($pages),
-    4,
+    \count($scripts),
 );

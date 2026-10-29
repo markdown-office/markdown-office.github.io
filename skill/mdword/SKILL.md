@@ -42,6 +42,9 @@ mdoffice word to-docx notes.md -o notes.docx   # build
 php scripts/render-document.php notes.docx --out notes.pdf   # render
 ```
 
+A **template** is rendered as well as a document — `php scripts/render-document.php
+report.dotx --out report.pdf` — and the PDF is named after the template.
+
 **Then read the PDF.** A document that has not been looked at has not been checked, and the
 thing a document gets wrong is almost always something only a picture shows: a line that
 wraps, a table that runs off the page, a picture in the wrong place.
@@ -86,7 +89,8 @@ mdoffice word to-markdown notes.docx  # and back
 
 It decides which way the data has to go **from the content, not the name**: a Word document
 is a zip and Markdown is text, and the four bytes that say which is which are part of the
-format. Exit `0` on success and `1` for a bad input, printed as the sentence alone.
+format. Exit `0` on success and `1` for anything that did not finish — a mistake the caller
+can put right or a defect they cannot.
 
 The command line is not part of this library; it is `mdoffice`, one program over both
 converters. `references/command-line-install.md` says how to get it.
