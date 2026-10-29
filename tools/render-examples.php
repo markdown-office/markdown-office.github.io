@@ -144,30 +144,73 @@ function blocks(string $markdown): array
 }
 
 /**
+ * The fence of an example: the opening line, the body between the two fences, and the
+ * closing fence.
+ *
+ * The opening line is a fence of three or more backticks, tagged with the direction the
+ * example runs in — `md word`, `md presentation` or `word md`. The closing fence is a run
+ * of the same number of backticks: the same length is what lets an example that itself
+ * contains a fenced block be written with four backticks.
+ *
+ * A third word may follow the direction: `finder`, which says that the example's files
+ * come from a finder rather than from the disk.
+ *
+ * A quoted title may follow the direction on the fence line. It is the same title the
+ * paired tag can carry, and a page that writes the title once in the fence and once in
+ * the tag is a page with two places to keep them in step.
+ *
+ * The closing fence is looked for in a second step, because it has to be as long as the
+ * opening one and its length is only known once the opening one has been read.
+ *
+ * @return array{fence: string, from: string, to: string, finder: string, title: string, body: string, whole: string}|null
+ */
+function fence(string $block): ?array
+{
+    $offset = 0;
+
+    while (\preg_match(
+        '/^(`{3,})(md|word|presentation)[ \t]+(md|word|presentation)(?:[ \t]+(finder))?[ \t]*(?:"([^"]*)")?[ \t]*\n/m',
+        $block,
+        $opening,
+        \PREG_OFFSET_CAPTURE,
+        $offset,
+    ) === 1) {
+        $start = $opening[0][1];
+        $after = $start + \strlen($opening[0][0]);
+
+        // The fence is backticks and nothing else, so it cannot change the pattern.
+        $closing = '/^(' . \preg_quote($opening[1][0], '/') . ')[ \t]*$/m';
+
+        if (\preg_match($closing, $block, $end, \PREG_OFFSET_CAPTURE, $after) === 1) {
+            return [
+                'fence' => $opening[1][0],
+                'from' => $opening[2][0],
+                'to' => $opening[3][0],
+                'finder' => $opening[4][0] ?? '',
+                'title' => $opening[5][0] ?? '',
+                'body' => \substr($block, $after, $end[0][1] - $after),
+                'whole' => \substr($block, $start, $end[0][1] + \strlen($end[0][0]) - $start),
+            ];
+        }
+
+        // An opening fence that is never closed is not the fence of the block; the next
+        // one may be.
+        $offset = $start + 1;
+    }
+
+    return null;
+}
+
+/**
  * The example a block holds, or null when the block holds none.
  *
  * @param array{tag: string, body: string} $block
  */
 function pendingFrom(string $file, string $directory, array $block): ?Pending
 {
-    // A fence of three or more backticks, tagged with the direction it runs in —
-    // `md word`, `md presentation` or `word md` — closed by a run of the same length.
-    // The same length is what lets an example that itself contains a fenced block be
-    // written with four backticks.
-    //
-    // A third word may follow the direction: `finder`, which says that the example's
-    // files come from a finder rather than from the disk.
-    //
-    // A quoted title may follow the direction on the fence line. It is the same title the
-    // paired tag can carry, and a page that writes the title once in the fence and once
-    // in the tag is a page with two places to keep them in step.
-    \preg_match(
-        '/^(`{3,})(md|word|presentation)[ \t]+(md|word|presentation)(?:[ \t]+(finder))?[ \t]*(?:"([^"]*)")?[ \t]*\n([\s\S]*?)^\1[ \t]*$/m',
-        $block['body'],
-        $fence,
-    );
+    $fence = fence($block['body']);
 
-    if ($fence === []) {
+    if ($fence === null) {
         \fwrite(\STDERR, \sprintf(
             "  %s: an {%% example %%} block has no `md word`, `md presentation` or `word md` fence.\n",
             $file,
@@ -176,7 +219,7 @@ function pendingFrom(string $file, string $directory, array $block): ?Pending
         return null;
     }
 
-    $direction = $fence[2] . '-' . $fence[3] . (($fence[4] ?? '') === 'finder' ? '-finder' : '');
+    $direction = $fence['from'] . '-' . $fence['to'] . ($fence['finder'] === 'finder' ? '-finder' : '');
 
     if (! isset(Runner::DIRECTIONS[$direction])) {
         \fwrite(\STDERR, \sprintf(
@@ -196,18 +239,18 @@ function pendingFrom(string $file, string $directory, array $block): ?Pending
     // frontmatter is matched at the first byte of the file, so an example whose source
     // began with a blank line would put `theme:` on slide 2 and be refused for naming a
     // deck directive there.
-    $source = \trim($fence[6]);
+    $source = \trim($fence['body']);
 
     // The tag wins over the fence, because the tag is the one an author edits when they
     // are looking at the `{% example %}` and not at the fence inside it.
     $title = \trim(\trim($block['tag']), '"');
-    $title = $title === '' ? \trim($fence[5] ?? '', '"') : $title;
+    $title = $title === '' ? \trim($fence['title'], '"') : $title;
     $title = $title !== '' ? $title : Runner::DIRECTIONS[$direction] . ' example';
 
     // The key is hashed from the *whole* trimmed block, fences included, because that is
     // what the Eleventy shortcode has to hand: it is given the text between the paired
     // tags and cannot tell a body from the fence around it without re-parsing it.
-    $whole = \trim($fence[0]);
+    $whole = \trim($fence['whole']);
 
     return new Pending(
         \str_replace($directory . '/', '', $file),

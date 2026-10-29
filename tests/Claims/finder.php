@@ -38,6 +38,16 @@ use MarkdownWord\Theme\ThemeResolver as WordThemeResolver;
  */
 
 /**
+ * The house theme's file, as a finder names it.
+ */
+const HOUSE_THEME_FILE = 'house/theme.yml';
+
+/**
+ * What that file holds: a theme with a name and nothing else.
+ */
+const HOUSE_THEME_YAML = "name: House\n";
+
+/**
  * The names a marked block of a vocabulary lists.
  *
  * @return list<string>
@@ -76,8 +86,8 @@ it('says that a finder answers and does not refuse', function () {
 it('answers null for a file that is not there, and refuses nothing', function () {
     $finder = new WordDiskFinder();
 
-    expect($finder->read('house/theme.yml', 'theme'))->toBeNull();
-    expect($finder->path('house/theme.yml', 'theme'))->toBeNull();
+    expect($finder->read(HOUSE_THEME_FILE, 'theme'))->toBeNull();
+    expect($finder->path(HOUSE_THEME_FILE, 'theme'))->toBeNull();
     expect($finder->files('house'))->toBe([]);
     expect($finder->themes())->toBe([]);
 });
@@ -91,7 +101,7 @@ it('refuses a path the finder answered, in the library\'s own words', function (
     $elsewhere = Directory::make('finder');
 
     \mkdir($elsewhere . '/house', 0o777, true);
-    \file_put_contents($elsewhere . '/house/theme.yml', "name: House\n");
+    \file_put_contents($elsewhere . '/' . HOUSE_THEME_FILE, HOUSE_THEME_YAML);
 
     // The finder answers the path of a theme outside the directories this render may
     // read, and the library is the one that refuses it.
@@ -108,7 +118,7 @@ it('refuses a path the finder answered, in the library\'s own words', function (
 });
 
 it('draws the same document from a theme in a finder as from a theme in a directory', function () {
-    $theme = "name: House\n";
+    $theme = HOUSE_THEME_YAML;
     $styles = "heading.1:\n  name: Georgia\n  bold: true\n  size: 20\n  color: \"1F3864\"\n";
     $markdown = "---\ntheme: house\n---\n\n# The house style\n\nA paragraph.\n";
 
@@ -120,7 +130,7 @@ it('draws the same document from a theme in a finder as from a theme in a direct
 
     $fromDirectory = Document::path($markdown, $root);
     $fromFinder = Document::path($markdown, null, new MemoryFinder([
-        'house/theme.yml' => $theme,
+        HOUSE_THEME_FILE => $theme,
         'house/styles.yml' => $styles,
     ]));
 
@@ -133,7 +143,7 @@ it('draws the same document from a theme in a finder as from a theme in a direct
 });
 
 it('draws the same deck from a theme in a finder as from a theme in a directory', function () {
-    $theme = "name: House\n";
+    $theme = HOUSE_THEME_YAML;
     $layouts = "layouts:\n  title: Title Slide\n  content: Title and Content\n";
     $markdown = "---\ntheme: house\n---\n\n# The house style\n\n## A deck\n\nWords.\n";
 
@@ -146,7 +156,7 @@ it('draws the same deck from a theme in a finder as from a theme in a directory'
 
     $fromDirectory = Deck::slides($markdown, $root);
     $fromFinder = Deck::slides($markdown, $elsewhere, new MemoryFinder([
-        'house/theme.yml' => $theme,
+        HOUSE_THEME_FILE => $theme,
         'house/layouts.yml' => $layouts,
     ]));
 
@@ -167,7 +177,7 @@ it('resolves a theme named in code once', function () {
 
     $converter->withTheme('house')->save(\sys_get_temp_dir() . '/markdown-office-finder-' . \bin2hex(\random_bytes(6)) . '.docx');
 
-    expect($finder->reads('house/theme.yml'))->toBe(1);
+    expect($finder->reads(HOUSE_THEME_FILE))->toBe(1);
 });
 
 it('names the themes that resolve when a theme does not', function () {
@@ -189,7 +199,7 @@ it('refuses a master the source cannot serve, rather than drawing without it', f
     $finder = new class implements SlidesFileFinder {
         public function read(string $name, ?string $role = null): ?string
         {
-            return $name === 'house/theme.yml' ? "name: House\n" : null;
+            return $name === HOUSE_THEME_FILE ? HOUSE_THEME_YAML : null;
         }
 
         public function path(string $name, ?string $role = null): ?string
@@ -216,7 +226,7 @@ it('refuses a master the source cannot serve, rather than drawing without it', f
 
 it('resolves a theme as a theme, a picture as a picture and a document as a document', function () {
     $finder = new MemoryFinder([
-        'house/theme.yml' => "name: House\n",
+        HOUSE_THEME_FILE => HOUSE_THEME_YAML,
         'logo.png' => (string) \base64_decode(
             'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
         ),
@@ -228,7 +238,7 @@ it('resolves a theme as a theme, a picture as a picture and a document as a docu
         $finder,
     );
 
-    expect($finder->askedFor('house/theme.yml'))->toBe('theme');
+    expect($finder->askedFor(HOUSE_THEME_FILE))->toBe('theme');
     expect($finder->askedFor('logo.png'))->toBe('picture');
 
     // The picture the finder answered is the picture in the document.
