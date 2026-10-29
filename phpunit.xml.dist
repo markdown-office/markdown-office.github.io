@@ -15,5 +15,8 @@
         <testsuite name="claims">
             <directory suffix=".php">tests/Claims</directory>
         </testsuite>
+        <testsuite name="skill">
+            <directory suffix=".php">tests/Skill</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

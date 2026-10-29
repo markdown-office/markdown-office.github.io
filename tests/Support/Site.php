@@ -45,6 +45,11 @@ final class Site
     public const WORD_ROUND_TRIP = 'word/round-trip.md';
 
     /**
+     * The page that documents rendering into a design that already exists.
+     */
+    public const WORD_TEMPLATES = 'word/templates.md';
+
+    /**
      * The root of the site: the directory this repository is in.
      */
     public static function root(): string
