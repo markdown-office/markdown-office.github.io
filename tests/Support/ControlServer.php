@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace MarkdownOffice\Documentation\Tests\Support;
 
-use RuntimeException;
-
 /**
  * An application that speaks the control protocol, for the client to talk to.
  *
@@ -140,7 +138,7 @@ final class ControlServer
         $log = \tempnam(\sys_get_temp_dir(), 'mdword-control-');
 
         if ($log === false) {
-            throw new RuntimeException('The control server could not be given a file to write to.');
+            throw TheMachineryFailed::because('The control server could not be given a file to write to.');
         }
 
         $this->log = $log;
@@ -156,7 +154,7 @@ final class ControlServer
         $portFile = \tempnam(\sys_get_temp_dir(), 'mdword-port-');
 
         if ($portFile === false) {
-            throw new RuntimeException('The control server could not be given a file to write its port to.');
+            throw TheMachineryFailed::because('The control server could not be given a file to write its port to.');
         }
 
         $server->process = \proc_open(
@@ -175,7 +173,7 @@ final class ControlServer
         );
 
         if (! \is_resource($server->process)) {
-            throw new RuntimeException('The control server could not be started.');
+            throw TheMachineryFailed::because('The control server could not be started.');
         }
 
         $server->port = $server->waitForPort($portFile);
@@ -244,6 +242,6 @@ final class ControlServer
             \usleep(50000);
         }
 
-        throw new RuntimeException('The control server did not say which port it is on.');
+        throw TheMachineryFailed::because('The control server did not say which port it is on.');
     }
 }

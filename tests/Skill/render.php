@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use MarkdownOffice\Documentation\Tests\Support\ControlServer;
+use MarkdownOffice\Documentation\Tests\Support\TheMachineryFailed;
 
 /*
  * The client the skill carries: what it asks, and how it reads the answer.
@@ -23,6 +24,16 @@ use MarkdownOffice\Documentation\Tests\Support\ControlServer;
  * request it answers, and a client is to check it: a reply to an earlier request is not
  * the answer to this one.
  */
+
+/**
+ * The flags the client takes.
+ *
+ * Named once, because the client is asked for them in four places and a flag that is
+ * written down four times is a flag that is spelled four ways.
+ */
+const PORT_FLAG = '--port';
+
+const OUT_FLAG = '--out';
 
 /**
  * The client's answer, with the environment it needs.
@@ -50,7 +61,7 @@ function client(array $environment, array $arguments): array
     );
 
     if (! is_resource($process)) {
-        throw new RuntimeException('The client could not be started.');
+        throw TheMachineryFailed::because('The client could not be started.');
     }
 
     $out = (string) stream_get_contents($pipes[1]);
@@ -85,7 +96,7 @@ function writeControlKey(string $home, int $port): void
     $directory = $home . '/' . $relative;
 
     if (! is_dir($directory) && ! mkdir($directory, 0o777, true) && ! is_dir($directory)) {
-        throw new RuntimeException(sprintf('Unable to create the directory "%s".', $directory));
+        throw TheMachineryFailed::because(sprintf('The directory "%s" could not be made.', $directory));
     }
 
     file_put_contents($directory . '/control-key.local-' . $port, 'the-key');
@@ -121,7 +132,7 @@ it('opens the document with one request that carries the path', function () {
 
     $answer = client(
         ['HOME' => $run['home']],
-        [$run['document'], '--port', (string) $server->port, '--out', $run['out']],
+        [$run['document'], PORT_FLAG, (string) $server->port, OUT_FLAG, $run['out']],
     );
 
     expect($answer['status'])->toBe(0)
@@ -139,7 +150,7 @@ it('opens the document with the other method when the first is unknown', functio
 
     $answer = client(
         ['HOME' => $run['home']],
-        [$run['document'], '--port', (string) $server->port, '--out', $run['out']],
+        [$run['document'], PORT_FLAG, (string) $server->port, OUT_FLAG, $run['out']],
     );
 
     expect($answer['status'])->toBe(0)
@@ -155,7 +166,7 @@ it('refuses a reply that answers another question', function () {
 
     $answer = client(
         ['HOME' => $run['home']],
-        [$run['document'], '--port', (string) $server->port, '--out', $run['out']],
+        [$run['document'], PORT_FLAG, (string) $server->port, OUT_FLAG, $run['out']],
     );
 
     expect($answer['status'])->not->toBe(0)
@@ -168,7 +179,7 @@ it('says so when there is no application to talk to', function () {
     // A port nothing is listening on.
     $answer = client(
         ['HOME' => $run['home']],
-        [$run['document'], '--port', '1', '--out', $run['out']],
+        [$run['document'], PORT_FLAG, '1', OUT_FLAG, $run['out']],
     );
 
     expect($answer['status'])->not->toBe(0)

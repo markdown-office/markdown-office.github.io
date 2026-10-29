@@ -73,7 +73,7 @@ const KEY_FILES = [
  * look for the key, and the method that answers the socket says what is on the other end
  * of it.
  */
-function control_key(int $port): string
+function controlKey(int $port): string
 {
     $home = (string) (\getenv('HOME') ?: \getenv('USERPROFILE') ?: '');
 
@@ -345,7 +345,7 @@ if ($port === null || $port === 0) {
 }
 
 try {
-    $key = control_key($port);
+    $key = controlKey($port);
     $socket = connect($port);
 
     try {
