@@ -193,15 +193,22 @@ jobs:
 
       # The claims the pages make in prose — the counts, the completeness, the rules —
       # which a table cannot carry and a name cannot say.
-      - name: The claims the pages make
+      # The claims the pages make, and the client the skill carries: the client is a
+      # program that talks to an application over a socket, and nothing else would say
+      # whether it asks what it should.
+      - name: The claims the pages make, and the client the skill carries
         working-directory: documentation
         run: vendor/bin/pest
 
       # A site whose links 404 is worse than no site, and nothing else says so: the build
       # succeeds, the pages are there, and the reader is the one who finds out.
-      - name: The site's own links
+      #
+      # The skill is checked here too, because it is built into the site: a bundle that has
+      # fallen behind the pages it was made from is a bundle that is quietly wrong, and
+      # nothing else would say so.
+      - name: The site's own links, and the skill it publishes
         working-directory: documentation
-        run: php tools/check-site-links.php
+        run: npm run check:site
 
       # The pages under `content/command-line/` are written by hand, and nothing else says
       # whether they still describe the program. A command that is implemented and not

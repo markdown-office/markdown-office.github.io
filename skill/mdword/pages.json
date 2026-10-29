@@ -1,0 +1,85 @@
+{
+  "_comment": [
+    "The pages the bundle carries, and the files they are carried in.",
+    "",
+    "The bundle is a copy of this site's documentation, made by the build. This file is",
+    "what says which pages are in it \u2014 and it is read by the build that writes the bundle",
+    "and by the checker that refuses a bundle that has fallen behind.",
+    "",
+    "The 'sections' are the pages that must all be there. A page added to one of them and",
+    "not carried is a page the bundle has silently fallen behind on, and the checker says",
+    "so rather than letting it pass. The pages outside them \u2014 the command line for the",
+    "slides half, and the suite itself \u2014 are carried or not as this file says, because a",
+    "skill about the Word half has no reason to carry the slides half's command line.",
+    "",
+    "The 'file' is the name the page is carried under. It is not the page's URL: the pages",
+    "are flattened into one directory, and two pages of different sections can want the",
+    "same name, so the names say which section a page is from where that is not obvious."
+  ],
+  "sections": [
+    "Markdown Word",
+    "In general"
+  ],
+  "references": [
+    {
+      "file": "dialect.md",
+      "page": "word/index.md"
+    },
+    {
+      "file": "directives.md",
+      "page": "word/directives.md"
+    },
+    {
+      "file": "configuration.md",
+      "page": "word/configuration.md"
+    },
+    {
+      "file": "templates.md",
+      "page": "word/templates.md"
+    },
+    {
+      "file": "round-trip.md",
+      "page": "word/round-trip.md"
+    },
+    {
+      "file": "images.md",
+      "page": "word/images.md"
+    },
+    {
+      "file": "errors.md",
+      "page": "word/errors.md"
+    },
+    {
+      "file": "directive-rules.md",
+      "page": "general/directives.md"
+    },
+    {
+      "file": "directive-syntax.md",
+      "page": "general/syntax.md"
+    },
+    {
+      "file": "general-images.md",
+      "page": "general/images.md"
+    },
+    {
+      "file": "errors-general.md",
+      "page": "general/errors.md"
+    },
+    {
+      "file": "command-line-word.md",
+      "page": "command-line/word.md"
+    },
+    {
+      "file": "command-line-basic.md",
+      "page": "command-line/basic.md"
+    },
+    {
+      "file": "command-line-install.md",
+      "page": "command-line/installation.md"
+    },
+    {
+      "file": "install.md",
+      "page": "skills/index.md"
+    }
+  ]
+}

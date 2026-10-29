@@ -4,7 +4,7 @@ permalink: /word/round-trip/
 title: Round trips
 summary: Markdown to a document and back. What comes out the same, and the six things that do not.
 section: Markdown Word
-order: 3
+order: 4
 ---
 
 Both directions are the same interface, so a round trip is two calls:

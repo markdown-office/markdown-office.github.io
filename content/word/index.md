@@ -281,10 +281,18 @@ try {
 
 The whole catalogue is on [Errors](/word/errors/).
 
+### For an agent
+
+There is a **skill**: a directory an agent reads, holding this half's documentation, the
+library's examples, and the tools that render a document so that it can be looked at. It is
+built from this site, so it is never out of step with it.
+
+[How to install it](/skills/).
+
 ---
 
 ## Next
 
 [Markdown Presentation](/presentation/) · [The directive syntax](/directives/syntax/) ·
 [Word directives](/word/directives/) · [Images](/images/) ·
-[Round trips](/word/round-trip/) · [Errors](/word/errors/)
+[Round trips](/word/round-trip/) · [Errors](/word/errors/) · [The skill](/skills/)

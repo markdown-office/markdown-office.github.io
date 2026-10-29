@@ -4,7 +4,7 @@ permalink: /word/errors/
 title: Errors
 summary: Every exception Markdown Word throws, and what each one means.
 section: Markdown Word
-order: 5
+order: 6
 ---
 
 Every exception Markdown Word throws, in one place. The one to catch, and the advice that is
