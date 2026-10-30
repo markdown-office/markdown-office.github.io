@@ -9,7 +9,7 @@ use MarkdownWord\Render\Directives;
 use MarkdownWord\Render\Handlers;
 
 /**
- * The names the Word half reads out of what it is given.
+ * What the libraries have, read out of their code.
  *
  * The lists the site checks are read out of the library's own code rather than written
  * down here: a name written down here is a second copy of the thing this checks.
@@ -20,6 +20,151 @@ use MarkdownWord\Render\Handlers;
  */
 final class Code
 {
+    /**
+     * The public methods of a class, by name.
+     *
+     * The constructor is left out: it is how the class is made rather than what it does,
+     * and a page that lists what a class can be asked for does not list how it is built.
+     * An interface has none, so this is the whole of one.
+     *
+     * @param class-string $class
+     *
+     * @return list<string>
+     */
+    public static function methods(string $class): array
+    {
+        $names = [];
+
+        foreach ((new \ReflectionClass($class))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            if ($method->getName() === '__construct') {
+                continue;
+            }
+
+            $names[] = $method->getName();
+        }
+
+        \sort($names);
+
+        return $names;
+    }
+
+    /**
+     * The roles a finder resolves a name in.
+     *
+     * Read out of the disk finder's own bases: a finder holds one list of directories per
+     * role, and the roles are the names of those lists. The library composes the name and
+     * the role, and the finder is what turns a role into a set of places to look.
+     *
+     * @param class-string $finder
+     *
+     * @return list<string>
+     */
+    public static function finderRoles(string $finder): array
+    {
+        $roles = [];
+
+        foreach ((new \ReflectionClass($finder))->getConstructor()?->getParameters() ?? [] as $parameter) {
+            $roles[] = $parameter->getName();
+        }
+
+        \sort($roles);
+
+        return $roles;
+    }
+
+    /**
+     * The shape of an interface: every method's name, its parameters and its return type.
+     *
+     * A parameter is a type and a default rather than a name: the name is the library's
+     * own, and an adapter written for one half serves the other whatever it calls its
+     * arguments. The default is part of it, because a method that takes an optional
+     * argument and a method that does not are two shapes.
+     *
+     * @param class-string $interface
+     *
+     * @return array<string, array{parameters: list<string>, returns: string}>
+     */
+    public static function shape(string $interface): array
+    {
+        $shape = [];
+
+        foreach ((new \ReflectionClass($interface))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            $parameters = [];
+
+            foreach ($method->getParameters() as $parameter) {
+                $type = (string) ($parameter->getType() ?? 'mixed');
+
+                $parameters[] = $parameter->isDefaultValueAvailable()
+                    ? $type . ' = ' . \str_replace("\n", '', \var_export($parameter->getDefaultValue(), true))
+                    : $type;
+            }
+
+            $shape[$method->getName()] = [
+                'parameters' => $parameters,
+                'returns' => (string) ($method->getReturnType() ?? 'mixed'),
+            ];
+        }
+
+        \ksort($shape);
+
+        return $shape;
+    }
+
+    /**
+     * The signature of every public method of an interface, as it is written.
+     *
+     * The parameter names are kept, unlike in {@see self::shape()}: a page that shows an
+     * interface shows it as it is written, so a parameter renamed is a page that has to
+     * change with it.
+     *
+     * @param class-string $interface
+     *
+     * @return list<string>
+     */
+    public static function signatures(string $interface): array
+    {
+        $signatures = [];
+
+        foreach ((new \ReflectionClass($interface))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            $parameters = [];
+
+            foreach ($method->getParameters() as $parameter) {
+                $written = (string) ($parameter->getType() ?? 'mixed') . ' $' . $parameter->getName();
+
+                if ($parameter->isDefaultValueAvailable()) {
+                    $written .= ' = ' . self::defaultOf($parameter->getDefaultValue());
+                }
+
+                $parameters[] = $written;
+            }
+
+            $signatures[] = $method->getName() . '(' . \implode(', ', $parameters) . '): '
+                . (string) ($method->getReturnType() ?? 'mixed');
+        }
+
+        \sort($signatures);
+
+        return $signatures;
+    }
+
+    /**
+     * A default value, as the source writes it.
+     *
+     * `var_export()` writes `NULL` and an array over three lines, where the source writes
+     * `null` and `[]` — and the source is what a page copies.
+     */
+    private static function defaultOf(mixed $value): string
+    {
+        return match (true) {
+            $value === null => 'null',
+            $value === true => 'true',
+            $value === false => 'false',
+            \is_string($value) => "'" . $value . "'",
+            \is_array($value) => '[' . \implode(', ', \array_map(self::defaultOf(...), $value)) . ']',
+            default => (string) $value,
+        };
+    }
+
     /**
      * The attributes each of the Word half's directives reads.
      *

@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace MarkdownOffice\Documentation\Reference;
 
 use MarkdownPresentation\Exception\Exception as PresentationException;
+use MarkdownPresentation\Files\DiskFinder as SlidesDiskFinder;
+use MarkdownPresentation\Files\FileFinder as SlidesFileFinder;
 use MarkdownPresentation\Render\CommonMark\BlockTranslator;
 use MarkdownPresentation\Render\Free\FreeShapes;
 use MarkdownPresentation\Render\Furniture;
 use MarkdownPresentation\Render\ImageConverter;
 use MarkdownPresentation\Render\PresentationRenderer;
 use MarkdownPresentation\Render\TemplateGeometry;
-use MarkdownPresentation\Template\ChromeFile;
+use MarkdownPresentation\Template\TemplatesFile;
 use MarkdownPresentation\Theme\LayoutRole;
 use MarkdownPresentation\Theme\StyleMapping;
 use MarkdownPresentation\Theme\StyleSlots;
@@ -22,6 +24,8 @@ use MarkdownWord\Configuration\Options;
 use MarkdownWord\Configuration\Styles;
 use MarkdownWord\Configuration\TextStyles;
 use MarkdownWord\Exception\Exception as WordException;
+use MarkdownWord\Files\DiskFinder as WordDiskFinder;
+use MarkdownWord\Files\FileFinder as WordFileFinder;
 use MarkdownWord\Format;
 use MarkdownWord\MarkdownToWord;
 use MarkdownWord\Render\Directives;
@@ -79,7 +83,7 @@ final class Vocabularies
             'presentation.ceilings' => new Vocabulary(
                 [
                     'PresentationRenderer::MAX_SLIDES, BlockTranslator::MAX_STEP, ImageConverter::MAX_PIXELS, '
-                        . 'ChromeFile::MAX_BYTES, Furniture::MAX_SHAPES, TemplateGeometry::MAX_PART_BYTES'
+                        . 'TemplatesFile::MAX_BYTES, Furniture::MAX_SHAPES, TemplateGeometry::MAX_PART_BYTES'
                         => [
                             'MAX_SLIDES',
                             'MAX_STEP',
@@ -93,7 +97,7 @@ final class Vocabularies
                     'MAX_SLIDES' => PresentationRenderer::MAX_SLIDES,
                     'MAX_STEP' => BlockTranslator::MAX_STEP,
                     'MAX_PIXELS' => ImageConverter::MAX_PIXELS,
-                    'MAX_BYTES' => ChromeFile::MAX_BYTES,
+                    'MAX_BYTES' => TemplatesFile::MAX_BYTES,
                     'MAX_SHAPES' => Furniture::MAX_SHAPES,
                     'MAX_PART_BYTES' => TemplateGeometry::MAX_PART_BYTES,
                 ],
@@ -153,6 +157,14 @@ final class Vocabularies
             'text-style-attributes' => new Vocabulary([
                 'MarkdownPresentation\\Theme\\TextStyle::ATTRIBUTES' => TextStyle::ATTRIBUTES,
                 'MarkdownWord\\Configuration\\TextStyles::ATTRIBUTES' => \array_keys(TextStyles::ATTRIBUTES),
+            ]),
+            'finder-methods' => new Vocabulary([
+                'MarkdownWord\\Files\\FileFinder' => Code::methods(WordFileFinder::class),
+                'MarkdownPresentation\\Files\\FileFinder' => Code::methods(SlidesFileFinder::class),
+            ]),
+            'finder-roles' => new Vocabulary([
+                'MarkdownWord\\Files\\DiskFinder' => Code::finderRoles(WordDiskFinder::class),
+                'MarkdownPresentation\\Files\\DiskFinder' => Code::finderRoles(SlidesDiskFinder::class),
             ]),
         ];
     }

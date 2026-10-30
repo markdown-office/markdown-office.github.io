@@ -35,6 +35,11 @@ final class Site
     public const WORD_DIRECTIVES = 'word/directives.md';
 
     /**
+     * The page that documents where a document's files come from.
+     */
+    public const FILES = 'general/files.md';
+
+    /**
      * The page that documents what does not survive a round trip in the Word half.
      */
     public const WORD_ROUND_TRIP = 'word/round-trip.md';

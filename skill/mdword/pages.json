@@ -66,6 +66,10 @@
       "page": "general/errors.md"
     },
     {
+      "file": "general-files.md",
+      "page": "general/files.md"
+    },
+    {
       "file": "command-line-word.md",
       "page": "command-line/word.md"
     },

@@ -192,3 +192,7 @@ then `themes/<name>` beside the document, then `themes/<name>` beside the workin
 then the package's own `themes/<name>`, and
 **there is no silent fallback** — a name that does not resolve raises `ThemeNotFound` listing the
 ones that do.
+
+That order is the disk's. A program that keeps its themes somewhere else — in a database, say —
+hands the library a **finder** instead, and the name is asked for through it: see
+[Where the files come from](/files/).

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use MarkdownOffice\Documentation\Reference\Code;
 use MarkdownOffice\Documentation\Reference\Vocabularies;
 use MarkdownOffice\Documentation\Tests\Support\RoundTrip;
 use MarkdownOffice\Documentation\Tests\Support\Site;
@@ -92,10 +93,7 @@ it('counts the things that do not survive as the page lists them', function () {
 });
 
 it('counts the renderer\'s methods as the code does', function () {
-    $methods = \array_filter(
-        (new \ReflectionClass(PresentationRenderer::class))->getMethods(\ReflectionMethod::IS_PUBLIC),
-        static fn (\ReflectionMethod $method): bool => $method->getName() !== '__construct',
-    );
+    $methods = Code::methods(PresentationRenderer::class);
 
     says(Site::PRESENTATION_INDEX, words(\count($methods)) . ' methods');
 });

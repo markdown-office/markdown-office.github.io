@@ -82,7 +82,9 @@ function expansion(name, built, fence, hash) {
   lines.push(`Source:  \`${directory}/example.md\``);
 
   if (built.document) {
-    lines.push(`Built:   \`${directory}/example.docx\``);
+    // The name the document was built under, which is not the same for every example: a
+    // deck is a `.pptx` and a document a `.docx`, and the bundle holds what was built.
+    lines.push(`Built:   \`${directory}/${basename(built.document)}\``);
   }
 
   if (built.previews.length > 0) {

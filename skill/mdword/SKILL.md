@@ -25,6 +25,7 @@ documentation, not by recalling it.
 | How a directive is written — names, labels, attributes, fences | `references/directive-syntax.md` |
 | What the two halves of the suite do with a name they know, and with one they do not | `references/directive-rules.md` |
 | The errors both halves throw | `references/errors-general.md` |
+| Where a document's files come from — the finder, the three roles, and the names the library composes | `references/general-files.md` |
 | The command line, and the options each command takes | `references/command-line-word.md`, `references/command-line-basic.md` |
 | Installing the command line | `references/command-line-install.md` |
 | Installing this skill | `references/install.md` |

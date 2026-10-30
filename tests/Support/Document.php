@@ -7,6 +7,7 @@ namespace MarkdownOffice\Documentation\Tests\Support;
 use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use MarkdownOffice\CommonMark\Directive\GenericDirectiveExtension;
+use MarkdownWord\Files\FileFinder;
 use MarkdownWord\Format;
 use MarkdownWord\Loss;
 use MarkdownWord\MarkdownToWord;
@@ -20,11 +21,11 @@ final class Document
     /**
      * A document built from the Markdown, and the path it was written to.
      */
-    public static function path(string $markdown, ?string $directory = null): string
+    public static function path(string $markdown, ?string $directory = null, ?FileFinder $files = null): string
     {
         $path = \sys_get_temp_dir() . '/markdown-office-document-' . \bin2hex(\random_bytes(6)) . '.docx';
 
-        self::converter($markdown, $directory)->save($path);
+        self::converter($markdown, $directory, $files)->save($path);
 
         return $path;
     }
@@ -32,9 +33,9 @@ final class Document
     /**
      * The body of a document, as the XML it was written as.
      */
-    public static function body(string $markdown, ?string $directory = null): string
+    public static function body(string $markdown, ?string $directory = null, ?FileFinder $files = null): string
     {
-        return Package::part(self::path($markdown, $directory), 'word/document.xml');
+        return Package::part(self::path($markdown, $directory, $files), 'word/document.xml');
     }
 
     /**
@@ -111,13 +112,20 @@ final class Document
      * A converter for the Markdown.
      *
      * The directory is named only where there is one: a document that has no file of its
-     * own beside it has nothing to resolve a path against.
+     * own beside it has nothing to resolve a path against. The finder is named only where
+     * there is one: without it the files come from the disk, which is the default.
      */
-    private static function converter(string $markdown, ?string $directory): MarkdownToWord
-    {
-        return $directory === null
-            ? new MarkdownToWord($markdown, parser: self::parser())
-            : new MarkdownToWord($markdown, parser: self::parser(), directory: $directory);
+    private static function converter(
+        string $markdown,
+        ?string $directory,
+        ?FileFinder $files = null,
+    ): MarkdownToWord {
+        return new MarkdownToWord(
+            $markdown,
+            parser: self::parser(),
+            directory: $directory,
+            files: $files,
+        );
     }
 
     /**

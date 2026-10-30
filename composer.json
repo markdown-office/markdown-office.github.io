@@ -84,7 +84,7 @@
             "@php tools/check-readme-links.php ../markdown-word ../markdown-presentation ../mdoffice",
             "@test"
         ],
-        "check:site": ["@php tools/check-site-links.php", "@php tools/check-skill.php"],
+        "check:site": "npm run check:site",
         "check:links": "@php tools/check-readme-links.php ../markdown-word ../markdown-presentation ../mdoffice"
     },
     "minimum-stability": "dev",

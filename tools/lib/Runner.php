@@ -7,19 +7,23 @@ namespace MarkdownOffice\Documentation\Tool;
 use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use MarkdownOffice\CommonMark\Directive\GenericDirectiveExtension;
+use MarkdownOffice\Documentation\Finder\MemoryFinder;
 use MarkdownWord\MarkdownToWord;
 use MarkdownWord\Parser\CommonMarkParser;
 use MarkdownWord\WordToMarkdown;
 use MarkdownPresentation\Document\DeckParser;
 use MarkdownPresentation\Render\PresentationRenderer;
+use MarkdownPresentation\Theme\ThemeResolver;
 
 /**
  * Runs a page's example through the library it documents, and keeps what came out.
  *
  * An example names a direction rather than a renderer: `md word` builds a document from
  * Markdown, `word md` reads a document back into Markdown, and the document in the second
- * case is the example's input rather than its output. The direction decides what is built,
- * which library draws it, and what the download on the page says about it.
+ * case is the example's input rather than its output. A third word on the fence — `finder` —
+ * says that the example's files come from a finder rather than from the disk. The direction
+ * decides what is built, which library draws it, and what the download on the page says
+ * about it.
  *
  * Caching is by content hash rather than by page or by position, so the second page to show
  * the same example pays nothing, a build that changes one paragraph re-renders one example, and
@@ -39,6 +43,12 @@ final class Runner
     /** Markdown into a PowerPoint deck. */
     public const MD_PRESENTATION = 'md-presentation';
 
+    /** Markdown into a Word document, its files from a finder. */
+    public const MD_WORD_FINDER = 'md-word-finder';
+
+    /** Markdown into a PowerPoint deck, its files from a finder. */
+    public const MD_PRESENTATION_FINDER = 'md-presentation-finder';
+
     /** A Word document back into Markdown. */
     public const WORD_MD = 'word-md';
 
@@ -46,11 +56,14 @@ final class Runner
      * The directions the site builds, and the library each belongs to.
      *
      * The key is the pair a fence tag names, with the two formats separated by a dash: the
-     * format the example starts in, and the format it ends in.
+     * format the example starts in, and the format it ends in. A third word — `finder` —
+     * says where the example's files come from: a finder rather than the disk.
      */
     public const DIRECTIONS = [
         self::MD_WORD => 'word',
         self::MD_PRESENTATION => 'presentation',
+        self::MD_WORD_FINDER => 'word',
+        self::MD_PRESENTATION_FINDER => 'presentation',
         self::WORD_MD => 'word',
     ];
 
@@ -212,12 +225,25 @@ final class Runner
 
         $document = $cache . '/example.' . (self::DIRECTIONS[$direction] === 'presentation' ? 'pptx' : 'docx');
 
+        $files = \str_ends_with($direction, '-finder') ? $this->finder() : null;
+
         return [
-            'document' => $direction === self::MD_PRESENTATION
-                ? $this->presentation($source, $document)
-                : $this->word($source, $document),
+            'document' => self::DIRECTIONS[$direction] === 'presentation'
+                ? $this->presentation($source, $document, $files)
+                : $this->word($source, $document, $files),
             'markdown' => $source,
         ];
+    }
+
+    /**
+     * The source the example's files come from, for an example built through a finder.
+     *
+     * The same finder for both halves, because the two interfaces have the same shape:
+     * one adapter serves both packages, which is what the page about the finder shows.
+     */
+    private function finder(): MemoryFinder
+    {
+        return MemoryFinder::house();
     }
 
     /**
@@ -250,16 +276,24 @@ final class Runner
      * direction that reads one, the document's own bytes are the input: the path is already
      * part of the example's hash, and a document that changed under the same name has to
      * rebuild rather than be served from the cache.
+     *
+     * The files of a finder are part of the input as well: an example whose theme comes
+     * from a finder is built from the theme's own bytes, so a theme that changed under
+     * the same name has to rebuild too.
      */
     private function fingerprint(string $direction, string $source): string
     {
-        if ($direction !== self::WORD_MD) {
-            return $source;
+        if ($direction === self::WORD_MD) {
+            $path = \realpath($this->site . '/' . $source);
+
+            return $path === false ? $source : $source . "\0" . (string) \hash_file('sha256', $path);
         }
 
-        $path = \realpath($this->site . '/' . $source);
+        if (\str_ends_with($direction, '-finder')) {
+            return $source . "\0" . (string) \hash('sha256', \serialize($this->finder()->held()));
+        }
 
-        return $path === false ? $source : $source . "\0" . (string) \hash_file('sha256', $path);
+        return $source;
     }
 
     /**
@@ -278,22 +312,30 @@ final class Runner
      *
      * So both, named. That is what a pipeline reading configuration out of a document wants, and the
      * page on Word configuration explains why it is not the default.
+     *
+     * The finder is the source of the document's files when there is one, and the theme the
+     * document names is resolved through it.
      */
-    private function word(string $markdown, string $target): string
+    private function word(string $markdown, string $target, ?MemoryFinder $files = null): string
     {
         (new MarkdownToWord($markdown, parser: new CommonMarkParser([
             GithubFlavoredMarkdownExtension::class,
             GenericDirectiveExtension::class,
             FrontMatterExtension::class,
-        ])))->save($target);
+        ]), files: $files))->save($target);
 
         return $target;
     }
 
-    private function presentation(string $markdown, string $target): string
+    private function presentation(string $markdown, string $target, ?MemoryFinder $files = null): string
     {
         $deck = (new DeckParser())->parse($markdown);
-        (new PresentationRenderer())->render($deck, $target);
+
+        $renderer = $files === null
+            ? new PresentationRenderer()
+            : new PresentationRenderer(themes: new ThemeResolver(files: $files), files: $files);
+
+        $renderer->render($deck, $target);
 
         return $target;
     }

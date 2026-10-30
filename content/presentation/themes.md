@@ -134,8 +134,8 @@ A **template** is not a theme, and it does not live beside one.
 A theme's own `template.pptx` is a **third thing** and shares only the name: it is the PowerPoint
 file that says where the theme's layouts put their boxes, and it says nothing about the furniture
 on a slide. A template that says where the furniture goes is written in Markdown, beside the deck
-or in it — `chrome: ./chrome.md` resolves against the deck's own directory, so a deck and the
-furniture it shares travel together.
+or in it — `templates-file: ./templates.md` resolves against the deck's own directory, so a deck
+and the furniture it shares travel together.
 
 The rules a template follows, and the four things that decide what one is, are on
 [Presentation directives](/presentation/directives/#slide-templates).
@@ -169,6 +169,10 @@ greys as well as colours.
 There is **no silent fallback to `default`**. A name that does not resolve raises `ThemeNotFound`
 and lists every theme that does. A deck that came out looking like something other than what was
 asked for is worse than a deck that did not build.
+
+That order is the disk's. A program that keeps its themes somewhere else — in a database, say —
+hands the library a **finder** instead, and the name is asked for through it: see
+[Where the files come from](/files/).
 
 ## Word themes
 

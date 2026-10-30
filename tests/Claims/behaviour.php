@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use MarkdownOffice\Documentation\Tests\Support\Deck;
+use MarkdownOffice\Documentation\Tests\Support\Document;
 use MarkdownOffice\Documentation\Tests\Support\Theme;
 use MarkdownOffice\Documentation\Tests\Support\Site;
 
@@ -44,4 +45,16 @@ it('finds a theme that sits beside the deck', function () {
     $message = Theme::slidesRefusal("---\ntheme: mine\n---\n\n# One\n");
 
     expect($message)->toBe('');
+});
+
+it('says that the two halves do opposite things with a name they do not know', function () {
+    says(Site::GENERAL_DIRECTIVES, 'Markdown Word is permissive');
+    says(Site::PRESENTATION_DIRECTIVES, 'it refuses it');
+
+    // The Word half writes the name out as the author's own text.
+    expect(Document::body("::somethingelse{key=value}\n"))->toContain('::somethingelse');
+
+    // The slides half refuses it, and names it.
+    expect(Deck::refusal("---\ntransition: none\n---\n\n# One\n"))
+        ->toContain('names "transition"');
 });
