@@ -103,6 +103,8 @@ const FORBIDDEN = [
     'the presentation index claimed to use every frontmatter key' => 'Every frontmatter key on a deck',
     'the Word page said the container form of a drawn name is claimed' => 'the body is **silently dropped**',
     'the errors page called a loss by a method it does not have' => '$loss->feature()',
+    'the suite page said the presentation pins a commit on dev-master' => 'to a **commit on `dev-master`**',
+    'the suite page said the presentation validates without --strict' => '`composer validate` runs without',
 ];
 
 /**
