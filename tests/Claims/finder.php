@@ -11,8 +11,10 @@ use MarkdownOffice\Documentation\Tests\Support\Document;
 use MarkdownOffice\Documentation\Tests\Support\Package;
 use MarkdownOffice\Documentation\Tests\Support\Refusal;
 use MarkdownOffice\Documentation\Tests\Support\Site;
+use MarkdownOffice\Documentation\Tests\Support\Snippet;
 use MarkdownPresentation\Exception\UnservedTemplate;
 use MarkdownPresentation\Files\FileFinder as SlidesFileFinder;
+use MarkdownPresentation\Theme\ThemeLoader as SlidesThemeLoader;
 use MarkdownPresentation\Theme\ThemeResolver as SlidesThemeResolver;
 use MarkdownWord\Exception\ThemeNotFound;
 use MarkdownWord\Files\DiskFinder as WordDiskFinder;
@@ -20,6 +22,7 @@ use MarkdownWord\Files\FileFinder as WordFileFinder;
 use MarkdownWord\MarkdownToWord;
 use MarkdownWord\Parser\CommonMarkParser;
 use MarkdownWord\Template\TemplateFile;
+use MarkdownWord\Theme\ThemeLoader as WordThemeLoader;
 use MarkdownWord\Theme\ThemeResolver as WordThemeResolver;
 
 /**
@@ -59,12 +62,75 @@ function finderNames(string $vocabulary): array
     return $marked === [] ? [] : $marked[0]->names;
 }
 
+/**
+ * The theme files the page's table names, and the half it says each belongs to.
+ *
+ * @return array<string, string>
+ */
+function finderThemeFiles(string $page): array
+{
+    \preg_match_all(
+        '/^\| [^|]+ \| `read\(\'([^\']+)\', \'theme\'\)` \| ([^|]+) \|$/m',
+        $page,
+        $matches,
+        \PREG_SET_ORDER,
+    );
+
+    $found = [];
+
+    foreach ($matches as $match) {
+        $found[\basename($match[1])] = \trim($match[2]);
+    }
+
+    return $found;
+}
+
+/**
+ * The adapter the page shows, loaded and given some files.
+ *
+ * The signatures are checked before the class is loaded, because a class whose methods do
+ * not match the interfaces cannot be loaded at all: a claim that dies of a fatal error says
+ * less about what is wrong than one that says what is. The two halves are checked together,
+ * because the adapter implements both of them.
+ *
+ * @param array<string, string> $files
+ */
+function finderAdapter(array $files): object
+{
+    $code = Snippet::of(Site::page(Site::FILES), 'implements');
+
+    expect(Snippet::methods($code))->toBe(Code::signatures(WordFileFinder::class));
+    expect(Code::shape(SlidesFileFinder::class))->toBe(Code::shape(WordFileFinder::class));
+
+    return Snippet::adapter($code, $files);
+}
+
 it('gives the two finders the same shape', function () {
     expect(Code::shape(SlidesFileFinder::class))->toBe(Code::shape(WordFileFinder::class));
 });
 
+it('gives the page\'s interface the signatures the code has', function () {
+    $code = Snippet::of(Site::page(Site::FILES), 'interface FileFinder');
+
+    expect(Snippet::methods($code))->toBe(Code::signatures(WordFileFinder::class));
+});
+
+it('gives the page\'s interface the namespace the code has', function () {
+    $code = Snippet::of(Site::page(Site::FILES), 'interface FileFinder');
+
+    \preg_match('/^namespace (.+);$/m', $code, $match);
+
+    expect($match[1] ?? null)->toBe((new \ReflectionClass(WordFileFinder::class))->getNamespaceName());
+});
+
+it('gives the page\'s adapter the signatures the interface has', function () {
+    $code = Snippet::of(Site::page(Site::FILES), 'implements');
+
+    expect(Snippet::methods($code))->toBe(Code::signatures(WordFileFinder::class));
+});
+
 it('lists every method of a finder', function () {
-    expect(finderNames('finder-methods'))->toBe(Code::finderMethods(WordFileFinder::class));
+    expect(finderNames('finder-methods'))->toBe(Code::methods(WordFileFinder::class));
 });
 
 it('lists every role a finder resolves a name in', function () {
@@ -72,7 +138,7 @@ it('lists every role a finder resolves a name in', function () {
 });
 
 it('counts the methods of a finder as the code does', function () {
-    says(Site::FILES, words(\count(Code::finderMethods(WordFileFinder::class))) . ' methods');
+    says(Site::FILES, words(\count(Code::methods(WordFileFinder::class))) . ' methods');
 });
 
 it('counts the roles as the code does', function () {
@@ -263,4 +329,56 @@ it('serves both halves with one adapter', function () {
 
     expect(Document::body($document, null, $finder))->toContain('The house style');
     expect(Deck::slides($deck, '.', $finder))->toHaveCount(2);
+});
+
+it('says which half composes which theme file', function () {
+    $word = [WordThemeLoader::THEME_FILE, WordThemeLoader::STYLES_FILE];
+    $slides = [
+        SlidesThemeLoader::THEME_FILE,
+        SlidesThemeLoader::STYLES_FILE,
+        SlidesThemeLoader::LAYOUTS_FILE,
+        SlidesThemeLoader::TEXT_STYLES_FILE,
+        SlidesThemeLoader::TEMPLATE_FILE,
+    ];
+
+    $expected = [];
+
+    foreach (\array_unique([...$word, ...$slides]) as $file) {
+        $inWord = \in_array($file, $word, true);
+        $inSlides = \in_array($file, $slides, true);
+
+        $expected[$file] = $inWord && $inSlides ? 'both' : ($inWord ? 'Word' : 'slides');
+    }
+
+    $written = finderThemeFiles(Site::page(Site::FILES));
+
+    \ksort($expected);
+    \ksort($written);
+
+    expect($written)->toBe($expected);
+});
+
+it('gives the page\'s adapter the sorted lists the interface promises', function () {
+    $adapter = finderAdapter([
+        'zebra/theme.yml' => "name: Zebra\n",
+        HOUSE_THEME_FILE => HOUSE_THEME_YAML,
+        'house/styles.yml' => "heading.1:\n  name: Georgia\n",
+    ]);
+
+    expect($adapter->themes())->toBe(['house', 'zebra']);
+    expect($adapter->files('house'))->toBe(['styles.yml', 'theme.yml']);
+});
+
+it('answers what the site\'s own adapter answers', function () {
+    $files = [
+        'zebra/theme.yml' => "name: Zebra\n",
+        HOUSE_THEME_FILE => HOUSE_THEME_YAML,
+        'house/styles.yml' => "heading.1:\n  name: Georgia\n",
+    ];
+
+    $adapter = finderAdapter($files);
+    $own = new MemoryFinder($files);
+
+    expect($adapter->themes())->toBe($own->themes());
+    expect($adapter->files('house'))->toBe($own->files('house'));
 });

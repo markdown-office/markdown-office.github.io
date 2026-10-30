@@ -159,8 +159,8 @@ final class Vocabularies
                 'MarkdownWord\\Configuration\\TextStyles::ATTRIBUTES' => \array_keys(TextStyles::ATTRIBUTES),
             ]),
             'finder-methods' => new Vocabulary([
-                'MarkdownWord\\Files\\FileFinder' => Code::finderMethods(WordFileFinder::class),
-                'MarkdownPresentation\\Files\\FileFinder' => Code::finderMethods(SlidesFileFinder::class),
+                'MarkdownWord\\Files\\FileFinder' => Code::methods(WordFileFinder::class),
+                'MarkdownPresentation\\Files\\FileFinder' => Code::methods(SlidesFileFinder::class),
             ]),
             'finder-roles' => new Vocabulary([
                 'MarkdownWord\\Files\\DiskFinder' => Code::finderRoles(WordDiskFinder::class),

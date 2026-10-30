@@ -21,17 +21,25 @@ use MarkdownWord\Render\Handlers;
 final class Code
 {
     /**
-     * The public methods of an interface, by name.
+     * The public methods of a class, by name.
      *
-     * @param class-string $interface
+     * The constructor is left out: it is how the class is made rather than what it does,
+     * and a page that lists what a class can be asked for does not list how it is built.
+     * An interface has none, so this is the whole of one.
+     *
+     * @param class-string $class
      *
      * @return list<string>
      */
-    public static function finderMethods(string $interface): array
+    public static function methods(string $class): array
     {
         $names = [];
 
-        foreach ((new \ReflectionClass($interface))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+        foreach ((new \ReflectionClass($class))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            if ($method->getName() === '__construct') {
+                continue;
+            }
+
             $names[] = $method->getName();
         }
 
@@ -100,6 +108,61 @@ final class Code
         \ksort($shape);
 
         return $shape;
+    }
+
+    /**
+     * The signature of every public method of an interface, as it is written.
+     *
+     * The parameter names are kept, unlike in {@see self::shape()}: a page that shows an
+     * interface shows it as it is written, so a parameter renamed is a page that has to
+     * change with it.
+     *
+     * @param class-string $interface
+     *
+     * @return list<string>
+     */
+    public static function signatures(string $interface): array
+    {
+        $signatures = [];
+
+        foreach ((new \ReflectionClass($interface))->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            $parameters = [];
+
+            foreach ($method->getParameters() as $parameter) {
+                $written = (string) ($parameter->getType() ?? 'mixed') . ' $' . $parameter->getName();
+
+                if ($parameter->isDefaultValueAvailable()) {
+                    $written .= ' = ' . self::defaultOf($parameter->getDefaultValue());
+                }
+
+                $parameters[] = $written;
+            }
+
+            $signatures[] = $method->getName() . '(' . \implode(', ', $parameters) . '): '
+                . (string) ($method->getReturnType() ?? 'mixed');
+        }
+
+        \sort($signatures);
+
+        return $signatures;
+    }
+
+    /**
+     * A default value, as the source writes it.
+     *
+     * `var_export()` writes `NULL` and an array over three lines, where the source writes
+     * `null` and `[]` — and the source is what a page copies.
+     */
+    private static function defaultOf(mixed $value): string
+    {
+        return match (true) {
+            $value === null => 'null',
+            $value === true => 'true',
+            $value === false => 'false',
+            \is_string($value) => "'" . $value . "'",
+            \is_array($value) => '[' . \implode(', ', \array_map(self::defaultOf(...), $value)) . ']',
+            default => (string) $value,
+        };
     }
 
     /**

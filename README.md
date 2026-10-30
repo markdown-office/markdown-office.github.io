@@ -227,7 +227,7 @@ GitHub serves a repository of that name at the root of the organisation's site, 
 name under a path of its own. That is the same shape the site will have on its own domain, so
 the build does not change when the domain is pointed at GitHub — only the address does.
 
-The build checks its own links before it publishes:
+The build checks its own links, and the skill it publishes, before it publishes:
 
 ```bash
 npm run check:site
@@ -235,7 +235,8 @@ npm run check:site
 
 Every root-relative link in the built HTML has to point at a page that is in the site, and
 every page has to be canonical at the address it is served from. A site whose links 404 is
-worse than no site, and nothing else says so.
+worse than no site, and nothing else says so. The skill is checked with them, because a
+bundle that has fallen behind the pages it was made from is quietly wrong.
 
 ### The custom domain
 

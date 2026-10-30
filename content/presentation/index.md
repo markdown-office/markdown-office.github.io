@@ -21,10 +21,10 @@ PHP 8.2 or newer, with `ext-dom`, `ext-gd` and `ext-zip`. `ext-imagick` is optio
 the Markdown this package writes decks in, so a deck can be taken apart, edited as text and put
 in again under a different theme. `PresentationRenderer` has five methods, `render()`,
 `overflows()`, `unknownFonts()`, `withTheme()` and `toString()`; the reader is
-`PowerPointToMarkdown`, with `convert()`, `save()`, `toMarkdown()` and `read()`. The two that
-report rather than write are `overflows()` — every block that had to be made smaller than it
-asked for — and `unknownFonts()` — every face the deck named that there is no table of advance
-widths for. What the round trip does not keep is written down in
+`PowerPointToMarkdown`, with `convert()`, `getOptions()`, `save()`, `toMarkdown()` and `read()`.
+The two that report rather than write are `overflows()` — every block that had to be made smaller
+than it asked for — and `unknownFonts()` — every face the deck named that there is no table of
+advance widths for. What the round trip does not keep is written down in
 [Reading a deck back](#reading-a-deck-back).
 
 ---
