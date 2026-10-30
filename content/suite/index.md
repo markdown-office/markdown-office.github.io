@@ -88,9 +88,11 @@ project on 7.2 or 7.3 cannot install the pair together.
 
 `ext-imagick` is in `suggest` for both, and buys SVG. See [Images](/images/).
 
-The presentation package pins `phpoffice/phppresentation` to a **commit on `dev-master`**, not a
-tag, because the fixes it needs are not in a release. That is why `composer validate` runs without
-`--strict` there: the pin is a warning, and the warning is the point.
+The presentation package requires `phpoffice/phppresentation` at `~1.2.0` — a range of tags, and
+`composer validate --strict` passes there. The fixes it needs are not in that release, so they
+come from a **patch the library applies to the installed package**: a project that installs the
+package has to allow the `cweagans/composer-patches` plugin for the patch to land. The library's
+[README](https://github.com/markdown-office/markdown-presentation#installation) has the details.
 
 ## The conventions they share
 
