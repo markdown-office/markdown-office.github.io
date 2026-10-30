@@ -16,9 +16,9 @@
         "ext-mbstring": "*",
         "ext-zip": "*",
         "league/commonmark": "^2.10",
-        "markdown-office/commonmark-generic-directives": "0.3.0",
-        "markdown-office/markdown-word": "dev-main",
-        "markdown-office/markdown-presentation": "dev-main"
+        "markdown-office/commonmark-generic-directives": "0.3.1",
+        "markdown-office/markdown-word": "0.3.0",
+        "markdown-office/markdown-presentation": "0.3.0"
     },
     "repositories": [
         {
@@ -27,7 +27,7 @@
             "options": {
                 "symlink": true,
                 "versions": {
-                    "markdown-office/commonmark-generic-directives": "0.3.0"
+                    "markdown-office/commonmark-generic-directives": "0.3.1"
                 }
             }
         },
@@ -37,7 +37,7 @@
             "options": {
                 "symlink": true,
                 "versions": {
-                    "markdown-office/markdown-word": "dev-main"
+                    "markdown-office/markdown-word": "0.3.0"
                 }
             }
         },
@@ -47,7 +47,7 @@
             "options": {
                 "symlink": true,
                 "versions": {
-                    "markdown-office/markdown-presentation": "dev-main"
+                    "markdown-office/markdown-presentation": "0.3.0"
                 }
             }
         }

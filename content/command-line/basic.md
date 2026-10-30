@@ -180,9 +180,9 @@ An installed copy answers with its own version and the two libraries it holds:
 
 ```bash
 $ mdoffice --version
-mdoffice 0.1.1
-  markdown-office/markdown-word            0.2.2
-  markdown-office/markdown-presentation    0.2.2
+mdoffice 0.1.2
+  markdown-office/markdown-word            v0.3.0
+  markdown-office/markdown-presentation    v0.3.0
 ```
 
 The tool versions itself separately from the libraries it holds, because it is neither of them: a
@@ -195,5 +195,5 @@ answers with the branch it resolved rather than with a release, because that is 
 
 ```bash
 $ mdoffice word --version
-mdoffice word 0.2.2
+mdoffice word v0.3.0
 ```

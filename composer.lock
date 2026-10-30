@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a7c52b0758fa031d56ea2f018057c411",
+    "content-hash": "f02be1a581d0a05697fef81b470d57b1",
     "packages": [
         {
             "name": "composer/pcre",
@@ -656,11 +656,11 @@
         },
         {
             "name": "markdown-office/commonmark-generic-directives",
-            "version": "0.3.0",
+            "version": "0.3.1",
             "dist": {
                 "type": "path",
                 "url": "../commonmark-generic-directives",
-                "reference": "7e4c56b1e9e78d57b4684dc99f13e8899d919ec8"
+                "reference": "ffcda3df4f06a3b8d03712c2756367575236377d"
             },
             "require": {
                 "league/commonmark": "^2.10",
@@ -736,11 +736,11 @@
         },
         {
             "name": "markdown-office/markdown-presentation",
-            "version": "dev-main",
+            "version": "0.3.0",
             "dist": {
                 "type": "path",
                 "url": "../markdown-presentation",
-                "reference": "06da2e48f72b9df0309b6a0ac4bb991e651079bd"
+                "reference": "18a7004a5d7f364047dd3659e6edf5af5bbbeb0e"
             },
             "require": {
                 "cweagans/composer-patches": "^2.0",
@@ -832,11 +832,11 @@
         },
         {
             "name": "markdown-office/markdown-word",
-            "version": "dev-main",
+            "version": "0.3.0",
             "dist": {
                 "type": "path",
                 "url": "../markdown-word",
-                "reference": "707f5f05c05a6d9ce9880fe88390341c330f3ee6"
+                "reference": "4ce60b53dbc253b3b5f1af1e7b2b39b240b370ee"
             },
             "require": {
                 "ext-dom": "*",
@@ -5972,10 +5972,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "markdown-office/markdown-presentation": 20,
-        "markdown-office/markdown-word": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
