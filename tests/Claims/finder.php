@@ -86,6 +86,28 @@ function finderThemeFiles(string $page): array
 }
 
 /**
+ * The half that composes a theme file, in the words the page's table uses.
+ *
+ * @param list<string> $word   The files the Word half composes.
+ * @param list<string> $slides The files the slides half composes.
+ */
+function finderHalf(string $file, array $word, array $slides): string
+{
+    $inWord = \in_array($file, $word, true);
+    $inSlides = \in_array($file, $slides, true);
+
+    if ($inWord && $inSlides) {
+        return 'both';
+    }
+
+    if ($inWord) {
+        return 'Word';
+    }
+
+    return 'slides';
+}
+
+/**
  * The adapter the page shows, loaded and given some files.
  *
  * The signatures are checked before the class is loaded, because a class whose methods do
@@ -344,10 +366,7 @@ it('says which half composes which theme file', function () {
     $expected = [];
 
     foreach (\array_unique([...$word, ...$slides]) as $file) {
-        $inWord = \in_array($file, $word, true);
-        $inSlides = \in_array($file, $slides, true);
-
-        $expected[$file] = $inWord && $inSlides ? 'both' : ($inWord ? 'Word' : 'slides');
+        $expected[$file] = finderHalf($file, $word, $slides);
     }
 
     $written = finderThemeFiles(Site::page(Site::FILES));

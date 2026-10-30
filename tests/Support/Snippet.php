@@ -108,7 +108,7 @@ final class Snippet
             // missing from it — and a file without one is read as text.
             \file_put_contents($file, "<?php\n\n" . $code);
 
-            require $file;
+            require_once $file;
 
             // The class is in memory now, and the file it came from is of no use to
             // anybody: a fixture that is left behind is a fixture the next run finds.
