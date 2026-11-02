@@ -26,6 +26,7 @@ about both libraries, is on [Errors in general](/errors/).
 | `MalformedDocument` | it is one, and it is broken |
 | `FileNotWritable` | **not** `InvalidInput`; the target cannot be written |
 | `TemplateNotFound` | `template_file:` names nothing |
+| `UnreadableTemplate` | the template holds more parts, or a larger part, than are allowed |
 | `NoContentControl` | `--require-control`, and the template has none |
 | `MalformedTheme` | a theme file is not shaped like one |
 | `ThemeNotFound` | a theme name resolves to nothing — the message lists the ones that do |
