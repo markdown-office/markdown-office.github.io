@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f02be1a581d0a05697fef81b470d57b1",
+    "content-hash": "adb5e3086be1ecc28f97f00dcdab3ed0",
     "packages": [
         {
             "name": "composer/pcre",
@@ -736,11 +736,11 @@
         },
         {
             "name": "markdown-office/markdown-presentation",
-            "version": "0.3.0",
+            "version": "0.3.1",
             "dist": {
                 "type": "path",
                 "url": "../markdown-presentation",
-                "reference": "18a7004a5d7f364047dd3659e6edf5af5bbbeb0e"
+                "reference": "ea0926185c80eef6305eebb75ca2a762bbe3a00c"
             },
             "require": {
                 "cweagans/composer-patches": "^2.0",
@@ -765,9 +765,9 @@
                 "patches": {
                     "phpoffice/phppresentation": [
                         {
-                            "description": "PHPPresentation 1.2.0 brought up to upstream's master, with the fixes that give a picture the path, the bytes and the name it was read from, and that find the folder of a part of a package with the slashes of the package",
-                            "url": "https://raw.githubusercontent.com/markdown-office/PHPPresentation/9aa3f4624f1cab54fc5d275397c2fc59cf6f276d/patches/phpoffice-phppresentation-1.2.0-to-master.patch",
-                            "sha256": "0b8f7c150f7ba5d12671fb9e211c9f1a4db549d7609239f49c0cea707a190551"
+                            "description": "PHPPresentation 1.2.0 brought up to upstream's master, with the fixes that give a picture the path, the bytes and the name it was read from, that find the folder of a part of a package with the slashes of the package, that write a chart series in the order the schema names it, that write the data points of a series and the fill of the series itself, and that give a category axis a tick label skip of its own",
+                            "url": "https://raw.githubusercontent.com/markdown-office/PHPPresentation/605bc7c9724ac4a0781cc1692ff7ae279a33bb8a/patches/phpoffice-phppresentation-1.2.0-to-master.patch",
+                            "sha256": "46862cef4470ae8e755a03f1f8afd94c7e772cc1ee4ab0a39441c2cb392d5146"
                         }
                     ]
                 }
@@ -788,6 +788,9 @@
                 ],
                 "test:unit": [
                     "pest --testsuite=unit"
+                ],
+                "test:conformance": [
+                    "pest --testsuite=conformance"
                 ],
                 "test:readme": [
                     "pest --testsuite=readme"
@@ -832,13 +835,14 @@
         },
         {
             "name": "markdown-office/markdown-word",
-            "version": "0.3.0",
+            "version": "0.3.1",
             "dist": {
                 "type": "path",
                 "url": "../markdown-word",
-                "reference": "4ce60b53dbc253b3b5f1af1e7b2b39b240b370ee"
+                "reference": "9a0c7ab08a66c89cc70ba4cf6788cff328027e71"
             },
             "require": {
+                "cweagans/composer-patches": "^2.0",
                 "ext-dom": "*",
                 "ext-gd": "*",
                 "ext-mbstring": "*",
@@ -846,7 +850,7 @@
                 "league/commonmark": "^2.10",
                 "markdown-office/commonmark-generic-directives": "^0.3.0",
                 "php": "^8.2",
-                "phpoffice/phpword": "^1.4",
+                "phpoffice/phpword": "~1.4.0",
                 "symfony/yaml": "^7.4 || ^8.1"
             },
             "require-dev": {
@@ -856,6 +860,17 @@
                 "ext-imagick": "Embeds SVG as a vector. Word holds an SVG only beside a raster of it, so something has to draw the raster; without this an SVG raises instead of going in."
             },
             "type": "library",
+            "extra": {
+                "patches": {
+                    "phpoffice/phpword": [
+                        {
+                            "description": "PHPWord 1.4.0 writes the children of `w:rPr`, of `w:pPr`, of `w:tblPr`, of `w:sectPr` and of `w:style` in an order of its own, and writes a few elements the format does not allow there. The patch puts them where ECMA-376 names them. The version is held to the 1.4 line rather than the 1 series: the patch is against 1.4.0, and a later release of the line would carry a different writer.",
+                            "url": "https://raw.githubusercontent.com/markdown-office/PHPWord/62f68049d287e5a52575f2ae694c2e76f4a2002a/patches/phpoffice-phpword-1.4.0-ooxml.patch",
+                            "sha256": "193163898e7690b6eaf51086d415809616b7e25ec4090b58ce7966f66ae1203a"
+                        }
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "MarkdownWord\\": "src/"
@@ -881,6 +896,9 @@
                 ],
                 "test:readme": [
                     "pest --testsuite=readme"
+                ],
+                "test:ooxml": [
+                    "pest --testsuite=ooxml"
                 ],
                 "test:coverage": [
                     "pest --coverage --min=91 --coverage-clover=build/coverage/clover.xml --coverage-html=build/coverage/html"
