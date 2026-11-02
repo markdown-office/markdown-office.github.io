@@ -118,6 +118,11 @@ title  content  two-column  section  blank  image-text  image-title  image-slide
 `blank` and `image-slide` have no title box. `layouts.yml` maps each role to a layout name in the
 master — the file may be a bare mapping or nested under a single `layouts:` key.
 
+**A slide with no title box draws the frontmatter's title as a heading in its body.** A deck
+that names no title has nothing to put one in, and a title that is not drawn is a silence —
+so the title becomes the first thing in the body, where it is a heading like any other. Write
+`title: ""` to leave it as metadata only, and the slide opens with no title at all.
+
 Only the roles a deck actually uses are built, so a ten-slide deck does not carry eight masters.
 
 ## Templates

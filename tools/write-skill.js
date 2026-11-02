@@ -10,6 +10,29 @@ import { expandExamples, slug } from "./markdown.js";
 const here = dirname(fileURLToPath(import.meta.url));
 
 /**
+ * The address the site is served from, without a trailing slash.
+ *
+ * The same address the site itself is built with, so a link in the bundle that points at
+ * the site points at the site that was built.
+ */
+const CANONICAL = (process.env.MARKDOWN_OFFICE_CANONICAL ?? "https://markdown-office.github.io").replace(
+  /\/+$/,
+  "",
+);
+
+/**
+ * The address a page is at, from its frontmatter.
+ *
+ * Null where the page states none, which is a page the bundle cannot place: a link to it
+ * cannot be rewritten into a link to a file.
+ */
+function permalinkOf(source) {
+  const found = /^permalink:\s*(\S+)\s*$/m.exec(source);
+
+  return found === null ? null : found[1];
+}
+
+/**
  * The tools the library ships, which the bundle carries unchanged.
  *
  * They are copied rather than rewritten, and the checker says so: a copy that has drifted
@@ -94,19 +117,50 @@ export async function writeSkill({ dir }) {
   // The pages, one file each, with the frontmatter off.
   await mkdir(join(bundle, "references"), { recursive: true });
 
-  await Promise.all(
-    (manifest.references ?? []).map(async (reference) => {
-      const page = join(here, "..", "content", reference.page);
+  const carried = manifest.references ?? [];
 
-      if (! existsSync(page)) {
-        throw new Error(`The page "${reference.page}" is not there, and the bundle says it carries it.`);
-      }
+  // The address a page is at on the site, and the file the bundle carries it in.
+  //
+  // The bundle is distributed as an archive with no website beside it, so a page's link to
+  // another page of the site resolves to nothing. A link to a page the bundle carries
+  // becomes a link to the file beside it; a link to a page it does not carry becomes the
+  // address of the page on the site, which is where the page is.
+  const at = new Map();
+
+  for (const reference of carried) {
+    const page = join(here, "..", "content", reference.page);
+
+    if (!existsSync(page)) {
+      throw new Error(`The page "${reference.page}" is not there, and the bundle says it carries it.`);
+    }
+
+    const permalink = permalinkOf(readFileSync(page, "utf8"));
+
+    if (permalink !== null) {
+      at.set(permalink, reference.file);
+    }
+  }
+
+  await Promise.all(
+    carried.map(async (reference) => {
+      const page = join(here, "..", "content", reference.page);
 
       const source = readFileSync(page, "utf8");
 
       await writeFile(
         join(bundle, "references", reference.file),
-        `${expandExamples(source, examples)}\n`,
+        `${expandExamples(source, examples)}\n`.replace(
+          /\]\((\/[^)\s#]*)(#[^)\s]*)?\)/g,
+          (whole, path, fragment) => {
+            const target = at.get(path);
+
+            if (target !== undefined) {
+              return `](${target}${fragment ?? ""})`;
+            }
+
+            return `](${CANONICAL}${path})`;
+          },
+        ),
       );
     }),
   );

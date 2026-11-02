@@ -184,6 +184,16 @@ is refused with a message that lists all thirteen.
 attribute after another, not a list with commas in it — a comma is part of the value, so
 `{fill=red,stroke=blue}` is one attribute called `fill` whose value is `red,stroke=blue`.
 
+**A shape may run off the edge of the slide, if it says so.** A free shape lies within the slide
+unless it is written to bleed, and a negative `left` or `top` is refused with the two ways out
+named: write it as `0`, or write `bleed=true` if the shape is meant to hang off the edge. The
+grey circles behind a title that the page cuts off are a shape this can now write, and a
+mistyped `left=-20` is still caught — because the permission is on the shape, and a deck-level
+switch would silence the check for every shape in it.
+
+The Word half has the same rule for the same thing: a text box hangs off the edge of the page on
+`bleed=true` as well.
+
 `layout: blank` is what most of them want: a slide whose whole content is free shapes has no title
 to place them around. Every attribute each of them reads is in the package's own
 [README](https://github.com/markdown-office/markdown-presentation#free-shapes).

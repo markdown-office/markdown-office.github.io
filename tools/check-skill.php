@@ -235,6 +235,55 @@ function paths(string $reference): array
     return $found[1];
 }
 
+/**
+ * The text of a piece of prose without the targets of its links.
+ *
+ * A link to a page the bundle carries is rewritten to the file beside it, so the same
+ * prose is not the same string in the bundle as it is on the site. The words are the same
+ * and the words are what this compares.
+ */
+function withoutTargets(string $text): string
+{
+    return (string) \preg_replace('/\]\([^)]*\)/', ']', $text);
+}
+
+/**
+ * Every link in a piece of the bundle, as the target it names.
+ *
+ * @return list<string>
+ */
+function linksIn(string $text): array
+{
+    \preg_match_all('/\]\(([^)]*)\)/', $text, $found);
+
+    return $found[1];
+}
+
+/**
+ * The anchors a file's headings give it.
+ *
+ * The names GitHub gives them: the heading in lower case, with everything that is not a
+ * letter, a digit, a space, a hyphen or an underscore taken out, and the spaces turned into
+ * hyphens.
+ *
+ * @return list<string>
+ */
+function anchorsOf(string $text): array
+{
+    \preg_match_all('/^#{1,6}\s+(.*)$/m', $text, $found);
+
+    $anchors = [];
+
+    foreach ($found[1] as $heading) {
+        $slug = \strtolower(\trim($heading));
+        $slug = (string) \preg_replace('/[^\p{L}\p{N} _-]/u', '', $slug);
+
+        $anchors[] = \str_replace(' ', '-', $slug);
+    }
+
+    return $anchors;
+}
+
 $manifest = manifest($root);
 $pages = pages($root . '/content');
 
@@ -265,7 +314,10 @@ foreach ($manifest['references'] as $reference) {
             continue;
         }
 
-        if (!\str_contains($written, $piece)) {
+        // The link targets are the bundle's own business — a link to a page the bundle
+        // carries is rewritten to the file beside it — so the text is compared without
+        // them. What a link points at is checked by check 9.
+        if (!\str_contains(withoutTargets($written), withoutTargets($piece))) {
             $report->fail(\sprintf(
                 'The reference file "%s" does not carry the text of "%s". It is a copy of the page, '
                     . 'not a paraphrase of it.',
@@ -446,6 +498,69 @@ foreach ($found[1] as $path) {
 // The address is read out of the site's own page rather than written down, so a page that
 // moves does not leave this pointing at a page that is no longer there — the pattern
 // `check-readme-links.php` already uses for the command-line page.
+// 9. Every link in the bundle goes somewhere.
+//
+// The bundle is distributed as an archive with no website beside it, so a link to a page of
+// the site resolves to nothing in it. A link to a page the bundle carries is rewritten to
+// the file beside it, and a link to a page it does not carry is the address of that page.
+//
+// Either is a link that goes somewhere. A link that is still a path of the site is a link
+// that goes nowhere, and an agent that follows it is told the page does not exist.
+$bundleFiles = [];
+
+foreach (\glob($bundle . '/references/*.md') ?: [] as $file) {
+    $bundleFiles['references/' . \basename($file)] = (string) \file_get_contents($file);
+}
+
+$bundleFiles['SKILL.md'] = (string) \file_get_contents($bundle . '/SKILL.md');
+
+foreach ($bundleFiles as $name => $text) {
+    $directory = \dirname($name);
+
+    foreach (linksIn($text) as $target) {
+        if (\str_starts_with($target, 'http://') || \str_starts_with($target, 'https://')
+            || \str_starts_with($target, 'mailto:')) {
+            continue;
+        }
+
+        if (\str_starts_with($target, '/')) {
+            $report->fail(\sprintf(
+                'The link "%s" in "%s" is a path of the site, and the bundle is read beside no site.',
+                $target,
+                $name,
+            ));
+
+            continue;
+        }
+
+        // A link with only a fragment is a link into the file it is in.
+        if (\str_starts_with($target, '#')) {
+            $anchor = \substr($target, 1);
+
+            if (!\in_array($anchor, anchorsOf($text), true)) {
+                $report->fail(\sprintf(
+                    'The link "%s" in "%s" goes to nothing: the file has no heading of that name.',
+                    $target,
+                    $name,
+                ));
+            }
+
+            continue;
+        }
+
+        $path = $directory . '/' . \explode('#', $target)[0];
+
+        if (!\is_file($bundle . '/' . $path)) {
+            $report->fail(\sprintf(
+                'The link "%s" in "%s" goes to nothing: there is no "%s" in the bundle.',
+                $target,
+                $name,
+                $path,
+            ));
+        }
+    }
+}
+
 $readme = $root . '/../markdown-word/README.md';
 
 if (\is_file($readme)) {

@@ -1,6 +1,6 @@
 ---
 name: mdword
-description: Turn Markdown into a Word document — .docx, .odt or .rtf — with the markdown-word library, and turn one back into Markdown. Use when asked to write or convert a Word document, to render Markdown into a company's own Word template or theme, to read a Word document back into Markdown, or to check that a document the library produced looks right.
+description: Turn Markdown into a Word document — .docx, .odt or .rtf — or a PowerPoint deck, with the markdown-word and markdown-presentation libraries, and turn one back to Markdown. Use when asked to write or convert a Word document or a presentation, to render Markdown into a company's own Word template or theme, to read a Word document or a deck back to Markdown, or to check that a document the library produced looks right.
 ---
 
 # mdword
@@ -26,7 +26,7 @@ documentation, not by recalling it.
 | What the two halves of the suite do with a name they know, and with one they do not | `references/directive-rules.md` |
 | The errors both halves throw | `references/errors-general.md` |
 | Where a document's files come from — the finder, the three roles, and the names the library composes | `references/general-files.md` |
-| The command line, and the options each command takes | `references/command-line-word.md`, `references/command-line-basic.md` |
+| The command line, and the options each command takes | `references/command-line-word.md`, `references/command-line-basic.md`, `references/command-line-presentations.md`, `references/command-line-theme.md` |
 | Installing the command line | `references/command-line-install.md` |
 | Installing this skill | `references/install.md` |
 
@@ -70,6 +70,17 @@ writes out of its settings folder. The script finds the key itself.
 `scripts/render-document.php` picks the first of them the machine has, and **says so when
 it had to fall back**, because a renderer that cannot be trusted is worse than no renderer:
 a caller who does not know is told a layout is right when it is not.
+
+**WordCraft is not Microsoft's.** It is a clean-room implementation of Word — it draws a
+document the way Word does without being Word — and it comes from
+[storytold/wordcraft](https://github.com/storytold/wordcraft);
+[storytold/deckcraft](https://github.com/storytold/deckcraft) is its half for decks. The
+script looks for them on the path as `wordcraft-cli` and `deckcraft-cli`, and **a machine
+without them falls back to LibreOffice** and says so. Microsoft Word, where it is
+installed, is found on its own and used in preference to both.
+
+The two are separate programs: one draws a Word document and the other draws a deck, and a
+machine may have one without the other.
 
 ## What this half does differently
 
