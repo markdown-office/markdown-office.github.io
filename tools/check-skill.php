@@ -74,6 +74,14 @@ $report = new Report();
 const SKILL_PAGE = 'content/skills/index.md';
 
 /**
+ * The reference files the bundle carries, as a glob beside the bundle.
+ *
+ * The bundle's own path is in front of it, so the three places that look at the reference
+ * files look at the same files.
+ */
+const REFERENCE_FILES = '/references/*.md';
+
+/**
  * The manifest: the pages the bundle carries, and the files they are carried in.
  *
  * @return array{sections: list<string>, references: list<array{file: string, page: string}>}
@@ -392,7 +400,7 @@ if (!\is_array($catalogue) || !\is_array($catalogue['skills'] ?? null)) {
 }
 
 // 4. Every path a reference file names exists.
-foreach (\glob($bundle . '/references/*.md') ?: [] as $file) {
+foreach (\glob($bundle . REFERENCE_FILES) ?: [] as $file) {
     foreach (paths((string) \file_get_contents($file)) as $path) {
         if (!\file_exists($bundle . '/' . $path)) {
             $report->fail(\sprintf(
@@ -424,7 +432,7 @@ if (\preg_match('/^---\r?\n(.*?)\r?\n---/s', $skill, $frontmatter) !== 1) {
 
     // Every reference the bundle carries is named in the skill, because a file nothing
     // points at is a file nobody reads.
-    foreach (\glob($bundle . '/references/*.md') ?: [] as $file) {
+    foreach (\glob($bundle . REFERENCE_FILES) ?: [] as $file) {
         $name = \basename($file);
 
         if (!\str_contains($skill, 'references/' . $name)) {
@@ -508,7 +516,7 @@ foreach ($found[1] as $path) {
 // that goes nowhere, and an agent that follows it is told the page does not exist.
 $bundleFiles = [];
 
-foreach (\glob($bundle . '/references/*.md') ?: [] as $file) {
+foreach (\glob($bundle . REFERENCE_FILES) ?: [] as $file) {
     $bundleFiles['references/' . \basename($file)] = (string) \file_get_contents($file);
 }
 

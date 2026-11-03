@@ -27,7 +27,10 @@ const CANONICAL = (process.env.MARKDOWN_OFFICE_CANONICAL ?? "https://markdown-of
  * cannot be rewritten into a link to a file.
  */
 function permalinkOf(source) {
-  const found = /^permalink:\s*(\S+)\s*$/m.exec(source);
+  // The spaces and tabs, and not the whitespace: a newline is a line of its own, and a
+  // pattern that can reach over one has two ways to match the same text, which is what
+  // makes the engine walk back over what it has already read.
+  const found = /^permalink:[ \t]*(\S+)[ \t]*$/m.exec(source);
 
   return found === null ? null : found[1];
 }
