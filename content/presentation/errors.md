@@ -22,7 +22,7 @@ is about both libraries, is on [Errors in general](/errors/).
 | `UnknownLayoutRole` | `layout:` is not one of the layout roles |
 | `UnknownTemplate` | a slide names a template the deck does not have — the message names the templates |
 | `MalformedChrome` | a template holds ordinary Markdown |
-| `MalformedGradient` | a gradient is not one: too few stops, a stop that names no colour, a position that is not a number, an angle that is not a whole number of degrees |
+| `MalformedGradient` | a gradient is not one: too few stops, a stop that names no colour, a position that is not a number, an angle that is not a whole number of degrees, stops that do not move forward, more stops than the ceiling allows, or a colour and a gradient on one shape |
 | `MalformedTemplatesFile` | the templates file a deck names holds a slide |
 | `TemplatesFileNotFound` | the templates file a deck names is not there, or is outside the roots |
 | `TemplatesFileTooLarge` | the templates file a deck names is over the ceiling |

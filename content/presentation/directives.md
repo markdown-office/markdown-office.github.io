@@ -280,6 +280,17 @@ Every key of every slide's frontmatter must be one of these fourteen:
 The layout roles are listed with the [themes](/presentation/themes/#layout-roles). Anything else —
 including Slidev's own `two-cols` — is refused with the list of what would have worked.
 
+**A background is one colour or one gradient.** `background-gradient` takes the stops of the
+gradient, one after another with a comma between them, and a stop may carry the place it is at
+as a percentage of the gradient — `accent1@50` is that stop at half of the way.
+`background-angle` says which way the gradient runs, and `background-radial` says it runs from
+the middle outwards, which is a way of running that has no angle.
+
+**A free shape may be painted with a gradient too**, with `gradient`, `gradient-angle` and
+`gradient-radial` carrying the same three things. A shape is filled with a colour **or** with
+a gradient, and the two together are refused. Every attribute each of them reads is in the
+package's own [README](https://github.com/markdown-office/markdown-presentation#free-shapes).
+
 A deck directive on a later slide is refused by name, because it is nearly always a slide that
 was meant to be the first one. The deck's own frontmatter **is the first slide's**, so `theme:`,
 `author:`, `description:` and `templates-file:` belong on the slide that opens the deck.
