@@ -217,8 +217,15 @@ it is a paragraph.
 | `width`, `height` | the size in centimetres |
 | `left`, `top` | where it floats, in centimetres |
 | `border` | the colour of the line round it, six hexadecimal digits without a `#` |
+| `bleed` | whether the box may hang off the edge of the page |
 
 A box with no size is written out as its own source text.
+
+**A box hangs off the edge of the page only when it says so.** A negative `left` or `top` is
+refused with the two ways out named: write it as `0`, or write `bleed=true` if the box is meant
+to hang off the edge. The slides half has the same rule for the same thing — a free shape that
+runs off the edge of the slide is written `bleed=true` as well — so a document and a deck are
+written the same way.
 
 ## `::shape` — a shape
 

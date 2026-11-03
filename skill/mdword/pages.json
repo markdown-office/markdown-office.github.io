@@ -8,9 +8,10 @@
     "",
     "The 'sections' are the pages that must all be there. A page added to one of them and",
     "not carried is a page the bundle has silently fallen behind on, and the checker says",
-    "so rather than letting it pass. The pages outside them \u2014 the command line for the",
-    "slides half, and the suite itself \u2014 are carried or not as this file says, because a",
-    "skill about the Word half has no reason to carry the slides half's command line.",
+    "The pages outside them — the suite itself — are carried or not as this file says,",
+    "because a skill about the two halves has no reason to carry the suite's own page. The",
+    "slides half's command line is carried: the bundle claims to be about decks as well as",
+    "about documents, and a page that is not there is a page an agent cannot read.",
     "",
     "The 'file' is the name the page is carried under. It is not the page's URL: the pages",
     "are flattened into one directory, and two pages of different sections can want the",
@@ -80,6 +81,14 @@
     {
       "file": "command-line-install.md",
       "page": "command-line/installation.md"
+    },
+    {
+      "file": "command-line-presentations.md",
+      "page": "command-line/presentations.md"
+    },
+    {
+      "file": "command-line-theme.md",
+      "page": "command-line/theme.md"
     },
     {
       "file": "install.md",

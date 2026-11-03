@@ -184,6 +184,16 @@ is refused with a message that lists all thirteen.
 attribute after another, not a list with commas in it — a comma is part of the value, so
 `{fill=red,stroke=blue}` is one attribute called `fill` whose value is `red,stroke=blue`.
 
+**A shape may run off the edge of the slide, if it says so.** A free shape lies within the slide
+unless it is written to bleed, and a negative `left` or `top` is refused with the two ways out
+named: write it as `0`, or write `bleed=true` if the shape is meant to hang off the edge. The
+grey circles behind a title that the page cuts off are a shape this can now write, and a
+mistyped `left=-20` is still caught — because the permission is on the shape, and a deck-level
+switch would silence the check for every shape in it.
+
+The Word half has the same rule for the same thing: a text box hangs off the edge of the page on
+`bleed=true` as well.
+
 `layout: blank` is what most of them want: a slide whose whole content is free shapes has no title
 to place them around. Every attribute each of them reads is in the package's own
 [README](https://github.com/markdown-office/markdown-presentation#free-shapes).
@@ -246,7 +256,7 @@ splits here the way it does there.
 
 ## Frontmatter directives
 
-Every key of every slide's frontmatter must be one of these nine:
+Every key of every slide's frontmatter must be one of these fifteen:
 
 <!-- reference: presentation.frontmatter -->
 
@@ -261,9 +271,26 @@ Every key of every slide's frontmatter must be one of these nine:
 | `description` | string | `null` | **first only** |
 | `template` | string, or a list of them | none | any |
 | `templates-file` | string | none | **first only** |
+| `template-settings` | mapping | none | a definition |
+| `background` | string | none | any |
+| `background-gradient` | string | none | any |
+| `background-angle` | integer | 180 | any |
+| `background-radial` | boolean | `false` | any |
+| `theme-variables` | mapping | the theme's | any |
 
 The layout roles are listed with the [themes](/presentation/themes/#layout-roles). Anything else —
 including Slidev's own `two-cols` — is refused with the list of what would have worked.
+
+**A background is one colour or one gradient.** `background-gradient` takes the stops of the
+gradient, one after another with a comma between them, and a stop may carry the place it is at
+as a percentage of the gradient — `accent1@50` is that stop at half of the way.
+`background-angle` says which way the gradient runs, and `background-radial` says it runs from
+the middle outwards, which is a way of running that has no angle.
+
+**A free shape may be painted with a gradient too**, with `gradient`, `gradient-angle` and
+`gradient-radial` carrying the same three things. A shape is filled with a colour **or** with
+a gradient, and the two together are refused. Every attribute each of them reads is in the
+package's own [README](https://github.com/markdown-office/markdown-presentation#free-shapes).
 
 A deck directive on a later slide is refused by name, because it is nearly always a slide that
 was meant to be the first one. The deck's own frontmatter **is the first slide's**, so `theme:`,
@@ -304,7 +331,7 @@ writing it out on every slide means changing it on every slide. A **template** i
 written once.
 
 A template is a slide of the deck's own Markdown whose frontmatter names a template and **nothing
-else**:
+but its own settings**:
 
 ```markdown
 ---
@@ -325,6 +352,24 @@ layout: blank
 template: brand
 ---
 ```
+
+**A template's own settings are named as the template's.** A template may carry a background and
+the theme's values for itself, and every slide that draws it gets them. They go under
+`template-settings:`, which holds the same keys a slide's own settings do:
+
+```markdown
+---
+template: brand
+template-settings:
+  background: accent1
+  theme-variables:
+    dark: true
+---
+```
+
+The ordinary keys mean the **slide's** own everywhere, which is what tells a definition from a
+slide: a slide that draws a template and names a `background:` of its own is a slide, and is
+drawn with it.
 
 {% example "A deck whose wordmark is written once" %}
 ````md presentation

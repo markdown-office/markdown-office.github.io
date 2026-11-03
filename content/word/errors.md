@@ -27,6 +27,7 @@ about both libraries, is on [Errors in general](/errors/).
 | `FileNotWritable` | **not** `InvalidInput`; the target cannot be written |
 | `TemplateNotFound` | `template_file:` names nothing |
 | `UnreadableTemplate` | the template holds more parts, or a larger part, than are allowed |
+| `BleedingBox` | a text box hangs off the edge of the page without saying that it means to |
 | `NoContentControl` | `--require-control`, and the template has none |
 | `MalformedTheme` | a theme file is not shaped like one |
 | `ThemeNotFound` | a theme name resolves to nothing — the message lists the ones that do |

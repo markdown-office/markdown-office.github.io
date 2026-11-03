@@ -33,12 +33,33 @@ There is no `--theme`: the renderer resolves the theme from the deck's own `them
 | `-o, --output <file>` | path | beside the input, `.md`; `-` for standard output |
 | `--media <dir>` | path | no extraction |
 | `--line-ending <lf\|crlf>` | `lf`, `crlf` | `lf` |
+| `--preserve-geometry` | flag | off |
 | `-h, --help` | flag | off |
 
 A line ending may also be written `unix`, `n`, `dos`, `windows` or `r`.
 
 The Markdown that comes back is the Markdown this tool writes decks in, so a deck can be read
 out, edited as text and put in again through `to-pptx` with a different theme.
+
+**`--preserve-geometry` keeps the shapes a deck placed itself.** A deck read back into Markdown
+comes back as text, and every free shape in it is left out: the shape itself disappears, not
+merely its design, so `deck.md` → `deck.pptx` → `deck.md` loses every position, colour and
+size. With the flag on, a free shape comes back as the free shape it is, with the box it was
+given and the colour it was painted:
+
+```markdown
+::roundrect{left=10% top=40% width=30% height=20% fill=4472C4}
+
+:::content{left=50% top=40% width=30% height=20%}
+Text in a free box.
+:::
+```
+
+The box is a percentage of the slide, because a shape is placed relative to the slide rather
+than in the pixels of one page size, and a shape that runs off the edge comes back with
+`bleed=true`. What still does not travel is what a shape is besides its box and its colour: the
+theme slot a colour came from, the shadow it casts, the corner radius of a rounded rectangle,
+the layer it was drawn on and the anchor of its box.
 
 ## Options for `diff`
 

@@ -39,6 +39,17 @@ and the table names the keys as they are — the colon is YAML's and not theirs.
 `dark: yes` being refused is not pedantry. YAML 1.1 truthy strings are what make a theme written
 by hand behave differently from one written by a machine, and this one is for machines.
 
+## A slide's own values
+
+A slide may name the theme's values for itself, in its frontmatter, and what it names is a
+`theme.yml`: the four keys above that hold a value — `dark`, `colors`, `fonts` and `style` —
+read by the reader that reads the theme's own file. The three that hold the theme's identity
+— `name`, `description` and `author` — are not a slide's, so naming one is refused.
+
+A slide's values are laid over the template's, and the template's over the theme's, and one
+value laid over another leaves the rest alone: a slide that names one colour leaves the other
+eleven as they were.
+
 ## The twelve colour slots
 
 <!-- reference: presentation.theme-colours -->
@@ -117,6 +128,11 @@ title  content  two-column  section  blank  image-text  image-title  image-slide
 
 `blank` and `image-slide` have no title box. `layouts.yml` maps each role to a layout name in the
 master — the file may be a bare mapping or nested under a single `layouts:` key.
+
+**A slide with no title box draws the frontmatter's title as a heading in its body.** A deck
+that names no title has nothing to put one in, and a title that is not drawn is a silence —
+so the title becomes the first thing in the body, where it is a heading like any other. Write
+`title: ""` to leave it as metadata only, and the slide opens with no title at all.
 
 Only the roles a deck actually uses are built, so a ten-slide deck does not carry eight masters.
 
