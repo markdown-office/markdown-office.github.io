@@ -176,9 +176,10 @@ named styles a document may write a word in — see
 [Word directives](/word/directives/#a-word-in-a-style). A `theme:` may also name the `theme.yml`
 itself, in which case that file is the theme's.
 
-A `styles.yml` beside the theme is refused, and the message says where its content goes:
+A `styles.yml` beside the theme is refused, and the message names the file and says where its
+content goes:
 
-> "styles.yml" is not read any more. A theme's styles are in the "styles:" section of its "theme.yml", and its named text styles in the "textStyles:" section.
+> "…/styles.yml" is not read any more. A theme's styles are in the "styles:" section of its "theme.yml", and its named text styles in the "textStyles:" section.
 
 It is refused rather than ignored, because a file that is quietly not read is a theme that looks
 like the one its author wrote and is not: the author moves a slot into the file beside the
