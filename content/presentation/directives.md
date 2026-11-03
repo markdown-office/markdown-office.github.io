@@ -256,7 +256,7 @@ splits here the way it does there.
 
 ## Frontmatter directives
 
-Every key of every slide's frontmatter must be one of these nine:
+Every key of every slide's frontmatter must be one of these fourteen:
 
 <!-- reference: presentation.frontmatter -->
 
@@ -271,6 +271,11 @@ Every key of every slide's frontmatter must be one of these nine:
 | `description` | string | `null` | **first only** |
 | `template` | string, or a list of them | none | any |
 | `templates-file` | string | none | **first only** |
+| `background` | string | none | any |
+| `background-gradient` | string | none | any |
+| `background-angle` | integer | 180 | any |
+| `background-radial` | boolean | `false` | any |
+| `theme-variables` | mapping | the theme's | any |
 
 The layout roles are listed with the [themes](/presentation/themes/#layout-roles). Anything else —
 including Slidev's own `two-cols` — is refused with the list of what would have worked.

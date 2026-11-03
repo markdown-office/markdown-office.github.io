@@ -39,6 +39,17 @@ and the table names the keys as they are — the colon is YAML's and not theirs.
 `dark: yes` being refused is not pedantry. YAML 1.1 truthy strings are what make a theme written
 by hand behave differently from one written by a machine, and this one is for machines.
 
+## A slide's own values
+
+A slide may name the theme's values for itself, in its frontmatter, and what it names is a
+`theme.yml`: the four keys above that hold a value — `dark`, `colors`, `fonts` and `style` —
+read by the reader that reads the theme's own file. The three that hold the theme's identity
+— `name`, `description` and `author` — are not a slide's, so naming one is refused.
+
+A slide's values are laid over the template's, and the template's over the theme's, and one
+value laid over another leaves the rest alone: a slide that names one colour leaves the other
+eleven as they were.
+
 ## The twelve colour slots
 
 <!-- reference: presentation.theme-colours -->

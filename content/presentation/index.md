@@ -62,8 +62,8 @@ slides and **cannot be a thematic break** — use `***`.
 ### Extended: frontmatter and themes
 
 The deck's own configuration goes in the frontmatter of slide 1. Every key is in a **closed set of
-nine**, and anything outside it fails the build with a message naming what would have worked. The
-nine are listed with the [directives](/presentation/directives/#frontmatter-directives).
+fourteen**, and anything outside it fails the build with a message naming what would have worked.
+The fourteen are listed with the [directives](/presentation/directives/#frontmatter-directives).
 
 {% example "The four keys that describe a deck" %}
 ````md presentation
