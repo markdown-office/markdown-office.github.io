@@ -15,10 +15,27 @@ const here = dirname(fileURLToPath(import.meta.url));
  * The same address the site itself is built with, so a link in the bundle that points at
  * the site points at the site that was built.
  */
-const CANONICAL = (process.env.MARKDOWN_OFFICE_CANONICAL ?? "https://markdown-office.github.io").replace(
-  /\/+$/,
-  "",
+const CANONICAL = withoutTrailingSlashes(
+  process.env.MARKDOWN_OFFICE_CANONICAL ?? "https://markdown-office.github.io",
 );
+
+/**
+ * An address without the slashes at its end.
+ *
+ * The slashes are counted off rather than matched: a pattern that strips them gives one
+ * of them back at a time, and it gives one back for every place it tries, so a long run
+ * of them costs more the longer it is. The address is the environment's to give, and the
+ * environment is not a person who would not do that.
+ */
+function withoutTrailingSlashes(address) {
+  let end = address.length;
+
+  while (end > 0 && address[end - 1] === "/") {
+    end -= 1;
+  }
+
+  return address.slice(0, end);
+}
 
 /**
  * The address a page is at, from its frontmatter.
@@ -27,10 +44,7 @@ const CANONICAL = (process.env.MARKDOWN_OFFICE_CANONICAL ?? "https://markdown-of
  * cannot be rewritten into a link to a file.
  */
 function permalinkOf(source) {
-  // The spaces and tabs, and not the whitespace: a newline is a line of its own, and a
-  // pattern that can reach over one has two ways to match the same text, which is what
-  // makes the engine walk back over what it has already read.
-  const found = /^permalink:[ \t]*(\S+)[ \t]*$/m.exec(source);
+  const found = /^permalink:\s*(\S+)\s*$/m.exec(source);
 
   return found === null ? null : found[1];
 }
