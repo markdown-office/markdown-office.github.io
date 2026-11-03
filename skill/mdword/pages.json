@@ -8,10 +8,13 @@
     "",
     "The 'sections' are the pages that must all be there. A page added to one of them and",
     "not carried is a page the bundle has silently fallen behind on, and the checker says",
-    "The pages outside them — the suite itself — are carried or not as this file says,",
+    "so. The pages outside them \u2014 the suite itself \u2014 are carried or not as this file says,",
     "because a skill about the two halves has no reason to carry the suite's own page. The",
     "slides half's command line is carried: the bundle claims to be about decks as well as",
-    "about documents, and a page that is not there is a page an agent cannot read.",
+    "about documents, and a page that is not there is a page an agent cannot read. The",
+    "slides half's own four pages are carried for the same reason \u2014 a theme is one file in",
+    "both halves, and a bundle that taught only the Word half's format would teach half of",
+    "it.",
     "",
     "The 'file' is the name the page is carried under. It is not the page's URL: the pages",
     "are flattened into one directory, and two pages of different sections can want the",
@@ -19,6 +22,7 @@
   ],
   "sections": [
     "Markdown Word",
+    "Markdown Presentation",
     "In general"
   ],
   "references": [
@@ -49,6 +53,22 @@
     {
       "file": "errors.md",
       "page": "word/errors.md"
+    },
+    {
+      "file": "presentation-index.md",
+      "page": "presentation/index.md"
+    },
+    {
+      "file": "presentation-directives.md",
+      "page": "presentation/directives.md"
+    },
+    {
+      "file": "presentation-errors.md",
+      "page": "presentation/errors.md"
+    },
+    {
+      "file": "presentation-themes.md",
+      "page": "presentation/themes.md"
     },
     {
       "file": "directive-rules.md",

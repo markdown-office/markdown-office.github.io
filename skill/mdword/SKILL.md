@@ -26,13 +26,18 @@ documentation, not by recalling it.
 | What the two halves of the suite do with a name they know, and with one they do not | `references/directive-rules.md` |
 | The errors both halves throw | `references/errors-general.md` |
 | Where a document's files come from — the finder, the three roles, and the names the library composes | `references/general-files.md` |
+| The slides half as a whole — its dialect, its library's API, and reading a deck back | `references/presentation-index.md` |
+| The slides half's frontmatter keys, its markers, and its free shapes | `references/presentation-directives.md` |
+| The slides half's themes — one file, the colours, the type and the eight layout roles | `references/presentation-themes.md` |
+| Every exception the slides half throws | `references/presentation-errors.md` |
 | The command line, and the options each command takes | `references/command-line-word.md`, `references/command-line-basic.md`, `references/command-line-presentations.md`, `references/command-line-theme.md` |
 | Installing the command line | `references/command-line-install.md` |
 | Installing this skill | `references/install.md` |
 
-The **examples** are beside these: `examples/site/` holds the documents this documentation
-shows, and `examples/library/` holds the library's own twenty-three — the catalogue of what
-it can do, one file each.
+The **examples** are beside these: `examples/site/` holds the documents and the decks this
+documentation shows, and `examples/library/` holds the Word half's own twenty-three — the
+catalogue of what it can do, one file each. The slides half's own gallery of decks is not in
+the bundle.
 
 ## The loop
 
