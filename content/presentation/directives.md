@@ -256,7 +256,7 @@ splits here the way it does there.
 
 ## Frontmatter directives
 
-Every key of every slide's frontmatter must be one of these fourteen:
+Every key of every slide's frontmatter must be one of these fifteen:
 
 <!-- reference: presentation.frontmatter -->
 
@@ -271,6 +271,7 @@ Every key of every slide's frontmatter must be one of these fourteen:
 | `description` | string | `null` | **first only** |
 | `template` | string, or a list of them | none | any |
 | `templates-file` | string | none | **first only** |
+| `template-settings` | mapping | none | a definition |
 | `background` | string | none | any |
 | `background-gradient` | string | none | any |
 | `background-angle` | integer | 180 | any |
@@ -330,7 +331,7 @@ writing it out on every slide means changing it on every slide. A **template** i
 written once.
 
 A template is a slide of the deck's own Markdown whose frontmatter names a template and **nothing
-else**:
+but its own settings**:
 
 ```markdown
 ---
@@ -351,6 +352,24 @@ layout: blank
 template: brand
 ---
 ```
+
+**A template's own settings are named as the template's.** A template may carry a background and
+the theme's values for itself, and every slide that draws it gets them. They go under
+`template-settings:`, which holds the same keys a slide's own settings do:
+
+```markdown
+---
+template: brand
+template-settings:
+  background: accent1
+  theme-variables:
+    dark: true
+---
+```
+
+The ordinary keys mean the **slide's** own everywhere, which is what tells a definition from a
+slide: a slide that draws a template and names a `background:` of its own is a slide, and is
+drawn with it.
 
 {% example "A deck whose wordmark is written once" %}
 ````md presentation
