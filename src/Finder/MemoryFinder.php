@@ -36,37 +36,51 @@ final class MemoryFinder implements WordFileFinder, SlidesFileFinder
     }
 
     /**
-     * A finder holding the site's own theme, which is in no directory at all.
+     * The site's own themes, which are in no directory at all.
      *
-     * The theme is here rather than under `themes/` on purpose: an example that named a
-     * theme beside it would be an example of the disk default, and this one is about the
-     * other kind.
+     * Two of them, because a theme file serves one half and the halves keep separate
+     * vocabularies: the Word half's `theme.yml` carries the slots a document is drawn from,
+     * and the slides half's carries the colours, the type and the layout roles. One file
+     * cannot be both — each half refuses the other's keys — so a finder that serves both
+     * holds a theme for each.
+     *
+     * They are here rather than under `themes/` on purpose: an example that named a theme
+     * beside it would be an example of the disk default, and these are about the other kind.
      */
-    public static function house(): self
+    public static function site(): self
     {
         return new self([
             'house/theme.yml' => <<<'YAML'
                 name: House
-                description: The site's own theme, which lives in a finder rather than in a directory.
+                description: The site's own theme for documents, which lives in a finder rather than in a directory.
                 author: markdown-office
+                styles:
+                  heading.1:
+                    name: Georgia
+                    bold: true
+                    size: 20
+                    color: "1F3864"
+                  paragraph:
+                    name: Calibri
+                    size: 11
+                    space: { after: 160 }
                 YAML,
-            'house/styles.yml' => <<<'YAML'
-                heading.1:
-                  name: Georgia
-                  bold: true
-                  size: 20
-                  color: "1F3864"
-                paragraph:
-                  name: Calibri
-                  size: 11
-                  space: { after: 160 }
-                YAML,
-            'house/layouts.yml' => <<<'YAML'
-                layouts:
-                  title: Title Slide
-                  content: Title and Content
-                  section: Section Header
-                  blank: Blank
+            'deck/theme.yml' => <<<'YAML'
+                name: Deck
+                description: The site's own theme for decks, which lives in a finder rather than in a directory.
+                author: markdown-office
+                dark: true
+                colors:
+                  dk1: "#1E1E2E"
+                  lt1: "#CDD6F4"
+                  accent1: "#89B4FA"
+                fonts:
+                  heading: Inter
+                  body: Roboto
+                style:
+                  margin: 48
+                  body: 18
+                  title: 32
                 YAML,
         ]);
     }

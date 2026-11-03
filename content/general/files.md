@@ -62,7 +62,7 @@ as for a theme.
 
 | Role | What it is |
 | --- | --- |
-| `theme` | a file of a theme — its manifest, its slots, its layouts, its master |
+| `theme` | a file of a theme — its manifest and its master |
 | `picture` | an image a document names |
 | `document` | anything else a document names by path — a `.dotx`, a deck's templates file |
 
@@ -77,16 +77,23 @@ not compose the same ones.
 | The library wants | It asks | Which half |
 | --- | --- | --- |
 | the theme `corporate`'s manifest | `read('corporate/theme.yml', 'theme')` | both |
-| the theme `corporate`'s styles | `read('corporate/styles.yml', 'theme')` | both |
-| the theme `corporate`'s layouts | `read('corporate/layouts.yml', 'theme')` | slides |
-| the theme `corporate`'s text styles | `read('corporate/text-styles.yml', 'theme')` | slides |
+| the theme `corporate`'s old styles | `read('corporate/styles.yml', 'theme')` | both |
+| the theme `corporate`'s old layouts | `read('corporate/layouts.yml', 'theme')` | slides |
+| the theme `corporate`'s old text styles | `read('corporate/text-styles.yml', 'theme')` | slides |
 | the theme `corporate`'s master | `read('corporate/template.pptx', 'theme')` | slides |
 | the picture `logo.png` | `read('logo.png', 'picture')` | both |
 | the document's `report.dotx` | `read('report.dotx', 'document')` | Word |
 | the deck's templates file | `read('slides.md', 'document')` | slides |
 
-The Word half's `styles.yml` carries `textStyles:` inside it; the slides half keeps the named
-styles in a `text-styles.yml` of their own. The finder is never told which is which — it is asked
+**Three of those names are asked for only so that they can be refused.** A theme is one file
+now, and `styles.yml`, `layouts.yml` and `text-styles.yml` are the format it used to be made
+of: the library asks the finder whether one of them is there, and refuses the theme when it
+is. The other five are read.
+
+The two halves keep separate vocabularies, and a theme file serves one of them: the Word
+half's `theme.yml` may carry `styles:` and `textStyles:`, and the slides half's may carry
+`dark:`, `colors:`, `fonts:`, `style:`, `layouts:` and `textStyles:`. Each half refuses the
+other's keys, so one file cannot be both. The finder is never told which is which — it is asked
 for a name.
 
 ## A finder answers; it does not refuse
@@ -299,17 +306,18 @@ theme: house
 
 A document whose theme came from a finder rather than from a directory.
 
-The theme's own `styles.yml` names the face and the colour of the heading, and the library
-asked the finder for both of them.
+The theme's own `theme.yml` names the face and the colour of the heading, and the library
+asked the finder for it.
 ````
 {% endexample %}
 
-And a deck, from the same source:
+And a deck, from the same source. The finder holds a theme for each half, because a theme file
+serves one of them:
 
 {% example "A deck whose theme came from a finder" %}
 ````md presentation finder
 ---
-theme: house
+theme: deck
 ---
 
 # The house style

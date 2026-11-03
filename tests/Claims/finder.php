@@ -206,20 +206,17 @@ it('refuses a path the finder answered, in the library\'s own words', function (
 });
 
 it('draws the same document from a theme in a finder as from a theme in a directory', function () {
-    $theme = HOUSE_THEME_YAML;
-    $styles = "heading.1:\n  name: Georgia\n  bold: true\n  size: 20\n  color: \"1F3864\"\n";
+    $theme = HOUSE_THEME_YAML . "styles:\n  heading.1:\n    name: Georgia\n    bold: true\n    size: 20\n    color: \"1F3864\"\n";
     $markdown = "---\ntheme: house\n---\n\n# The house style\n\nA paragraph.\n";
 
     $root = Directory::make('finder');
 
     \mkdir($root . '/themes/house', 0o777, true);
     \file_put_contents($root . '/themes/house/theme.yml', $theme);
-    \file_put_contents($root . '/themes/house/styles.yml', $styles);
 
     $fromDirectory = Document::path($markdown, $root);
     $fromFinder = Document::path($markdown, null, new MemoryFinder([
         HOUSE_THEME_FILE => $theme,
-        'house/styles.yml' => $styles,
     ]));
 
     // The parts rather than the bytes: a zip stores timestamps, and two correct
@@ -232,7 +229,6 @@ it('draws the same document from a theme in a finder as from a theme in a direct
 
 it('draws the same deck from a theme in a finder as from a theme in a directory', function () {
     $theme = HOUSE_THEME_YAML;
-    $layouts = "layouts:\n  title: Title Slide\n  content: Title and Content\n";
     $markdown = "---\ntheme: house\n---\n\n# The house style\n\n## A deck\n\nWords.\n";
 
     $root = Directory::make('finder');
@@ -240,12 +236,10 @@ it('draws the same deck from a theme in a finder as from a theme in a directory'
 
     \mkdir($root . '/themes/house', 0o777, true);
     \file_put_contents($root . '/themes/house/theme.yml', $theme);
-    \file_put_contents($root . '/themes/house/layouts.yml', $layouts);
 
     $fromDirectory = Deck::slides($markdown, $root);
     $fromFinder = Deck::slides($markdown, $elsewhere, new MemoryFinder([
         HOUSE_THEME_FILE => $theme,
-        'house/layouts.yml' => $layouts,
     ]));
 
     expect($fromFinder)->toBe($fromDirectory);
@@ -255,7 +249,7 @@ it('draws the same deck from a theme in a finder as from a theme in a directory'
 });
 
 it('resolves a theme named in code once', function () {
-    $finder = MemoryFinder::house();
+    $finder = MemoryFinder::site();
 
     $converter = new MarkdownToWord(
         "# The house style\n",
@@ -269,7 +263,7 @@ it('resolves a theme named in code once', function () {
 });
 
 it('names the themes that resolve when a theme does not', function () {
-    $resolver = new WordThemeResolver(files: MemoryFinder::house());
+    $resolver = new WordThemeResolver(files: MemoryFinder::site());
 
     $message = Refusal::of(static fn (): string => $resolver->resolve('nowhere')->name());
 
@@ -341,13 +335,16 @@ it('resolves a theme as a theme, a picture as a picture and a document as a docu
 });
 
 it('serves both halves with one adapter', function () {
-    $finder = MemoryFinder::house();
+    $finder = MemoryFinder::site();
 
     expect($finder)->toBeInstanceOf(WordFileFinder::class);
     expect($finder)->toBeInstanceOf(SlidesFileFinder::class);
 
+    // A theme file serves one half, so the finder holds one for each: the Word half's
+    // carries the slots a document is drawn from, and the slides half's the colours, the
+    // type and the layout roles.
     $document = "---\ntheme: house\n---\n\n# The house style\n";
-    $deck = "---\ntheme: house\n---\n\n# The house style\n\n---\n\n## A deck\n";
+    $deck = "---\ntheme: deck\n---\n\n# The house style\n\n---\n\n## A deck\n";
 
     expect(Document::body($document, null, $finder))->toContain('The house style');
     expect(Deck::slides($deck, '.', $finder))->toHaveCount(2);

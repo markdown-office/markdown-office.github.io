@@ -148,16 +148,16 @@ $template->insert('body', $markdown)->save('northwind.docx');   // a .docx, what
 
 ## A theme
 
-A theme is a directory: `theme.yml` — `name` required, plus `description` and `author` — and
-an optional `styles.yml` holding the same slot names as
-[the configuration](/word/configuration/#every-style-slot). One key of that file is not a slot:
-`textStyles` holds the named styles a document may write a word in.
+A theme is **one file**: `theme.yml` — `name` required, plus `description` and `author`. Its
+`styles:` section holds the same slot names as
+[the configuration](/word/configuration/#every-style-slot), and its `textStyles:` section holds
+the named styles a document may write a word in.
 
 A document names one with `theme:`, and the ones that ship are listed with the configuration, on
 [the themes](/word/configuration/#themes).
 
-A theme may also name the `theme.yml` itself, in which case the `styles.yml` beside it is the
-theme's, and a document that names one by path gets that one.
+A theme may also name the `theme.yml` itself, in which case that file is the theme's, and a
+document that names one by path gets that one.
 
 ## The command line
 

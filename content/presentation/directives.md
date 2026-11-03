@@ -128,7 +128,7 @@ it.
 
 The three forms and the eight attributes are the suite's, and are on
 [How directives work](/directives/#a-word-in-a-style). The named styles come from the theme's
-`text-styles.yml` — see [Text styles](/presentation/themes/#text-styles).
+`textStyles:` section — see [Text styles](/presentation/themes/#text-styles).
 
 **What this half does with a name it does not know is the opposite of the Word half's: it refuses
 it**, and the message names the styles the theme does have. Every inline directive in a deck is a
@@ -256,7 +256,7 @@ splits here the way it does there.
 
 ## Frontmatter directives
 
-Every key of every slide's frontmatter must be one of these fifteen:
+Every key of every slide's frontmatter must be one of these sixteen:
 
 <!-- reference: presentation.frontmatter -->
 
@@ -272,6 +272,7 @@ Every key of every slide's frontmatter must be one of these fifteen:
 | `template` | string, or a list of them | none | any |
 | `templates-file` | string | none | **first only** |
 | `template-settings` | mapping | none | a definition |
+| `deck-settings` | mapping | none | **first only** |
 | `background` | string | none | any |
 | `background-gradient` | string | none | any |
 | `background-angle` | integer | 180 | any |
@@ -280,6 +281,11 @@ Every key of every slide's frontmatter must be one of these fifteen:
 
 The layout roles are listed with the [themes](/presentation/themes/#layout-roles). Anything else —
 including Slidev's own `two-cols` — is refused with the list of what would have worked.
+
+**The ordinary keys are the slide's own, wherever they are written.** A key that holds somebody
+else's settings says whose: `template-settings:` says the template's, and `deck-settings:` says
+the deck's. That is what tells a definition from a slide and a slide from a deck — see
+[The deck's own settings](#the-decks-own-settings).
 
 **A background is one colour or one gradient.** `background-gradient` takes the stops of the
 gradient, one after another with a comma between them, and a stop may carry the place it is at
@@ -294,7 +300,8 @@ package's own [README](https://github.com/markdown-office/markdown-presentation#
 
 A deck directive on a later slide is refused by name, because it is nearly always a slide that
 was meant to be the first one. The deck's own frontmatter **is the first slide's**, so `theme:`,
-`author:`, `description:` and `templates-file:` belong on the slide that opens the deck.
+`author:`, `description:`, `templates-file:` and `deck-settings:` belong on the slide that opens
+the deck.
 
 {% example %}
 ````md presentation "The four keys that describe a deck"
@@ -320,6 +327,57 @@ description: What changed, what it cost, and what happens next.
 ::note
 Lead with the renewal number. It is the one people remember.
 ::
+````
+{% endexample %}
+
+## The deck's own settings
+
+**A deck's settings are the deck's, and they are named as the deck's.** Every slide is drawn
+with them, and they go under `deck-settings:`, which holds the same keys a slide's own settings
+do:
+
+```markdown
+---
+theme: corporate-dark
+deck-settings:
+  background: "#101014"
+  theme-variables:
+    colors:
+      accent1: "#123456"
+---
+```
+
+`deck-settings:` is the deck's alone, so it is refused on any slide but the first — the way
+`theme:` is. It holds the five settings — `background`, `background-gradient`,
+`background-angle`, `background-radial` and `theme-variables` — and a key that is not one of
+them is refused by name rather than left out, so that a typo in a deck's settings is a failure
+and not a setting that does nothing.
+
+**The precedence is slide → template → deck → theme.** A slide's own settings are laid over the
+template's, and the template's over the deck's, and the deck's over the theme's — and one value
+laid over another leaves the rest alone: a slide that names one colour leaves the other eleven
+as they were.
+
+That is the whole of the rule, and it is one rule: **the ordinary keys are the slide's own,
+wherever they are written; a key that holds somebody else's settings says whose.** A slide that
+draws a template and names a `background:` of its own is therefore a slide, and is drawn with
+it.
+
+{% example "A deck whose accent every slide is drawn with" %}
+````md presentation
+---
+theme: corporate-dark
+deck-settings:
+  theme-variables:
+    colors:
+      accent1: "#123456"
+---
+
+# The quarter
+
+## What changed
+
+- Two products shipped
 ````
 {% endexample %}
 
@@ -368,8 +426,8 @@ template-settings:
 ```
 
 The ordinary keys mean the **slide's** own everywhere, which is what tells a definition from a
-slide: a slide that draws a template and names a `background:` of its own is a slide, and is
-drawn with it.
+slide. A template's settings are laid over the slide's, and the deck's over the template's —
+see [The deck's own settings](#the-decks-own-settings).
 
 {% example "A deck whose wordmark is written once" %}
 ````md presentation
@@ -412,9 +470,9 @@ template: [brand, page]
 ```
 
 **`layout:` and `template:` are independent.** `layout:` chooses the geometry — the role the
-theme's `layouts.yml` maps onto a box on the page — and `template:` adds furniture on top of it.
-`layout: blank` with `template: brand` is a slide with no furniture of its own and the wordmark
-drawn where the template puts it.
+theme's `layouts:` section maps onto a box on the page — and `template:` adds furniture on top
+of it. `layout: blank` with `template: brand` is a slide with no furniture of its own and the
+wordmark drawn where the template puts it.
 
 The chrome is drawn **over** what the slide placed itself, so a full-bleed picture is behind the
 wordmark and not over it.

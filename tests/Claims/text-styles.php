@@ -5,7 +5,6 @@ declare(strict_types=1);
 use MarkdownOffice\Documentation\Tests\Support\Deck;
 use MarkdownOffice\Documentation\Tests\Support\Document;
 use MarkdownOffice\Documentation\Tests\Support\Theme;
-use MarkdownPresentation\Theme\ThemeLoader;
 use MarkdownWord\Configuration\TextStyles;
 use MarkdownWord\WordToMarkdown;
 use MarkdownOffice\Documentation\Tests\Support\Site;
@@ -25,7 +24,7 @@ it('refuses a theme that names a style "style"', function () {
 
     $message = Theme::slidesRefusal(
         Theme::DECK,
-        "style:\n  color: FF0000\n",
+        "textStyles:\n  style:\n    color: FF0000\n",
     );
 
     expect($message)->toContain('reserved word');
@@ -58,10 +57,39 @@ it('does not honour a label that holds Markdown', function () {
     expect($message)->toContain('which is Markdown');
 });
 
-it('reads the named styles of a theme from the file the page names', function () {
-    says(Site::PRESENTATION_THEMES, 'text-styles.yml');
+it('reads the named styles of a theme from the section the page names', function () {
+    says(Site::PRESENTATION_THEMES, 'The `textStyles:` section is optional');
 
-    expect(ThemeLoader::TEXT_STYLES_FILE)->toBe('text-styles.yml');
+    $message = Theme::slidesRefusal(
+        Theme::DECK,
+    );
+
+    expect($message)->toContain('a theme names them in its "textStyles:" section');
+});
+
+it('refuses each file of the old theme format, and says where the content goes', function () {
+    says(Site::PRESENTATION_THEMES, 'move its content into the "layouts:" section of its "theme.yml"');
+    says(Site::PRESENTATION_THEMES, 'move its content into the "textStyles:" section of its "theme.yml"');
+    says(Site::PRESENTATION_THEMES, 'That file is the Word half\'s, and this half does not read it');
+
+    expect(Theme::slidesRetired(Theme::DECK, 'layouts.yml', "layouts:\n  content: Title and Content\n"))
+        ->toContain('move its content into the "layouts:" section');
+
+    expect(Theme::slidesRetired(Theme::DECK, 'text-styles.yml', "brand:\n  color: FF0000\n"))
+        ->toContain('move its content into the "textStyles:" section');
+
+    expect(Theme::slidesRetired(Theme::DECK, 'styles.yml', "heading.1:\n  name: Georgia\n"))
+        ->toContain('That file is the Word half\'s, and this half does not read it');
+});
+
+it('refuses the file the Word half\'s slots used to be in, and says where they go', function () {
+    says('word/configuration.md', 'A `styles.yml` beside the theme is refused');
+
+    expect(Theme::wordRetired(
+        "---\ntheme: mine\n---\n\n# One\n",
+        'styles.yml',
+        "heading.1:\n  name: Georgia\n",
+    ))->toContain('A theme\'s styles are in the "styles:" section of its "theme.yml"');
 });
 
 it('refuses a text style the theme does not have, and names the styles it has', function () {
@@ -69,7 +97,7 @@ it('refuses a text style the theme does not have, and names the styles it has', 
 
     $message = Theme::slidesRefusal(
         "---\ntheme: mine\n---\n\nResilience :bakery[Bakery] is open.\n",
-        "brand:\n  color: FF0000\n  bold: true\nmuted:\n  color: accent1\n  size: 10\n",
+        "textStyles:\n  brand:\n    color: FF0000\n    bold: true\n  muted:\n    color: accent1\n    size: 10\n",
     );
 
     expect($message)->toContain('The styles are: brand, muted.');
@@ -137,8 +165,8 @@ it('leaves a property off the run of a deck when an attribute is false', functio
     expect(Deck::run($slide, 'Bakery'))->not->toContain('b="1"');
 });
 
-it('reads the named styles of a Word theme from the key the page names', function () {
-    says('word/configuration.md', '`textStyles`');
+it('reads the named styles of a Word theme from the section the page names', function () {
+    says('word/configuration.md', '`textStyles:`');
 
     expect(TextStyles::KEY)->toBe('textStyles');
 });

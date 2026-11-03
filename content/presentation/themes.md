@@ -7,16 +7,15 @@ section: Markdown Presentation
 order: 2
 ---
 
-A theme is a directory. `theme.yml` is required; `styles.yml`, `layouts.yml` and
-`template.pptx` are optional.
+A theme is **one file**, plus a master if it has one. `theme.yml` holds the look, the roles the
+theme maps and the named styles a deck may write in, and `template.pptx` beside it is the
+master: the PowerPoint file that says where the theme's layouts put their boxes. A theme
+without one is drawn with the library's own geometry.
 
 ```text
 themes/corporate-dark/
-├── theme.yml      required
-├── styles.yml     the Word half's vocabulary — the renderer does not read it
-├── layouts.yml    which PowerPoint layout each role maps to
-├── text-styles.yml  the names a deck writes words in — see [Text styles](#text-styles)
-└── template.pptx  optional, a path
+├── theme.yml      the look, the roles and the named styles
+└── template.pptx  optional, the master
 ```
 
 ## `theme.yml`
@@ -32,23 +31,45 @@ themes/corporate-dark/
 | `colors` | mapping | see below | `#rrggbb`, stored upper-cased |
 | `fonts` | mapping | Calibri / Calibri / Consolas | `heading`, `body`, `mono` |
 | `style` | mapping | see below | the geometry |
+| `layouts` | mapping | the library's own | which layout each role maps to — see [Layout roles](#layout-roles) |
+| `textStyles` | mapping | none | the names a deck writes words in — see [Text styles](#text-styles) |
 
-The last three hold a mapping. A key is written with a colon in the file whatever it holds,
+Five of them hold a mapping. A key is written with a colon in the file whatever it holds,
 and the table names the keys as they are — the colon is YAML's and not theirs.
 
 `dark: yes` being refused is not pedantry. YAML 1.1 truthy strings are what make a theme written
 by hand behave differently from one written by a machine, and this one is for machines.
 
+## The files a theme used to be made of
+
+A theme was a directory of up to five files, and the three that are no longer read are
+**refused** when they are beside the theme, each with a message that says what to do with it:
+
+> The theme "acme" has a "layouts.yml" beside it. A theme is one file: move its content into the "layouts:" section of its "theme.yml".
+
+> The theme "acme" has a "text-styles.yml" beside it. A theme is one file: move its content into the "textStyles:" section of its "theme.yml".
+
+> The theme "acme" has a "styles.yml" beside it. That file is the Word half's, and this half does not read it: its slots name Word styles, which a deck of slides has no use for. Delete it, and the theme is read again.
+
+`layouts.yml` and `text-styles.yml` are the two that became sections of the theme's own file.
+`styles.yml` was the Word half's, and this half loaded it for years without ever reading it.
+
+They are refused rather than ignored, because a file that is quietly not read is a theme that
+looks like the one its author wrote and is not: the author renames a layout in the file
+beside the theme, the deck is drawn with the old mapping, and nothing in the output says so.
+
 ## A slide's own values
 
 A slide may name the theme's values for itself, in its frontmatter, and what it names is a
-`theme.yml`: the four keys above that hold a value — `dark`, `colors`, `fonts` and `style` —
-read by the reader that reads the theme's own file. The three that hold the theme's identity
-— `name`, `description` and `author` — are not a slide's, so naming one is refused.
+`theme.yml`: the four keys that hold a value — `dark`, `colors`, `fonts` and `style` — read by
+the reader that reads the theme's own file. The three that hold the theme's identity —
+`name`, `description` and `author` — are not a slide's, so naming one is refused, and so are
+`layouts` and `textStyles`: those are the theme's own shape rather than anything a slide may
+lay over it.
 
-A slide's values are laid over the template's, and the template's over the theme's, and one
-value laid over another leaves the rest alone: a slide that names one colour leaves the other
-eleven as they were.
+A slide's values are laid over the template's, and the template's over the deck's, and the
+deck's over the theme's — and one value laid over another leaves the rest alone: a slide that
+names one colour leaves the other eleven as they were.
 
 ## The twelve colour slots
 
@@ -93,18 +114,19 @@ subtle ink `lt2` — which is why the same theme can be dark without being a sec
 
 ## Text styles
 
-A theme may name the styles a deck writes words in. `text-styles.yml` is optional: a theme
-without one has no named styles, and every named form written against it is a name the theme does
-not have.
+A theme may name the styles a deck writes words in. The `textStyles:` section is optional: a
+theme without one has no named styles, and every named form written against it is a name the
+theme does not have.
 
 ```yaml
-# themes/mine/text-styles.yml
-brand:
-  color: accent1
-  bold: true
-muted:
-  color: lt2
-  size: 10
+# themes/mine/theme.yml
+textStyles:
+  brand:
+    color: accent1
+    bold: true
+  muted:
+    color: lt2
+    size: 10
 ```
 
 The properties are the [eight attributes](/directives/#a-word-in-a-style) an inline style takes, and
@@ -126,8 +148,31 @@ Eight, and only these:
 title  content  two-column  section  blank  image-text  image-title  image-slide
 ```
 
-`blank` and `image-slide` have no title box. `layouts.yml` maps each role to a layout name in the
-master — the file may be a bare mapping or nested under a single `layouts:` key.
+`blank` and `image-slide` have no title box. The `layouts:` section maps each role to a layout
+name in the master, and the names are the theme's own:
+
+```yaml
+# themes/mine/theme.yml
+layouts:
+  title: Titelfolie
+  content: Titel und Inhalt
+  two-column: Zwei Spalten
+  section: Abschnitt
+  blank: Leer
+  image-text: Bild links
+  image-title: Bild mit Titel
+  image-slide: Ganzflächiges Bild
+```
+
+**A theme with no `layouts:` section is drawn with the library's own mapping**, which is the one
+every theme shipping with this library used to carry in a file of its own: `Title Slide`,
+`Title and Content`, `Two Content`, `Section Header`, `Blank`, `Picture Left`,
+`Picture with Caption` and `Full Bleed Picture`.
+
+**A theme with a `layouts:` section has the whole mapping.** A role the section does not name is
+a role the theme does not map, and a deck that asks for one is told which roles the theme does
+map. The section is not a set of overrides over the library's own names; it is the mapping, and
+it is either complete or the theme cannot draw every role.
 
 **A slide with no title box draws the frontmatter's title as a heading in its body.** A deck
 that names no title has nothing to put one in, and a title that is not drawn is a silence —
@@ -143,7 +188,7 @@ A **template** is not a theme, and it does not live beside one.
 | | Theme | Template |
 | --- | --- | --- |
 | Where it lives | a directory, `themes/<name>/` | a slide of the deck, or a file beside the deck |
-| What it is | `theme.yml` and its friends | chrome: the free shapes it draws, and the words in them |
+| What it is | `theme.yml` and its master | chrome: the free shapes it draws, and the words in them |
 | What names it | `theme:` | `template:` |
 | What it decides | the colours, the type, the grid | the furniture on the slide |
 
@@ -192,9 +237,11 @@ hands the library a **finder** instead, and the name is asked for through it: se
 
 ## Word themes
 
-The Word half has themes too, and they are the other shape: a directory with `theme.yml` —
-`name`, `description`, `author`, and `name` required — and an optional `styles.yml` holding the
-same slot names the [Word configuration](/word/configuration/) page lists. They are listed
+The Word half has themes too, and they are the other shape: a `theme.yml` — `name` required,
+plus `description` and `author` — whose `styles:` section holds the same slot names the
+[Word configuration](/word/configuration/) page lists, and whose `textStyles:` section holds the
+named styles a document may write a word in. The two halves keep separate vocabularies: a
+Word theme that carries the slides half's `colors:` is refused. They are listed
 [there](/word/configuration/#themes).
 
 A theme is a **starting point**, not a replacement: your own `styles:` sits on top of it, and

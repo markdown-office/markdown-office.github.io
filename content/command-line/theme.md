@@ -37,13 +37,20 @@ mdoffice theme:   Pass --force to replace it.
 
 ## What is written
 
-Three files go into the directory.
+Two files go into the directory.
 
 | File | Holds |
 | --- | --- |
-| `theme.yml` | the colours, the fonts and the type scale |
-| `layouts.yml` | the layout roles, each pointed at a layout of the deck |
+| `theme.yml` | the colours, the fonts, the type scale and the layout roles |
 | `template.pptx` | the deck's own layouts, without its slides |
+
+A deck with no master has no template to write, so the directory holds the theme's file alone.
+
+**Every role is mapped.** The roles the deck's own layouts cover are named the deck's way, and
+the rest take the library's own names — the names the library draws the layouts it generates
+under. A theme's `layouts:` section is the whole mapping, so a role it leaves out is a role no
+slide can be drawn on, and the roles the deck has no layout for are reported rather than
+pointed at a layout that is something else.
 
 **The theme is read back before the command reports success.** The library's own reader reads it
 and the library's own geometry reads the boxes of the template, so a theme this command cannot
@@ -61,8 +68,9 @@ largest type on the first slide, the body the size the prose is written at, and 
 scale the sizes below the title.
 
 **The layouts** are mapped by the placeholders they hold, not by their names: a deck calls its
-layouts whatever it likes, and the same layout is called different things in two offices. A role
-the deck has no layout for is reported rather than pointed at a layout that is something else.
+layouts whatever it likes, and the same layout is called different things in two offices. The
+roles the deck has no layout for are reported rather than pointed at a layout that is something
+else.
 
 **The template** is the deck's layouts without its slides, and without the pictures on them. A
 template places, and the slides of the deck it came from are not a placement.
@@ -79,15 +87,56 @@ the file can be told apart from the numbers somebody chose.
 The command says what it read and where it read it from:
 
 ```text
-mdoffice theme: wrote the theme for "deck.pptx" into "deck".
+mdoffice theme: wrote the theme for "probe.pptx" into "/tmp/probe-theme".
 
-  theme.yml     the colours, the fonts and the type scale
-  layouts.yml   1 of the 8 layout roles mapped
-  template.pptx the deck's 1 layouts, without its 3 slides
+  theme.yml     the colours, the fonts, the type scale and the layout roles
+  template.pptx the deck's 3 layouts, without its 2 slides
 
   colours
-    dk1        #000000   the type
-    lt2        #000000   a filled block
+    dk1        #0D1B2A   the background of the slides
+    lt1        #F8FAFC   the type
+    accent1    #00B4D8   the colour the deck draws with
+    hlink      #00B4D8   the accent, as a link is drawn
+
+  type
+    heading        Cambria                  the face of the type at the title size
+    body           Calibri                  the face the deck writes its prose in
+    title          26pt                     the largest type on most of the slides
+    cover          26pt                     the largest type on the first slide
+    section        26pt                     the title on a slide that carries little else
+    body size      14pt                     the size the deck writes its prose at
+    headings       14pt                     the sizes below the title
+    leading        1.0                      the line spacing the deck sets
+    heading weight regular                  the weight of the headings
+    heading ink    ink                      the colour the headings are drawn in
+
+  roles
+    title       Titelfolie                 a title and a subtitle
+    content     Titel und Inhalt           a title and one column
+    two-column  Two Content                the library's own name
+    section     Section Header             the library's own name
+    blank       Leer                       nothing in it at all
+    image-text  Picture Left               the library's own name
+    image-title Picture with Caption       the library's own name
+    image-slide Full Bleed Picture         the library's own name
+
+  the deck's own layouts map 3 of the 8 roles; the library's own names map the other 5.
+
+  left at the library's default
+    colours  dk2 #44546A, lt2 #E7E6E6, accent2 #ED7D31, accent3 #A5A5A5, accent4 #FFC000, accent5 #5B9BD5, accent6 #70AD47, folHlink #954F72
+    type     margin, gutter, block, rule, mono
+
+  the deck has no layout for
+    two-column, section, image-text, image-title, image-slide
+
+  the template places 0 of the 3 roles the deck's own layouts map.
+```
+
+A deck with no master has no template, and the report says so where the template's line would
+be:
+
+```text
+  the deck has no master, so the theme carries no template.
 ```
 
 The report goes to standard output, and the theme it writes is a directory the slides part

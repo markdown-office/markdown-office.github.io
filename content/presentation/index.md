@@ -62,8 +62,8 @@ slides and **cannot be a thematic break** — use `***`.
 ### Extended: frontmatter and themes
 
 The deck's own configuration goes in the frontmatter of slide 1. Every key is in a **closed set of
-fifteen**, and anything outside it fails the build with a message naming what would have worked.
-The fifteen are listed with the [directives](/presentation/directives/#frontmatter-directives).
+sixteen**, and anything outside it fails the build with a message naming what would have worked.
+The sixteen are listed with the [directives](/presentation/directives/#frontmatter-directives).
 
 {% example "The four keys that describe a deck" %}
 ````md presentation
@@ -86,10 +86,10 @@ description: What changed, what it cost, and what happens next.
 #### A theme
 
 A theme is a directory, and `theme.yml` is what it has to hold: the name, an optional description
-and author, the colours, the fonts and the geometry. A `theme:` may also name the `theme.yml`
-itself, in which case the theme's other files are the ones beside it. The keys it takes, the
-colour slots, the geometry and the themes that ship are all on
-[Themes and layout](/presentation/themes/).
+and author, the colours, the fonts and the geometry — and, when it says anything, the layout
+roles and the named text styles. A `theme:` may also name the `theme.yml` itself, in which case
+the theme's master beside it is the theme's. The keys it takes, the colour slots, the geometry
+and the themes that ship are all on [Themes and layout](/presentation/themes/).
 
 Resolution is a path, then `themes/<name>` beside the deck, then the package's own. **No silent
 fallback to `default`**: a name that does not resolve raises `ThemeNotFound` listing the ones that
@@ -161,8 +161,9 @@ More, including the refusal table and the three things that look like they work 
 
 ## 2. Command line
 
-**The package declares no `bin`**, and `examples/build.php` in the repository is
-the closest thing — it converts a directory of Markdown files and renders page images of each.
+**The package declares no `bin`**, and the build script in the library's own `examples`
+directory is the closest thing — it converts a directory of Markdown files and renders page
+images of each.
 
 A shell loop is the whole substitute:
 
