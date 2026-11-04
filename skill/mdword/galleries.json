@@ -1,0 +1,27 @@
+{
+  "_comment": [
+    "The galleries the bundle carries, and where each one comes from.",
+    "",
+    "The two halves of the suite each ship a gallery of examples: the catalogue of what",
+    "that half can do, one file each. Both are carried, and both are copied from the",
+    "library rather than written again here — a copy the build makes cannot drift from",
+    "what it was made from, and the checker says so when one has.",
+    "",
+    "The 'source' is where the gallery is copied from, relative to the suite's directory:",
+    "the library's own checkout and the examples inside it. The 'path' is where its gallery",
+    "is carried in the bundle, and it is the path the prose names.",
+    "",
+    "The 'exclude' are the parts of a gallery the bundle does not carry: the built",
+    "output, and the Finder's own bookkeeping. A gallery is the sources, and a copy of",
+    "the output is a second copy of something the library builds.",
+    "",
+    "This file is read by the build that writes the bundle and by the checker that",
+    "refuses a bundle that has fallen behind, because two copies of one list are two",
+    "answers to one question."
+  ],
+  "exclude": ["out", ".DS_Store"],
+  "galleries": {
+    "word": { "source": "markdown-word/examples", "path": "examples/word" },
+    "slides": { "source": "markdown-presentation/examples", "path": "examples/slides" }
+  }
+}

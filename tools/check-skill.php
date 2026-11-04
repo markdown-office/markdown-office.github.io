@@ -31,6 +31,8 @@ declare(strict_types=1);
  *    description is not advertised to the model
  *  - the scripts are the ones the library ships, byte for byte, because a copy that has
  *    drifted is a copy that is wrong
+ *  - the galleries are the ones the two libraries ship, byte for byte, because a gallery
+ *    that has drifted is a gallery that is wrong
  *  - every path the install page names exists in the built tree, because a URL that does
  *    not resolve is the failure a reader meets first
  *  - the library's README points at the skill page
@@ -50,6 +52,7 @@ if (\PHP_SAPI !== 'cli') {
 
 require_once __DIR__ . '/lib/Autoload.php';
 
+use MarkdownOffice\Documentation\Bundle\Gallery;
 use MarkdownOffice\Documentation\Tool\Cli;
 use MarkdownOffice\Documentation\Tool\Report;
 use MarkdownOffice\Documentation\Tool\UnreadableSkill;
@@ -399,13 +402,24 @@ if (!\is_array($catalogue) || !\is_array($catalogue['skills'] ?? null)) {
     }
 }
 
-// 4. Every path a reference file names exists.
+// 4. Every path the bundle's prose names exists.
+//
+// The reference files and the skill's own file: both are read by an agent, and a path in
+// either of them that the bundle does not hold is a path that goes nowhere.
+$prose = [];
+
 foreach (\glob($bundle . REFERENCE_FILES) ?: [] as $file) {
-    foreach (paths((string) \file_get_contents($file)) as $path) {
+    $prose[\str_replace($bundle . '/', '', $file)] = (string) \file_get_contents($file);
+}
+
+$prose['SKILL.md'] = (string) \file_get_contents($bundle . '/SKILL.md');
+
+foreach ($prose as $name => $text) {
+    foreach (paths($text) as $path) {
         if (!\file_exists($bundle . '/' . $path)) {
             $report->fail(\sprintf(
-                'The reference file "%s" names "%s" and the bundle does not hold it.',
-                \basename($file),
+                'The file "%s" names "%s" and the bundle does not hold it.',
+                $name,
                 $path,
             ));
         }
@@ -481,7 +495,17 @@ foreach ($scripts as $tool) {
     }
 }
 
-// 7. Every path the install page names exists in the built tree.
+// 7. The galleries are the ones the libraries ship.
+//
+// The bundle carries both halves' own galleries, and a gallery that has fallen behind the
+// library is a gallery that is wrong: it shows a construct the library no longer draws, or
+// misses one it does. The copy is made by the build, so it cannot drift while the build
+// runs — but a bundle built against another checkout can, and nothing said so.
+foreach (Gallery::differences($root, $bundle) as $problem) {
+    $report->fail($problem);
+}
+
+// 8. Every path the install page names exists in the built tree.
 $install = (string) \file_get_contents($root . '/' . SKILL_PAGE);
 
 \preg_match_all('#https?://[^/\s]+/skills/([^\s`)\]",]+)#', $install, $found);
@@ -501,12 +525,12 @@ foreach ($found[1] as $path) {
     }
 }
 
-// 8. The library's README points at the skill page.
+// 9. The library's README points at the skill page.
 //
 // The address is read out of the site's own page rather than written down, so a page that
 // moves does not leave this pointing at a page that is no longer there — the pattern
 // `check-readme-links.php` already uses for the command-line page.
-// 9. Every link in the bundle goes somewhere.
+// 10. Every link in the bundle goes somewhere.
 //
 // The bundle is distributed as an archive with no website beside it, so a link to a page of
 // the site resolves to nothing in it. A link to a page the bundle carries is rewritten to
@@ -514,15 +538,7 @@ foreach ($found[1] as $path) {
 //
 // Either is a link that goes somewhere. A link that is still a path of the site is a link
 // that goes nowhere, and an agent that follows it is told the page does not exist.
-$bundleFiles = [];
-
-foreach (\glob($bundle . REFERENCE_FILES) ?: [] as $file) {
-    $bundleFiles['references/' . \basename($file)] = (string) \file_get_contents($file);
-}
-
-$bundleFiles['SKILL.md'] = (string) \file_get_contents($bundle . '/SKILL.md');
-
-foreach ($bundleFiles as $name => $text) {
+foreach ($prose as $name => $text) {
     $directory = \dirname($name);
 
     foreach (linksIn($text) as $target) {
@@ -589,8 +605,9 @@ if ($report->failed()) {
 }
 
 \printf(
-    "%d reference file(s), %d page(s) and %d script(s) checked against the bundle.\n",
+    "%d reference file(s), %d page(s), %d script(s) and %d gallery(s) checked against the bundle.\n",
     \count($manifest['references']),
     \count($pages),
     \count($scripts),
+    \count(Gallery::paths($root)),
 );

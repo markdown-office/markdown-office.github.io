@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 permalink: /skills/
 title: The skill
-summary: A directory an agent reads, holding this site's documentation and the library's examples — and where each agent harness looks for one.
+summary: A directory an agent reads, holding this site's documentation and the two libraries' examples — and where each agent harness looks for one.
 section: The skill
 order: 0
 ---
@@ -18,9 +18,9 @@ when to use it — and beside it the files it points at: the documentation, the 
 the scripts that render a document so that it can be looked at.
 
 **The one for this suite is `mdword`**, and it is built from this site. The pages in it are
-the pages of this site; the examples in it are this site's own and the library's. Nothing in
-it is written twice: it is a copy made by the build, and a copy that is made by the build
-cannot drift from what it was made from.
+the pages of this site; the examples in it are this site's own and the two libraries' own.
+Nothing in it is written twice: it is a copy made by the build, and a copy that is made by
+the build cannot drift from what it was made from.
 
 ## Install it
 
@@ -77,17 +77,23 @@ mdword/
 ├── SKILL.md              what the library does, and how to use it
 ├── VERSION               the version of this bundle
 ├── references/           the documentation, one file per page
-├── examples/             this site's examples, and the library's
+├── examples/             this site's examples, and the two halves' own
 │   ├── site/
-│   └── library/
+│   ├── word/
+│   └── slides/
 └── scripts/              the render tools
 ```
 
 The **references** are the pages of this site, one file each, with the frontmatter off. They
 cover both halves: the Word half's pages and the slides half's four, and the pages the two
 have in common. The **examples** are the decks and documents the pages show, built and named,
-and the Word half's own twenty-four — which between them are the catalogue of what that half
-can do. The slides half's own gallery of decks is not in the bundle.
+and the two halves' own galleries — `examples/word/` and `examples/slides/` — which between
+them are the catalogue of what each half can do.
+
+**The themes are not carried.** They ship with the library, and the resolver's last step is
+the theme that ships with it, so the bundle needs no second copy of a thing the library
+already has. A theme named by a path is written from the deck's own directory, and that
+directory is carried whole, so it travels with the copy.
 
 The **scripts** render a document so that it can be looked at, which is the one step a
 prose answer cannot do for itself.
