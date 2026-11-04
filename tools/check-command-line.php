@@ -125,6 +125,7 @@ const FORBIDDEN = [
     'the themes page said the styles file was never read' => 'loaded it for years without ever reading it',
     'the command-line page said three files go into a theme' => 'Three files go into the directory',
     'the command-line page said the roles are reported rather than mapped' => 'reported rather than pointed at a layout that is something else',
+    'the files and themes pages said the two halves keep separate vocabularies' => 'keep separate vocabularies',
 ];
 
 /**

@@ -240,9 +240,9 @@ hands the library a **finder** instead, and the name is asked for through it: se
 The Word half has themes too, and they are the other shape: a `theme.yml` — `name` required,
 plus `description` and `author` — whose `styles:` section holds the same slot names the
 [Word configuration](/word/configuration/) page lists, and whose `textStyles:` section holds the
-named styles a document may write a word in. The two halves keep separate vocabularies: a
-Word theme that carries the slides half's `colors:` is refused. They are listed
-[there](/word/configuration/#themes).
+named styles a document may write a word in. The two halves part at the look, and a Word theme
+that carries the slides half's `colors:` is refused because that is the other half's look. They
+are listed [there](/word/configuration/#themes).
 
 A theme is a **starting point**, not a replacement: your own `styles:` sits on top of it, and
 which keys you wrote is remembered so a partial override does not silently discard the rest.

@@ -58,3 +58,17 @@ it('says that the two halves do opposite things with a name they do not know', f
     expect(Deck::refusal("---\ntransition: none\n---\n\n# One\n"))
         ->toContain('names "transition"');
 });
+
+it('says that the two halves part at the look', function () {
+    says(
+        Site::FILES,
+        'The two halves part at the look: the Word half\'s `theme.yml` may carry `styles:`, and the slides half\'s may carry `dark:`, `colors:`, `fonts:`, `style:` and `layouts:`',
+    );
+});
+
+it('says that a Word theme is refused for carrying the other half\'s look', function () {
+    says(
+        Site::PRESENTATION_THEMES,
+        'The two halves part at the look, and a Word theme that carries the slides half\'s `colors:` is refused because that is the other half\'s look',
+    );
+});

@@ -90,12 +90,12 @@ now, and `styles.yml`, `layouts.yml` and `text-styles.yml` are the format it use
 of: the library asks the finder whether one of them is there, and refuses the theme when it
 is. The other five are read.
 
-The two halves keep separate vocabularies, and they part at the look: the Word half's
-`theme.yml` may carry `styles:`, and the slides half's may carry `dark:`, `colors:`, `fonts:`,
-`style:` and `layouts:`. Each half refuses the other's look, so one file cannot carry both. The
-keys they share — `name:`, `description:`, `author:` and `textStyles:` — are legal in both, and
-a file that carries only those is read by both, each half drawing it its own way. The finder is
-never told which is which — it is asked for a name.
+The two halves part at the look: the Word half's `theme.yml` may carry `styles:`, and the slides
+half's may carry `dark:`, `colors:`, `fonts:`, `style:` and `layouts:`. Each half refuses the
+other's look, so one file cannot carry both. The keys they share — `name:`, `description:`,
+`author:` and `textStyles:` — are legal in both, and a file that carries only those is read by
+both, each half drawing it its own way. The finder is never told which is which — it is asked
+for a name.
 
 ## A finder answers; it does not refuse
 
