@@ -176,6 +176,26 @@ named styles a document may write a word in — see
 [Word directives](/word/directives/#a-word-in-a-style). A `theme:` may also name the `theme.yml`
 itself, in which case that file is the theme's.
 
+**Seven mistakes in a theme's named styles are refused when the theme is read** rather than
+reaching the document:
+
+| Refused | Why |
+| --- | --- |
+| a style that is not a set of properties | a style carries one property per line |
+| a style that carries no property at all | a style that styles nothing is a mistake |
+| a style that names a property that does not exist | the properties are the eight of an inline style |
+| a value that is not one — a `color`, a `size`, a `font` or a `bold` | the message says what the property takes |
+| a style called `style` | that word is how the raw form is written |
+| a style named after a directive this library draws | the directive is drawn first, and the style would never reach a word |
+| a style that names another one in a different case | `Brand` and `brand` are one word |
+
+Every one of them names what would have worked instead, and a `textStyles:` section that is not a
+mapping of styles at all is refused the same way.
+
+**A style's name is folded**, so a theme that spells a style `Brand` has it under `:brand[…]` and
+`:Brand[…]` alike — the rule is on [How directives work](/directives/#a-word-in-a-style), which
+both halves keep.
+
 A `styles.yml` beside the theme is refused, and the message names the file and says where its
 content goes:
 

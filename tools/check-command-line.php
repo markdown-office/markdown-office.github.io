@@ -126,6 +126,12 @@ const FORBIDDEN = [
     'the command-line page said three files go into a theme' => 'Three files go into the directory',
     'the command-line page said the roles are reported rather than mapped' => 'reported rather than pointed at a layout that is something else',
     'the files and themes pages said the two halves keep separate vocabularies' => 'keep separate vocabularies',
+    'the Word templates page called a theme a directory of YAML' => 'a directory of YAML',
+    'the presentation index said the design does not travel at all' => 'neither travels to a new deck',
+    'the presentation index left the theme out of the frontmatter' => 'its title, its author and its description',
+    'the themes page said a layout name is in the master' => 'a layout name in the master',
+    'the themes page gave three steps of the resolution order' => 'an explicit path',
+    'the themes page listed four of the ten refusals' => 'which this half does not draw, are each refused',
 ];
 
 /**

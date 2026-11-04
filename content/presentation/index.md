@@ -91,9 +91,9 @@ roles and the named text styles. A `theme:` may also name the `theme.yml` itself
 the theme's master beside it is the theme's. The keys it takes, the colour slots, the geometry
 and the themes that ship are all on [Themes and layout](/presentation/themes/).
 
-Resolution is a path, then `themes/<name>` beside the deck, then the package's own. **No silent
-fallback to `default`**: a name that does not resolve raises `ThemeNotFound` listing the ones that
-do.
+Resolution is a path, then `themes/<name>` beside the deck, then `themes/<name>` beside the
+working directory, then the package's own. **No silent fallback to `default`**: a name that does
+not resolve raises `ThemeNotFound` listing the ones that do.
 
 #### A template
 
@@ -239,13 +239,19 @@ author: "markdown-office"
 Text.
 ```
 
-The frontmatter carries what the deck said about itself — its title, its author and its
-description — because a deck's own properties are the only thing about it that is not on a
+The frontmatter carries what the deck said about itself — its title, its theme, its author and
+its description — because a deck's own properties are the only thing about it that is not on a
 slide. `save()` writes it to a file instead, and `read()` gives the slides back as a list.
 
-What comes back is the text and the structure. What does not is the design: the type sizes,
-the colours and the geometry live in the theme and the master, and neither travels to a new
-deck. A `.pptx` records what is on a slide, not how it was drawn.
+**The theme's name comes back; the theme does not.** The name travels into the `.pptx` and comes
+back out of it, so a deck read back into Markdown is drawn again in the theme it was drawn in.
+The file itself does not come back: the type sizes, the colours and the geometry live in the
+theme and the master, and none of them travels to a new deck. A `.pptx` records what is on a
+slide, not how it was drawn.
+
+**A deck's own settings come back as the slides' own.** A deck that named a background under
+`deck-settings:` has it read back as a `background:` on every slide, rather than as the deck's
+own layer: the file holds the background of each slide, and that is where the reader finds it.
 
 | In the deck | In the Markdown |
 | --- | --- |

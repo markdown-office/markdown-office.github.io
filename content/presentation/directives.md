@@ -282,6 +282,10 @@ Every key of every slide's frontmatter must be one of these sixteen:
 The layout roles are listed with the [themes](/presentation/themes/#layout-roles). Anything else —
 including Slidev's own `two-cols` — is refused with the list of what would have worked.
 
+**`theme-variables:` is the theme's own values for one slide.** It is a `theme.yml` in miniature
+— the same keys, the same names, the same spelling — and what a slide may put in it is on
+[A slide's own values](/presentation/themes/#a-slides-own-values).
+
 **The ordinary keys are the slide's own, wherever they are written.** A key that holds somebody
 else's settings says whose: `template-settings:` says the template's, and `deck-settings:` says
 the deck's. That is what tells a definition from a slide and a slide from a deck — see

@@ -84,6 +84,11 @@ Two of the eight are not the same in both halves. A `color` is a role, a theme s
 in Markdown Presentation, and six hexadecimal digits in Markdown Word. A `highlight` is drawn by
 Markdown Word and **refused by name** by Markdown Presentation, which has no way to write one.
 
+**A style's name is folded.** A theme that spells a style `Brand` has it under `:brand[…]` and
+`:Brand[…]` alike: a style's name is a word, and a word does not care about case. The refusal for
+a name the theme does not have spells the styles the way the theme wrote them, because that is
+the spelling the author has to change.
+
 Three forms, one grammar:
 
 | Written | Means |

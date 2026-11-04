@@ -35,6 +35,11 @@ final class Site
     public const WORD_DIRECTIVES = 'word/directives.md';
 
     /**
+     * The page that documents the Word half's themes.
+     */
+    public const WORD_CONFIGURATION = 'word/configuration.md';
+
+    /**
      * The page that documents where a document's files come from.
      */
     public const FILES = 'general/files.md';

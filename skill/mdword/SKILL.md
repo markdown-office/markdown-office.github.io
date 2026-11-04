@@ -18,7 +18,7 @@ documentation, not by recalling it.
 | The directives: `::toc`, `:footnote`, `:style`, and the seven that place objects in a document | `references/directives.md` |
 | Every frontmatter key, every option and every style slot | `references/configuration.md` |
 | Rendering into a design that already exists — a Word template, or a theme | `references/templates.md` |
-| What comes back when a document is read into Markdown, and the six things that do not | `references/round-trip.md` |
+| What comes back when a document is read into Markdown, and the seven things that do not | `references/round-trip.md` |
 | The three options that decide what happens to a picture | `references/images.md` |
 | The same three options, and how the slides half differs | `references/general-images.md` |
 | Every exception the library throws, and what each one means | `references/errors.md` |

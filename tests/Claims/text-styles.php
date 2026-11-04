@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use MarkdownOffice\Documentation\Tests\Support\Deck;
+use MarkdownOffice\Documentation\Tests\Support\Directory;
 use MarkdownOffice\Documentation\Tests\Support\Document;
 use MarkdownOffice\Documentation\Tests\Support\Theme;
 use MarkdownWord\Configuration\TextStyles;
@@ -33,9 +34,6 @@ function quotedRefusals(string $page): array
 
 /** The Word half's slots, as a `styles.yml` held them. */
 const WORD_SLOT = "heading.1:\n  name: Georgia\n";
-
-/** The page that names the Word half's theme, and its refusals. */
-const WORD_CONFIGURATION = 'word/configuration.md';
 
 /** The theme's name as the library prints it: the name the deck gave. */
 const DECLARED_NAME = '"mine"';
@@ -109,7 +107,7 @@ it('refuses each file of the old theme format, and says where the content goes',
 });
 
 it('refuses the file the Word half\'s slots used to be in, and says where they go', function () {
-    says(WORD_CONFIGURATION, 'A `styles.yml` beside the theme is refused');
+    says(Site::WORD_CONFIGURATION, 'A `styles.yml` beside the theme is refused');
 
     expect(Theme::wordRetired(
         "---\ntheme: mine\n---\n\n# One\n",
@@ -125,7 +123,7 @@ it('refuses the file the Word half\'s slots used to be in, and says where they g
 it('quotes the refusals as the library prints them', function () {
     $themes = quotedRefusals(Site::PRESENTATION_THEMES);
 
-    expect($themes)->toHaveCount(3);
+    expect($themes)->toHaveCount(4);
 
     // The page writes the theme's name as "acme", and the library writes the name the
     // deck named: the same sentence with another name in it.
@@ -147,7 +145,14 @@ it('quotes the refusals as the library prints them', function () {
         WORD_SLOT,
     )))->toBe($themes[2]);
 
-    $configuration = quotedRefusals(WORD_CONFIGURATION);
+    // The fourth is the colour a YAML comment leaves with no value at all.
+    expect((string) \preg_replace(
+        '/^In "[^"]*"/',
+        'In "…/theme.yml"',
+        Theme::slidesRefusal(Theme::DECK, "colors:\n  dk1: #1E1E2E\n"),
+    ))->toBe($themes[3]);
+
+    $configuration = quotedRefusals(Site::WORD_CONFIGURATION);
 
     expect($configuration)->toHaveCount(1);
 
@@ -158,6 +163,134 @@ it('quotes the refusals as the library prints them', function () {
         '"…/styles.yml"',
         Theme::wordRetired("---\ntheme: mine\n---\n\n# One\n", 'styles.yml', WORD_SLOT),
     ))->toBe($configuration[0]);
+});
+
+it('lists every mistake a theme\'s named styles may carry, and refuses it', function (string $page, string $styles, string $message) {
+    says(Site::PRESENTATION_THEMES, 'Ten mistakes in a theme\'s named styles are refused');
+    says(Site::PRESENTATION_THEMES, $page);
+
+    expect(Theme::slidesRefusal(Theme::DECK, $styles))->toContain($message);
+})->with([
+    'an attribute that does not exist' => [
+        'a style that sets an attribute that does not exist',
+        "textStyles:\n  a:\n    colour: FF0000\n",
+        'which is not an attribute of a text style',
+    ],
+    'nothing at all' => [
+        'a style that sets nothing at all',
+        "textStyles:\n  a: {}\n",
+        'sets nothing',
+    ],
+    'a style that is not a mapping' => [
+        'a style that is not a mapping of attributes',
+        "textStyles:\n  a: notamapping\n",
+        'is not a mapping of attributes to values',
+    ],
+    'the reserved word' => [
+        'a style called `style`',
+        "textStyles:\n  style:\n    color: FF0000\n",
+        'is named with a reserved word',
+    ],
+    'a highlight' => [
+        'a style that sets a `highlight`',
+        "textStyles:\n  a:\n    highlight: FF0000\n",
+        'sets a "highlight"',
+    ],
+    'another style in another case' => [
+        'a style that names another one in a different case',
+        "textStyles:\n  Brand:\n    color: FF0000\n  brand:\n    color: 00FF00\n",
+        'is the same style as',
+    ],
+    'a colour that is not a colour' => [
+        'a colour that is not a colour',
+        "textStyles:\n  a:\n    color: chartreuse\n",
+        'which is not a colour',
+    ],
+    'a size that is not a size' => [
+        'a size that is not a number of points',
+        "textStyles:\n  a:\n    size: big\n",
+        'is not a number of points',
+    ],
+    'a font that is not a name' => [
+        'a font that is not a name',
+        "textStyles:\n  a:\n    font: 12\n",
+        'is not a font name',
+    ],
+    'a flag that is not a flag' => [
+        'a flag that is not `true` or `false`',
+        "textStyles:\n  a:\n    bold: yes\n",
+        'is not true or false',
+    ],
+]);
+
+it('lists every mistake a Word theme\'s named styles may carry, and refuses it', function (string $page, string $styles, string $message) {
+    says(Site::WORD_CONFIGURATION, 'Seven mistakes in a theme\'s named styles are refused');
+    says(Site::WORD_CONFIGURATION, $page);
+
+    expect(Theme::wordRefusal("---\ntheme: mine\n---\n\n# One\n", $styles))->toContain($message);
+})->with([
+    'a style that is not a set of properties' => [
+        'a style that is not a set of properties',
+        "textStyles:\n  a: notamapping\n",
+        'A text style is a set of properties',
+    ],
+    'no properties at all' => [
+        'a style that carries no property at all',
+        "textStyles:\n  a: {}\n",
+        'has no properties',
+    ],
+    'a property that does not exist' => [
+        'a style that names a property that does not exist',
+        "textStyles:\n  a:\n    colour: FF0000\n",
+        'property of the "a" style',
+    ],
+    'a value that is not one' => [
+        'a value that is not one',
+        "textStyles:\n  a:\n    color: chartreuse\n",
+        'It is six hexadecimal digits',
+    ],
+    'the reserved word' => [
+        'a style called `style`',
+        "textStyles:\n  style:\n    color: FF0000\n",
+        'cannot be defined',
+    ],
+    'the name of a directive' => [
+        'a style named after a directive this library draws',
+        "textStyles:\n  footnote:\n    color: FF0000\n",
+        'is the name of a directive this library draws',
+    ],
+    'another style in another case' => [
+        'a style that names another one in a different case',
+        "textStyles:\n  Brand:\n    color: FF0000\n  brand:\n    color: 00FF00\n",
+        'is the same style as',
+    ],
+]);
+
+it('folds a style\'s name, in both halves', function () {
+    says(Site::GENERAL_DIRECTIVES, 'A style\'s name is folded');
+    says(Site::PRESENTATION_THEMES, 'A style\'s name is folded');
+    says(Site::WORD_CONFIGURATION, 'A style\'s name is folded');
+
+    $slide = Theme::slidesSlide(
+        "---\ntheme: mine\n---\n\nA :brand[Bakery] B :Brand[Croissant] C\n",
+        "textStyles:\n  Brand:\n    color: FF0000\n",
+    );
+
+    expect(Deck::run($slide, 'Bakery'))->toContain('<a:srgbClr val="FF0000"');
+    expect(Deck::run($slide, 'Croissant'))->toContain('<a:srgbClr val="FF0000"');
+
+    $root = Theme::word("textStyles:\n  Brand:\n    color: \"0B5CAB\"\n");
+
+    $body = Directory::during(
+        $root,
+        static fn (string $root): string => Document::body(
+            "---\ntheme: mine\n---\n\nA :brand[Bakery] B :Brand[Croissant] C\n",
+            $root,
+        ),
+    );
+
+    expect(Document::run($body, 'Bakery'))->toContain('<w:color w:val="0B5CAB"/>');
+    expect(Document::run($body, 'Croissant'))->toContain('<w:color w:val="0B5CAB"/>');
 });
 
 it('refuses a text style the theme does not have, and names the styles it has', function () {
@@ -234,7 +367,7 @@ it('leaves a property off the run of a deck when an attribute is false', functio
 });
 
 it('reads the named styles of a Word theme from the section the page names', function () {
-    says(WORD_CONFIGURATION, '`textStyles:`');
+    says(Site::WORD_CONFIGURATION, '`textStyles:`');
 
     expect(TextStyles::KEY)->toBe('textStyles');
 });

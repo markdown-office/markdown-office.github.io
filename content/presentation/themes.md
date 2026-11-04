@@ -28,8 +28,8 @@ themes/corporate-dark/
 | `description` | string | `null` | |
 | `author` | string | `null` | |
 | `dark` | boolean | `false` | boolean only — `dark: yes` is refused |
-| `colors` | mapping | see below | `#rrggbb`, stored upper-cased |
-| `fonts` | mapping | Calibri / Calibri / Consolas | `heading`, `body`, `mono` |
+| `colors` | mapping | see below | `#rrggbb`, stored upper-cased — **quoted**, or YAML reads the `#` as a comment |
+| `fonts` | mapping | Calibri / Calibri / Consolas | `heading`, `body`, `mono` — see [The three faces](#the-three-faces) |
 | `style` | mapping | see below | the geometry |
 | `layouts` | mapping | the library's own | which layout each role maps to — see [Layout roles](#layout-roles) |
 | `textStyles` | mapping | none | the names a deck writes words in — see [Text styles](#text-styles) |
@@ -58,11 +58,66 @@ They are refused rather than ignored, because a file that is quietly not read is
 looks like the one its author wrote and is not: the author renames a layout in the file
 beside the theme, the deck is drawn with the old mapping, and nothing in the output says so.
 
+## A whole theme
+
+One file, with every section in it:
+
+```yaml
+# themes/mine/theme.yml
+name: Resilience Bakery
+description: The house look.
+author: Markdown Office
+dark: true
+colors:
+  dk1: "#1E1E2E"
+  lt1: "#F5F3EE"
+  accent1: "#C25E00"
+fonts:
+  heading: "Avenir Next"
+  body: "Charter"
+  mono: "Fira Code"
+style:
+  margin: 48
+  gutter: 24
+  body: 18
+  title: 32
+  heading-weight: bold
+  heading-ink: accent
+layouts:
+  title: Titelfolie
+  content: Titel und Inhalt
+  two-column: Zwei Spalten
+  section: Abschnitt
+  blank: Leer
+  image-text: Bild links
+  image-title: Bild mit Titel
+  image-slide: Ganzflächiges Bild
+textStyles:
+  brand:
+    color: accent1
+    bold: true
+  muted:
+    color: lt2
+    size: 10
+```
+
+**Every colour is quoted.** YAML reads an unquoted `#` as the start of a comment, so
+`dk1: #1E1E2E` is a key with no value at all — and the theme is refused for it:
+
+> In "…/theme.yml": "dk1" is not a colour such as "#1E1E2E".
+
+The `layouts:` section names all eight roles, because a theme with a `layouts:` section has the
+whole mapping: a role it does not name is a role the theme does not map. `textStyles:` is
+optional, and so is everything else here except `name:`.
+
 ## A slide's own values
 
 A slide may name the theme's values for itself, in its frontmatter, and what it names is a
 `theme.yml`: the four keys that hold a value — `dark`, `colors`, `fonts` and `style` — read by
-the reader that reads the theme's own file. The three that hold the theme's identity —
+the reader that reads the theme's own file. The frontmatter key that carries it is
+**`theme-variables:`**, and every slide may carry one — the
+[frontmatter table](/presentation/directives/#frontmatter-directives) lists it among the
+sixteen. The three that hold the theme's identity —
 `name`, `description` and `author` — are not a slide's, so naming one is refused, and so are
 `layouts` and `textStyles`: those are the theme's own shape rather than anything a slide may
 lay over it.
@@ -92,6 +147,24 @@ dark1  light1  dark2  light2  hyperlink  followedHyperlink
 
 `dark: true` swaps four of them — the page becomes `dk1`, the ink `lt1`, the panel `dk2`, the
 subtle ink `lt2` — which is why the same theme can be dark without being a second theme.
+
+## The three faces
+
+A theme names three of them, and each is a slot rather than a family:
+
+| Slot | The face it is |
+| --- | --- |
+| `heading` | the heading and the title |
+| `body` | the prose |
+| `mono` | the code |
+
+**A name that is none of the three is a family as written.** A theme that says `body: Charter`
+draws its prose in Charter, and a style that says `font: Inter` is drawn in Inter whether or
+not the theme names it.
+
+**A text style's `font:` may name one of the three.** `font: heading` is drawn in the theme's
+heading face, `font: body` in its body face and `font: mono` in its code face; a name that is
+none of the three is a family as written.
 
 ## `style:` — the geometry
 
@@ -130,13 +203,32 @@ textStyles:
 ```
 
 The properties are the [eight attributes](/directives/#a-word-in-a-style) an inline style takes, and
-a size is in points as it is everywhere else. A colour is the same one a shape's fill is written
-in: a role, a theme slot or a hex value.
+a size is in points as it is everywhere else — and the smallest one is **half a point**. A colour
+is the same one a shape's fill is written in: a role, a theme slot or a hex value.
 
-When the theme is read, a style that names an attribute that does not exist, a style that carries
-no property at all, a style called `style` — the word the raw form is written with — and a
-`highlight`, which this half does not draw, are each refused. A typo in the file is never rendered
-as silence.
+**Ten mistakes in a theme's named styles are refused when the theme is read** rather than reaching
+the slide:
+
+| Refused | Why |
+| --- | --- |
+| a style that sets an attribute that does not exist | the attributes are a closed set |
+| a style that sets nothing at all | a style that styles nothing is a mistake |
+| a style that is not a mapping of attributes | a style carries one attribute per line |
+| a style called `style` | that word is how the raw form is written |
+| a style that sets a `highlight` | **not drawn by this half** |
+| a style that names another one in a different case | `Brand` and `brand` are one word |
+| a colour that is not a colour | the message names every colour that would have been right |
+| a size that is not a number of points | the message says what a size may be |
+| a font that is not a name | a font is a family name |
+| a flag that is not `true` or `false` | `yes` is a YAML truthy string rather than the flag |
+
+Every one of them names what would have worked instead, so a mistake in a theme's
+`textStyles:` section is never rendered as silence. A `textStyles:` section that is not a mapping
+of styles at all is refused the same way.
+
+**A style's name is folded**, so a theme that spells a style `Brand` has it under `:brand[…]` and
+`:Brand[…]` alike — the rule is on [How directives work](/directives/#a-word-in-a-style), which
+both halves keep.
 
 ## Layout roles
 
@@ -149,7 +241,7 @@ title  content  two-column  section  blank  image-text  image-title  image-slide
 ```
 
 `blank` and `image-slide` have no title box. The `layouts:` section maps each role to a layout
-name in the master, and the names are the theme's own:
+name, and the names are the theme's own:
 
 ```yaml
 # themes/mine/theme.yml
@@ -173,6 +265,16 @@ every theme shipping with this library used to carry in a file of its own: `Titl
 a role the theme does not map, and a deck that asks for one is told which roles the theme does
 map. The section is not a set of overrides over the library's own names; it is the mapping, and
 it is either complete or the theme cannot draw every role.
+
+**A master fills in the roles it covers and says nothing about the rest.** A role the master
+has no layout for — or a layout with no placeholders in it, such as Office's own *Blank* —
+keeps the library's own geometry, even when the theme's `layouts:` section names it. The section
+says which layout a role is; the master says where that layout puts its boxes.
+
+**A theme with no master still names its layouts.** The library writes the layout parts itself,
+and it names them by the mapping above: a theme whose `layouts:` section says
+`content: Mein Inhalt` and carries no master has a layout part called *Mein Inhalt*, drawn in
+the library's own geometry.
 
 **A slide with no title box draws the frontmatter's title as a heading in its body.** A deck
 that names no title has nothing to put one in, and a title that is not drawn is a silence —
@@ -223,9 +325,10 @@ greys as well as colours.
 
 ## Resolution order
 
-1. an explicit path — anything containing `/`
+1. a path — written from beside the deck, the way a relative image path is —
 2. `themes/<name>` beside the deck
-3. the package's own `themes/<name>`
+3. `themes/<name>` beside the working directory
+4. the package's own `themes/<name>`
 
 There is **no silent fallback to `default`**. A name that does not resolve raises `ThemeNotFound`
 and lists every theme that does. A deck that came out looking like something other than what was

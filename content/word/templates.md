@@ -14,7 +14,7 @@ There are two, and they answer different questions.
 | | The design is | You give it | It gives you |
 | --- | --- | --- | --- |
 | **A template** | a Word document — a `.docx` or a `.dotx` | the `styleId`s of its styles | its fonts, colours, spacing, headers and footers, and its letterhead |
-| **A theme** | a directory of YAML | nothing | a look of your own, in every document that names it |
+| **A theme** | one file of YAML — a `theme.yml` | nothing | a look of your own, in every document that names it |
 
 A template is a design somebody made in Word. A theme is a design you write down, and it is
 the only one of the two that travels with the Markdown rather than with the document.

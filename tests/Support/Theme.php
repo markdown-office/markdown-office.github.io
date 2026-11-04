@@ -52,6 +52,44 @@ final class Theme
     }
 
     /**
+     * A directory holding a theme of the slides half's shape, with a master beside it.
+     *
+     * `$sections` is what the theme's own file carries beside its name.
+     *
+     * @param list<string>|null $layouts The names the master's layouts carry, or null for a
+     *                                    theme with no master at all.
+     */
+    public static function slidesWithMaster(string $sections, ?array $layouts): string
+    {
+        $root = self::directory();
+
+        \file_put_contents($root . '/themes/mine/theme.yml', "name: Mine\n" . $sections);
+
+        if ($layouts !== null) {
+            \copy(Master::of($layouts), $root . '/themes/mine/template.pptx');
+        }
+
+        return $root;
+    }
+
+    /**
+     * The slide a deck is drawn as, against a theme with a master beside it.
+     *
+     * `$markdown` is the deck and `$sections` is what the theme's own file carries beside
+     * its name.
+     *
+     * @param list<string>|null $layouts The names the master's layouts carry, or null for a
+     *                                    theme with no master at all.
+     */
+    public static function slidesMasterSlide(string $markdown, string $sections, ?array $layouts): string
+    {
+        return Directory::during(
+            self::slidesWithMaster($sections, $layouts),
+            static fn (string $root): string => Deck::slide($markdown, $root),
+        );
+    }
+
+    /**
      * The message the library gives for a deck drawn against a theme of the slides half.
      *
      * The theme is written, the deck is drawn against it and the theme is taken away
