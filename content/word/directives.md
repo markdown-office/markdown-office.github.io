@@ -312,7 +312,8 @@ Resilience :brand[Bakery] is open.
 
 The three forms and the eight attributes are the suite's, and are on
 [How directives work](/directives/#a-word-in-a-style). The named styles come from the theme: the
-`textStyles` key of its `styles.yml`, beside the slots — see [Themes](/word/configuration/#themes).
+`textStyles:` section of its `theme.yml`, beside the slots — see
+[Themes](/word/configuration/#themes).
 
 **What this half does with a name it does not know is the opposite of the presentation half's: it
 writes the directive out as its own source text.**

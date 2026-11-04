@@ -35,6 +35,11 @@ final class Site
     public const WORD_DIRECTIVES = 'word/directives.md';
 
     /**
+     * The page that documents the Word half's themes.
+     */
+    public const WORD_CONFIGURATION = 'word/configuration.md';
+
+    /**
      * The page that documents where a document's files come from.
      */
     public const FILES = 'general/files.md';
@@ -69,6 +74,17 @@ final class Site
         }
 
         return (string) \file_get_contents($file);
+    }
+
+    /**
+     * The skill's own file, as it is written.
+     *
+     * The bundle's `SKILL.md` is a copy of this file, so a claim about what it says is a
+     * claim about a file that is not a page of the site.
+     */
+    public static function skill(): string
+    {
+        return (string) \file_get_contents(self::root() . '/skill/mdword/SKILL.md');
     }
 
     /**
@@ -193,6 +209,15 @@ final class Site
             18 => 'eighteen',
             19 => 'nineteen',
             20 => 'twenty',
+            21 => 'twenty-one',
+            22 => 'twenty-two',
+            23 => 'twenty-three',
+            24 => 'twenty-four',
+            25 => 'twenty-five',
+            26 => 'twenty-six',
+            27 => 'twenty-seven',
+            28 => 'twenty-eight',
+            29 => 'twenty-nine',
         ];
 
         return $words[$number] ?? (string) $number;

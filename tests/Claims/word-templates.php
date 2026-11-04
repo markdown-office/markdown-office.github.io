@@ -27,6 +27,11 @@ use MarkdownWord\Template\MarkdownTemplate;
  */
 const CONTENT = 'The content.';
 
+it('says that a theme is one file and not a directory', function () {
+    says(Site::WORD_TEMPLATES, 'one file of YAML');
+    says(Site::WORD_TEMPLATES, 'A theme is **one file**: `theme.yml`');
+});
+
 it('says that body is this library own convention, and names the constant', function () {
     says(Site::WORD_TEMPLATES, '`body` is this library\'s convention, not Word\'s');
 

@@ -36,7 +36,7 @@ is about both libraries, is on [Errors in general](/errors/).
 | `FencedFrontmatter` | a ```` ```yaml ```` block at the top of a slide |
 | `MalformedTheme` | a theme file is not shaped like one |
 | `ThemeNotFound` | a theme name resolves to nothing — the message lists the ones that do |
-| `UnknownStyleSlot` | `styles.yml` names a slot that does not exist |
+| `RetiredThemeFile` | a file of the old theme format is beside the theme — the message says what to do with it |
 | `MalformedTemplate` | a `template.pptx` is not one |
 | `MalformedShape` | a free shape has an attribute it does not read, or a value it cannot be |
 | `UnknownTextStyle` | an inline style names a style the theme does not have — the message names the styles |

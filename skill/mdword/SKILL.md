@@ -1,6 +1,6 @@
 ---
 name: mdword
-description: Turn Markdown into a Word document — .docx, .odt or .rtf — or a PowerPoint deck, with the markdown-word and markdown-presentation libraries, and turn one back to Markdown. Use when asked to write or convert a Word document or a presentation, to render Markdown into a company's own Word template or theme, to read a Word document or a deck back to Markdown, or to check that a document the library produced looks right.
+description: Turn Markdown into a Word document — .docx, .odt or .rtf — or a PowerPoint deck, with the markdown-word and markdown-presentation libraries, and turn one back to Markdown. Use when asked to write or convert a Word document or a presentation, to render Markdown into a company's own template or theme, to read a Word document or a deck back to Markdown, or to check that a document or a deck the library produced looks right.
 ---
 
 # mdword
@@ -18,7 +18,7 @@ documentation, not by recalling it.
 | The directives: `::toc`, `:footnote`, `:style`, and the seven that place objects in a document | `references/directives.md` |
 | Every frontmatter key, every option and every style slot | `references/configuration.md` |
 | Rendering into a design that already exists — a Word template, or a theme | `references/templates.md` |
-| What comes back when a document is read into Markdown, and the six things that do not | `references/round-trip.md` |
+| What comes back when a document is read into Markdown, and the seven things that do not | `references/round-trip.md` |
 | The three options that decide what happens to a picture | `references/images.md` |
 | The same three options, and how the slides half differs | `references/general-images.md` |
 | Every exception the library throws, and what each one means | `references/errors.md` |
@@ -26,31 +26,48 @@ documentation, not by recalling it.
 | What the two halves of the suite do with a name they know, and with one they do not | `references/directive-rules.md` |
 | The errors both halves throw | `references/errors-general.md` |
 | Where a document's files come from — the finder, the three roles, and the names the library composes | `references/general-files.md` |
+| The slides half as a whole — its dialect, its library's API, and reading a deck back | `references/presentation-index.md` |
+| The slides half's frontmatter keys, its markers, and its free shapes | `references/presentation-directives.md` |
+| The slides half's themes — one file, the colours, the type and the eight layout roles | `references/presentation-themes.md` |
+| Every exception the slides half throws | `references/presentation-errors.md` |
 | The command line, and the options each command takes | `references/command-line-word.md`, `references/command-line-basic.md`, `references/command-line-presentations.md`, `references/command-line-theme.md` |
 | Installing the command line | `references/command-line-install.md` |
 | Installing this skill | `references/install.md` |
 
-The **examples** are beside these: `examples/site/` holds the documents this documentation
-shows, and `examples/library/` holds the library's own twenty-three — the catalogue of what
-it can do, one file each.
+The **examples** are beside these: `examples/site/` holds the documents and the decks this
+documentation shows, and the two halves' own galleries — `examples/word/` the Word half's
+catalogue of what it can do, one file each, and `examples/slides/` the slides half's, the
+same way.
+
+**The themes are not carried.** They ship with the library, and the resolver's last step is
+the theme that ships with it, so the bundle needs no second copy of a thing the library
+already has. A theme named by a path is written from the deck's own directory, and that
+directory is carried whole, so it travels with the copy.
 
 ## The loop
 
-Write the Markdown, build the document, render it, **look at it**, and fix the Markdown.
+Write the Markdown, build it, render it, **look at it**, and fix the Markdown.
 
 ```bash
-mdoffice word to-docx notes.md -o notes.docx   # build
+mdoffice word to-docx notes.md -o notes.docx   # build a document
+mdoffice slides to-pptx deck.md -o deck.pptx   # build a deck
 php scripts/render-document.php notes.docx --out notes.pdf   # render
 ```
+
+`scripts/render-document.php` takes a deck as well as a document: it reads the extension and
+draws a `.pptx` with DeckCraft and a `.docx` with WordCraft, so one command renders either.
 
 A **template** is rendered as well as a document — `php scripts/render-document.php
 report.dotx --out report.pdf` — and the PDF is named after the template.
 
 **Then read the PDF.** A document that has not been looked at has not been checked, and the
 thing a document gets wrong is almost always something only a picture shows: a line that
-wraps, a table that runs off the page, a picture in the wrong place.
+wraps, a table that runs off the page, a picture in the wrong place. A deck fails the same
+way — a slide that overflows is a slide the room cannot read — and `mdoffice slides to-pptx
+--strict` refuses it rather than shrinking it to fit.
 
-For a picture of every page rather than a PDF, WordCraft renders them directly:
+For a picture of every page rather than a PDF, the application renders them directly —
+WordCraft for a document, DeckCraft for a deck:
 
 ```bash
 php scripts/render.php notes.docx --port 7981 --out pages/
@@ -97,12 +114,15 @@ mdoffice word to-docx notes.md      # to .docx
 mdoffice word to-odt notes.md       # to .odt
 mdoffice word to-rtf notes.md       # to .rtf
 mdoffice word to-markdown notes.docx  # and back
+mdoffice slides to-pptx deck.md     # to .pptx
+mdoffice slides to-markdown deck.pptx  # and back
 ```
 
-It decides which way the data has to go **from the content, not the name**: a Word document
-is a zip and Markdown is text, and the four bytes that say which is which are part of the
-format. Exit `0` on success and `1` for anything that did not finish — a mistake the caller
-can put right or a defect they cannot.
+The Word part decides which way the data has to go **from the content, not the name**: a Word
+document is a zip and Markdown is text, and the four bytes that say which is which are part
+of the format. The slides part names the direction instead, because a deck is a `.pptx` either
+way. Exit `0` on success and `1` for anything that did not finish — a mistake the caller can
+put right or a defect they cannot.
 
 The command line is not part of this library; it is `mdoffice`, one program over both
 converters. `references/command-line-install.md` says how to get it.

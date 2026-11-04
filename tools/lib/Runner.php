@@ -243,7 +243,7 @@ final class Runner
      */
     private function finder(): MemoryFinder
     {
-        return MemoryFinder::house();
+        return MemoryFinder::site();
     }
 
     /**

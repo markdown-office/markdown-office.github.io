@@ -12,10 +12,12 @@ use MarkdownOffice\Documentation\Tests\Support\Package;
 use MarkdownOffice\Documentation\Tests\Support\Refusal;
 use MarkdownOffice\Documentation\Tests\Support\Site;
 use MarkdownOffice\Documentation\Tests\Support\Snippet;
+use MarkdownPresentation\Exception\MalformedTheme as SlidesMalformedTheme;
 use MarkdownPresentation\Exception\UnservedTemplate;
 use MarkdownPresentation\Files\FileFinder as SlidesFileFinder;
 use MarkdownPresentation\Theme\ThemeLoader as SlidesThemeLoader;
 use MarkdownPresentation\Theme\ThemeResolver as SlidesThemeResolver;
+use MarkdownWord\Exception\MalformedTheme as WordMalformedTheme;
 use MarkdownWord\Exception\ThemeNotFound;
 use MarkdownWord\Files\DiskFinder as WordDiskFinder;
 use MarkdownWord\Files\FileFinder as WordFileFinder;
@@ -206,20 +208,17 @@ it('refuses a path the finder answered, in the library\'s own words', function (
 });
 
 it('draws the same document from a theme in a finder as from a theme in a directory', function () {
-    $theme = HOUSE_THEME_YAML;
-    $styles = "heading.1:\n  name: Georgia\n  bold: true\n  size: 20\n  color: \"1F3864\"\n";
+    $theme = HOUSE_THEME_YAML . "styles:\n  heading.1:\n    name: Georgia\n    bold: true\n    size: 20\n    color: \"1F3864\"\n";
     $markdown = "---\ntheme: house\n---\n\n# The house style\n\nA paragraph.\n";
 
     $root = Directory::make('finder');
 
     \mkdir($root . '/themes/house', 0o777, true);
     \file_put_contents($root . '/themes/house/theme.yml', $theme);
-    \file_put_contents($root . '/themes/house/styles.yml', $styles);
 
     $fromDirectory = Document::path($markdown, $root);
     $fromFinder = Document::path($markdown, null, new MemoryFinder([
         HOUSE_THEME_FILE => $theme,
-        'house/styles.yml' => $styles,
     ]));
 
     // The parts rather than the bytes: a zip stores timestamps, and two correct
@@ -232,7 +231,6 @@ it('draws the same document from a theme in a finder as from a theme in a direct
 
 it('draws the same deck from a theme in a finder as from a theme in a directory', function () {
     $theme = HOUSE_THEME_YAML;
-    $layouts = "layouts:\n  title: Title Slide\n  content: Title and Content\n";
     $markdown = "---\ntheme: house\n---\n\n# The house style\n\n## A deck\n\nWords.\n";
 
     $root = Directory::make('finder');
@@ -240,12 +238,10 @@ it('draws the same deck from a theme in a finder as from a theme in a directory'
 
     \mkdir($root . '/themes/house', 0o777, true);
     \file_put_contents($root . '/themes/house/theme.yml', $theme);
-    \file_put_contents($root . '/themes/house/layouts.yml', $layouts);
 
     $fromDirectory = Deck::slides($markdown, $root);
     $fromFinder = Deck::slides($markdown, $elsewhere, new MemoryFinder([
         HOUSE_THEME_FILE => $theme,
-        'house/layouts.yml' => $layouts,
     ]));
 
     expect($fromFinder)->toBe($fromDirectory);
@@ -255,7 +251,7 @@ it('draws the same deck from a theme in a finder as from a theme in a directory'
 });
 
 it('resolves a theme named in code once', function () {
-    $finder = MemoryFinder::house();
+    $finder = MemoryFinder::site();
 
     $converter = new MarkdownToWord(
         "# The house style\n",
@@ -269,7 +265,7 @@ it('resolves a theme named in code once', function () {
 });
 
 it('names the themes that resolve when a theme does not', function () {
-    $resolver = new WordThemeResolver(files: MemoryFinder::house());
+    $resolver = new WordThemeResolver(files: MemoryFinder::site());
 
     $message = Refusal::of(static fn (): string => $resolver->resolve('nowhere')->name());
 
@@ -341,16 +337,55 @@ it('resolves a theme as a theme, a picture as a picture and a document as a docu
 });
 
 it('serves both halves with one adapter', function () {
-    $finder = MemoryFinder::house();
+    $finder = MemoryFinder::site();
 
     expect($finder)->toBeInstanceOf(WordFileFinder::class);
     expect($finder)->toBeInstanceOf(SlidesFileFinder::class);
 
+    // The finder holds a theme for each half: each carries the look of its own half —
+    // the Word half's the slots a document is drawn from, and the slides half's the
+    // colours, the type and the layout roles — and each half refuses the other's look.
     $document = "---\ntheme: house\n---\n\n# The house style\n";
-    $deck = "---\ntheme: house\n---\n\n# The house style\n\n---\n\n## A deck\n";
+    $deck = "---\ntheme: deck\n---\n\n# The deck style\n\n---\n\n## A deck\n";
 
     expect(Document::body($document, null, $finder))->toContain('The house style');
     expect(Deck::slides($deck, '.', $finder))->toHaveCount(2);
+});
+
+it('reads a theme file that carries neither half\'s look with both loaders', function () {
+    // The two vocabularies part at the look and not at the name: a file that names
+    // itself and carries a named style is a theme file for both halves.
+    $finder = new MemoryFinder([
+        'both/theme.yml' => "name: Shared\ntextStyles:\n  brand:\n    color: FF0000\n",
+    ]);
+
+    $word = (new WordThemeLoader())->load('both', 'both', $finder);
+    $slides = (new SlidesThemeLoader())->load('both', 'both', $finder);
+
+    expect($word->theme()->name())->toBe('Shared')
+        ->and($word->theme()->textStyles()->names())->toBe(['brand'])
+        ->and($slides->theme()->name())->toBe('Shared')
+        ->and($slides->theme()->textStyles()->names())->toBe(['brand']);
+});
+
+it('refuses the other half\'s look in a theme file', function () {
+    $slides = new MemoryFinder([
+        'both/theme.yml' => "name: Shared\nstyles:\n  heading.1:\n    name: Georgia\n",
+    ]);
+
+    expect(static fn (): mixed => (new SlidesThemeLoader())->load('both', 'both', $slides))
+        ->toThrow(SlidesMalformedTheme::class, '"styles" is not a key of a theme');
+
+    $word = new MemoryFinder([
+        'both/theme.yml' => "name: Shared\ncolors:\n  accent1: \"#123456\"\n",
+    ]);
+
+    expect(static fn (): mixed => (new WordThemeLoader())->load('both', 'both', $word))
+        ->toThrow(WordMalformedTheme::class, 'Unknown key "colors"');
+});
+
+it('says that a theme file carrying only the shared keys is read by both halves', function () {
+    says(Site::FILES, 'a file that carries only those is read by both');
 });
 
 it('says which half composes which theme file', function () {

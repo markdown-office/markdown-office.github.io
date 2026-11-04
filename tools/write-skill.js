@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { dirname, join, relative, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve } from "node:path";
 
 import { expandExamples, slug } from "./markdown.js";
 
@@ -75,6 +75,16 @@ const LIBRARY_TOOLS = [
 const LIBRARY = join(here, "..", "..", "markdown-word");
 
 /**
+ * The galleries the bundle carries, and the libraries they come from.
+ *
+ * Read rather than written down here, because the checker reads it too: two copies of one
+ * list are two answers to one question, and the two drift.
+ */
+const GALLERIES = JSON.parse(
+  readFileSync(join(here, "..", "skill", "mdword", "galleries.json"), "utf8"),
+);
+
+/**
  * Where the archive is made by.
  *
  * The absolute path rather than the name, because a command looked up on the path is a
@@ -89,8 +99,8 @@ const ZIP = "/usr/bin/zip";
  * cannot say anything the site does not say, and it cannot be out of date in a way the site
  * is not.
  *
- * Four things are in it: the pages of the site, the examples the site built, the examples
- * the library ships, and the tools that render a document so that it can be looked at.
+ * Four things are in it: the pages of the site, the examples the site built, the galleries
+ * the two libraries ship, and the tools that render a document so that it can be looked at.
  */
 export async function writeSkill({ dir }) {
   const manifest = JSON.parse(
@@ -199,20 +209,29 @@ export async function writeSkill({ dir }) {
     }),
   );
 
-  // The examples the library ships: the catalogue of what it can do.
-  const libraryExamples = join(LIBRARY, "examples");
+  // The galleries the libraries ship: the catalogue of what each half can do.
+  //
+  // The sources are copied and not the built output, and the manifest says which parts of
+  // a gallery are output: a gallery that carried the built decks would be a second copy of
+  // something the library builds, and one that had fallen behind would be a gallery of
+  // decks the library no longer draws.
+  await Promise.all(
+    Object.entries(GALLERIES.galleries).map(async ([half, gallery]) => {
+      const from = join(here, "..", "..", gallery.source);
 
-  if (! existsSync(libraryExamples)) {
-    throw new Error(
-      "The library's examples are not there. The library is checked out beside this one, and they "
-        + "are what the bundle's own catalogue is.",
-    );
-  }
+      if (! existsSync(from)) {
+        throw new Error(
+          `The ${half} half's examples are not there. The library is checked out beside this one, `
+            + "and they are what the bundle's own catalogue is.",
+        );
+      }
 
-  await cp(libraryExamples, join(bundle, "examples", "library"), {
-    recursive: true,
-    filter: (from) => !from.includes("/out/") && !from.endsWith(".DS_Store"),
-  });
+      await cp(from, join(bundle, gallery.path), {
+        recursive: true,
+        filter: (path) => ! GALLERIES.exclude.includes(basename(path)),
+      });
+    }),
+  );
 
   const version = await versionOf(bundle);
 

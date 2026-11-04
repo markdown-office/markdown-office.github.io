@@ -16,9 +16,9 @@ use MarkdownPresentation\Render\TemplateGeometry;
 use MarkdownPresentation\Template\TemplatesFile;
 use MarkdownPresentation\Theme\LayoutRole;
 use MarkdownPresentation\Theme\StyleMapping;
-use MarkdownPresentation\Theme\StyleSlots;
 use MarkdownPresentation\Theme\TextStyle;
 use MarkdownPresentation\Theme\Theme;
+use MarkdownPresentation\Theme\ThemeLoader;
 use MarkdownPresentation\Theme\ThemeMapping;
 use MarkdownWord\Configuration\Options;
 use MarkdownWord\Configuration\Styles;
@@ -63,7 +63,10 @@ final class Vocabularies
                 'Theme::COLOURS' => Theme::COLOURS,
             ]),
             'presentation.theme-keys' => new Vocabulary([
-                'ThemeMapping::KEYS' => ThemeMapping::KEYS,
+                'ThemeMapping::KEYS and ThemeLoader::SECTIONS' => [
+                    ...ThemeMapping::KEYS,
+                    ...self::themeSections(),
+                ],
             ]),
             'presentation.theme-aliases' => new Vocabulary([
                 'ThemeMapping::ALIASES' => self::themeAliases(),
@@ -152,7 +155,6 @@ final class Vocabularies
             ]),
             'style-slots' => new Vocabulary([
                 'Styles::defaults()' => \array_keys(Styles::defaults()),
-                'StyleSlots::names()' => StyleSlots::names(),
             ]),
             'text-style-attributes' => new Vocabulary([
                 'MarkdownPresentation\\Theme\\TextStyle::ATTRIBUTES' => TextStyle::ATTRIBUTES,
@@ -167,6 +169,22 @@ final class Vocabularies
                 'MarkdownPresentation\\Files\\DiskFinder' => Code::finderRoles(SlidesDiskFinder::class),
             ]),
         ];
+    }
+
+    /**
+     * The sections a theme's own file may carry beside the theme's own values.
+     *
+     * Read out of the loader rather than written down here: a copy is the thing that
+     * drifts. The constant is public, and it is public because the loader's own refusal
+     * offers it — {@see \MarkdownPresentation\Exception\MalformedTheme::unknownKey()}
+     * names the whole vocabulary — so a reader of the format is given the list and then
+     * asked to find it somewhere else.
+     *
+     * @return list<string>
+     */
+    public static function themeSections(): array
+    {
+        return \array_values(ThemeLoader::SECTIONS);
     }
 
     /**

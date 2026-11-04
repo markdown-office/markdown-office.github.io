@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 permalink: /word/round-trip/
 title: Round trips
-summary: Markdown to a document and back. What comes out the same, and the six things that do not.
+summary: Markdown to a document and back. What comes out the same, and the seven things that do not.
 section: Markdown Word
 order: 4
 ---
@@ -88,6 +88,12 @@ reads them back should treat directives as one-way.
 
 These are the rest of the list. Each one is a property of the formats rather than a bug, and each
 one is silent unless you look for it.
+
+### The frontmatter does not come back
+
+The reader writes **no frontmatter at all**, so a document read back has lost its `theme:`, its
+`styles:` and its `options:` — and every other key it carried. What comes back is the document's
+text and nothing else, and the configuration that drew it is gone with it.
 
 ### A table's header row comes back bold
 

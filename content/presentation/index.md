@@ -62,8 +62,8 @@ slides and **cannot be a thematic break** — use `***`.
 ### Extended: frontmatter and themes
 
 The deck's own configuration goes in the frontmatter of slide 1. Every key is in a **closed set of
-fifteen**, and anything outside it fails the build with a message naming what would have worked.
-The fifteen are listed with the [directives](/presentation/directives/#frontmatter-directives).
+sixteen**, and anything outside it fails the build with a message naming what would have worked.
+The sixteen are listed with the [directives](/presentation/directives/#frontmatter-directives).
 
 {% example "The four keys that describe a deck" %}
 ````md presentation
@@ -85,15 +85,15 @@ description: What changed, what it cost, and what happens next.
 
 #### A theme
 
-A theme is a directory, and `theme.yml` is what it has to hold: the name, an optional description
-and author, the colours, the fonts and the geometry. A `theme:` may also name the `theme.yml`
-itself, in which case the theme's other files are the ones beside it. The keys it takes, the
-colour slots, the geometry and the themes that ship are all on
-[Themes and layout](/presentation/themes/).
+A theme is **one file**, and `theme.yml` is what it has to hold: the name, an optional description
+and author, the colours, the fonts and the geometry — and, when it says anything, the layout
+roles and the named text styles. A `theme:` may also name the `theme.yml` itself, in which case
+the theme's master beside it is the theme's. The keys it takes, the colour slots, the geometry
+and the themes that ship are all on [Themes and layout](/presentation/themes/).
 
-Resolution is a path, then `themes/<name>` beside the deck, then the package's own. **No silent
-fallback to `default`**: a name that does not resolve raises `ThemeNotFound` listing the ones that
-do.
+Resolution is a path, then `themes/<name>` beside the deck, then `themes/<name>` beside the
+working directory, then the package's own. **No silent fallback to `default`**: a name that does
+not resolve raises `ThemeNotFound` listing the ones that do.
 
 #### A template
 
@@ -161,8 +161,9 @@ More, including the refusal table and the three things that look like they work 
 
 ## 2. Command line
 
-**The package declares no `bin`**, and `examples/build.php` in the repository is
-the closest thing — it converts a directory of Markdown files and renders page images of each.
+**The package declares no `bin`**, and the build script in the library's own `examples`
+directory is the closest thing — it converts a directory of Markdown files and renders page
+images of each.
 
 A shell loop is the whole substitute:
 
@@ -238,13 +239,19 @@ author: "markdown-office"
 Text.
 ```
 
-The frontmatter carries what the deck said about itself — its title, its author and its
-description — because a deck's own properties are the only thing about it that is not on a
+The frontmatter carries what the deck said about itself — its title, its theme, its author and
+its description — because a deck's own properties are the only thing about it that is not on a
 slide. `save()` writes it to a file instead, and `read()` gives the slides back as a list.
 
-What comes back is the text and the structure. What does not is the design: the type sizes,
-the colours and the geometry live in the theme and the master, and neither travels to a new
-deck. A `.pptx` records what is on a slide, not how it was drawn.
+**The theme's name comes back; the theme does not.** The name travels into the `.pptx` and comes
+back out of it, so a deck read back into Markdown is drawn again in the theme it was drawn in.
+The file itself does not come back: the type sizes, the colours and the geometry live in the
+theme and the master, and none of them travels to a new deck. A `.pptx` records what is on a
+slide, not how it was drawn.
+
+**A deck's own settings come back as the slides' own.** A deck that named a background under
+`deck-settings:` has it read back as a `background:` on every slide, rather than as the deck's
+own layer: the file holds the background of each slide, and that is where the reader finds it.
 
 | In the deck | In the Markdown |
 | --- | --- |

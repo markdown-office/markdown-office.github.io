@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use MarkdownOffice\Documentation\Tests\Support\Deck;
+use MarkdownOffice\Documentation\Tests\Support\Directory;
 use MarkdownOffice\Documentation\Tests\Support\Document;
 use MarkdownOffice\Documentation\Tests\Support\Theme;
-use MarkdownPresentation\Theme\ThemeLoader;
 use MarkdownWord\Configuration\TextStyles;
 use MarkdownWord\WordToMarkdown;
 use MarkdownOffice\Documentation\Tests\Support\Site;
@@ -20,12 +20,42 @@ use MarkdownOffice\Documentation\Tests\Support\Site;
  * the library that has to behave that way.
  */
 
+/**
+ * The refusal messages a page quotes, as the page writes them.
+ *
+ * @return list<string>
+ */
+function quotedRefusals(string $page): array
+{
+    \preg_match_all('/^> (.*)$/m', Site::page($page), $matches);
+
+    return $matches[1];
+}
+
+/** The Word half's slots, as a `styles.yml` held them. */
+const WORD_SLOT = "heading.1:\n  name: Georgia\n";
+
+/** The theme's name as the library prints it: the name the deck gave. */
+const DECLARED_NAME = '"mine"';
+
+/** The theme's name as a page writes it, which is not the deck's own. */
+const PAGE_NAME = '"acme"';
+
+/** A theme that names a style called `style`, which is the raw form's own name. */
+const RESERVED_STYLE = "textStyles:\n  style:\n    color: FF0000\n";
+
+/** A deck that names a theme of its own and writes nothing in it. */
+const THEME_ONLY = "---\ntheme: mine\n---\n\n# One\n";
+
+/** The claim a page makes about a named style's name, in all three halves' words. */
+const FOLDED = 'A style\'s name is folded';
+
 it('refuses a theme that names a style "style"', function () {
     says(Site::GENERAL_DIRECTIVES, 'a theme may not name a style `style`');
 
     $message = Theme::slidesRefusal(
         Theme::DECK,
-        "style:\n  color: FF0000\n",
+        RESERVED_STYLE,
     );
 
     expect($message)->toContain('reserved word');
@@ -58,10 +88,218 @@ it('does not honour a label that holds Markdown', function () {
     expect($message)->toContain('which is Markdown');
 });
 
-it('reads the named styles of a theme from the file the page names', function () {
-    says(Site::PRESENTATION_THEMES, 'text-styles.yml');
+it('reads the named styles of a theme from the section the page names', function () {
+    says(Site::PRESENTATION_THEMES, 'The `textStyles:` section is optional');
 
-    expect(ThemeLoader::TEXT_STYLES_FILE)->toBe('text-styles.yml');
+    $message = Theme::slidesRefusal(
+        Theme::DECK,
+    );
+
+    expect($message)->toContain('a theme names them in its "textStyles:" section');
+});
+
+it('refuses each file of the old theme format, and says where the content goes', function () {
+    says(Site::PRESENTATION_THEMES, 'move its content into the "layouts:" section of its "theme.yml"');
+    says(Site::PRESENTATION_THEMES, 'move its content into the "textStyles:" section of its "theme.yml"');
+    says(Site::PRESENTATION_THEMES, 'That file is the Word half\'s, and this half does not read it');
+
+    // The whole message and not a piece of it: the message the library used to print is
+    // a prefix of the one it prints now, so a check for the prefix passes for both.
+    expect(Theme::slidesRetired(Theme::DECK, 'layouts.yml', "layouts:\n  content: Title and Content\n"))
+        ->toBe('The theme "mine" has a "layouts.yml" beside it. A theme is one file: move its content into the "layouts:" section of its "theme.yml", and delete the file.');
+
+    expect(Theme::slidesRetired(Theme::DECK, 'text-styles.yml', "brand:\n  color: FF0000\n"))
+        ->toBe('The theme "mine" has a "text-styles.yml" beside it. A theme is one file: move its content into the "textStyles:" section of its "theme.yml", and delete the file.');
+
+    expect(Theme::slidesRetired(Theme::DECK, 'styles.yml', WORD_SLOT))
+        ->toBe('The theme "mine" has a "styles.yml" beside it. That file is the Word half\'s, and this half does not read it: its slots name Word styles, which a deck of slides has no use for. Delete it, and the theme is read again.');
+});
+
+it('refuses the file the Word half\'s slots used to be in, and says where they go', function () {
+    says(Site::WORD_CONFIGURATION, 'A `styles.yml` beside the theme is refused');
+
+    expect(Theme::wordRetired(
+        THEME_ONLY,
+        'styles.yml',
+        WORD_SLOT,
+    ))->toMatch(
+        '/^"[^"]*\/styles\.yml" is not read any more\. A theme\'s styles are in the "styles:" section of '
+        . 'its "theme\.yml", and its named text styles in the "textStyles:" section\. Delete the file, '
+        . 'and the theme is read again\.$/',
+    );
+});
+
+it('quotes the refusals as the library prints them', function () {
+    $themes = quotedRefusals(Site::PRESENTATION_THEMES);
+
+    expect($themes)->toHaveCount(4);
+
+    // The page writes the theme's name as "acme", and the library writes the name the
+    // deck named: the same sentence with another name in it.
+    expect(\str_replace(DECLARED_NAME, PAGE_NAME, Theme::slidesRetired(
+        Theme::DECK,
+        'layouts.yml',
+        "layouts:\n  content: Title and Content\n",
+    )))->toBe($themes[0]);
+
+    expect(\str_replace(DECLARED_NAME, PAGE_NAME, Theme::slidesRetired(
+        Theme::DECK,
+        'text-styles.yml',
+        "brand:\n  color: FF0000\n",
+    )))->toBe($themes[1]);
+
+    expect(\str_replace(DECLARED_NAME, PAGE_NAME, Theme::slidesRetired(
+        Theme::DECK,
+        'styles.yml',
+        WORD_SLOT,
+    )))->toBe($themes[2]);
+
+    // The fourth is the colour a YAML comment leaves with no value at all.
+    expect((string) \preg_replace(
+        '/^In "[^"]*"/',
+        'In "…/theme.yml"',
+        Theme::slidesRefusal(Theme::DECK, "colors:\n  dk1: #1E1E2E\n"),
+    ))->toBe($themes[3]);
+
+    $configuration = quotedRefusals(Site::WORD_CONFIGURATION);
+
+    expect($configuration)->toHaveCount(1);
+
+    // The page writes the path the library prints as an ellipsis, because the path is
+    // where the file happened to be and the sentence is about the file.
+    expect((string) \preg_replace(
+        '/^"[^"]*"/',
+        '"…/styles.yml"',
+        Theme::wordRetired(THEME_ONLY, 'styles.yml', WORD_SLOT),
+    ))->toBe($configuration[0]);
+});
+
+it('lists every mistake a theme\'s named styles may carry, and refuses it', function (string $page, string $styles, string $message) {
+    says(Site::PRESENTATION_THEMES, 'Ten mistakes in a theme\'s named styles are refused');
+    says(Site::PRESENTATION_THEMES, $page);
+
+    expect(Theme::slidesRefusal(Theme::DECK, $styles))->toContain($message);
+})->with([
+    'an attribute that does not exist' => [
+        'a style that sets an attribute that does not exist',
+        "textStyles:\n  a:\n    colour: FF0000\n",
+        'which is not an attribute of a text style',
+    ],
+    'nothing at all' => [
+        'a style that sets nothing at all',
+        "textStyles:\n  a: {}\n",
+        'sets nothing',
+    ],
+    'a style that is not a mapping' => [
+        'a style that is not a mapping of attributes',
+        "textStyles:\n  a: notamapping\n",
+        'is not a mapping of attributes to values',
+    ],
+    'the reserved word' => [
+        'a style called `style`',
+        RESERVED_STYLE,
+        'is named with a reserved word',
+    ],
+    'a highlight' => [
+        'a style that sets a `highlight`',
+        "textStyles:\n  a:\n    highlight: FF0000\n",
+        'sets a "highlight"',
+    ],
+    'another style in another case' => [
+        'a style that names another one in a different case',
+        "textStyles:\n  Brand:\n    color: FF0000\n  brand:\n    color: 00FF00\n",
+        'is the same style as',
+    ],
+    'a colour that is not a colour' => [
+        'a colour that is not a colour',
+        "textStyles:\n  a:\n    color: chartreuse\n",
+        'which is not a colour',
+    ],
+    'a size that is not a size' => [
+        'a size that is not a number of points',
+        "textStyles:\n  a:\n    size: big\n",
+        'is not a number of points',
+    ],
+    'a font that is not a name' => [
+        'a font that is not a name',
+        "textStyles:\n  a:\n    font: 12\n",
+        'is not a font name',
+    ],
+    'a flag that is not a flag' => [
+        'a flag that is not `true` or `false`',
+        "textStyles:\n  a:\n    bold: yes\n",
+        'is not true or false',
+    ],
+]);
+
+it('lists every mistake a Word theme\'s named styles may carry, and refuses it', function (string $page, string $styles, string $message) {
+    says(Site::WORD_CONFIGURATION, 'Seven mistakes in a theme\'s named styles are refused');
+    says(Site::WORD_CONFIGURATION, $page);
+
+    expect(Theme::wordRefusal(THEME_ONLY, $styles))->toContain($message);
+})->with([
+    'a style that is not a set of properties' => [
+        'a style that is not a set of properties',
+        "textStyles:\n  a: notamapping\n",
+        'A text style is a set of properties',
+    ],
+    'no properties at all' => [
+        'a style that carries no property at all',
+        "textStyles:\n  a: {}\n",
+        'has no properties',
+    ],
+    'a property that does not exist' => [
+        'a style that names a property that does not exist',
+        "textStyles:\n  a:\n    colour: FF0000\n",
+        'property of the "a" style',
+    ],
+    'a value that is not one' => [
+        'a value that is not one',
+        "textStyles:\n  a:\n    color: chartreuse\n",
+        'It is six hexadecimal digits',
+    ],
+    'the reserved word' => [
+        'a style called `style`',
+        RESERVED_STYLE,
+        'cannot be defined',
+    ],
+    'the name of a directive' => [
+        'a style named after a directive this library draws',
+        "textStyles:\n  footnote:\n    color: FF0000\n",
+        'is the name of a directive this library draws',
+    ],
+    'another style in another case' => [
+        'a style that names another one in a different case',
+        "textStyles:\n  Brand:\n    color: FF0000\n  brand:\n    color: 00FF00\n",
+        'is the same style as',
+    ],
+]);
+
+it('folds a style\'s name, in both halves', function () {
+    foreach ([Site::GENERAL_DIRECTIVES, Site::PRESENTATION_THEMES, Site::WORD_CONFIGURATION] as $page) {
+        says($page, FOLDED);
+    }
+
+    $slide = Theme::slidesSlide(
+        "---\ntheme: mine\n---\n\nA :brand[Bakery] B :Brand[Croissant] C\n",
+        "textStyles:\n  Brand:\n    color: FF0000\n",
+    );
+
+    expect(Deck::run($slide, 'Bakery'))->toContain('<a:srgbClr val="FF0000"');
+    expect(Deck::run($slide, 'Croissant'))->toContain('<a:srgbClr val="FF0000"');
+
+    $root = Theme::word("textStyles:\n  Brand:\n    color: \"0B5CAB\"\n");
+
+    $body = Directory::during(
+        $root,
+        static fn (string $root): string => Document::body(
+            "---\ntheme: mine\n---\n\nA :brand[Bakery] B :Brand[Croissant] C\n",
+            $root,
+        ),
+    );
+
+    expect(Document::run($body, 'Bakery'))->toContain('<w:color w:val="0B5CAB"/>');
+    expect(Document::run($body, 'Croissant'))->toContain('<w:color w:val="0B5CAB"/>');
 });
 
 it('refuses a text style the theme does not have, and names the styles it has', function () {
@@ -69,7 +307,7 @@ it('refuses a text style the theme does not have, and names the styles it has', 
 
     $message = Theme::slidesRefusal(
         "---\ntheme: mine\n---\n\nResilience :bakery[Bakery] is open.\n",
-        "brand:\n  color: FF0000\n  bold: true\nmuted:\n  color: accent1\n  size: 10\n",
+        "textStyles:\n  brand:\n    color: FF0000\n    bold: true\n  muted:\n    color: accent1\n    size: 10\n",
     );
 
     expect($message)->toContain('The styles are: brand, muted.');
@@ -137,8 +375,8 @@ it('leaves a property off the run of a deck when an attribute is false', functio
     expect(Deck::run($slide, 'Bakery'))->not->toContain('b="1"');
 });
 
-it('reads the named styles of a Word theme from the key the page names', function () {
-    says('word/configuration.md', '`textStyles`');
+it('reads the named styles of a Word theme from the section the page names', function () {
+    says(Site::WORD_CONFIGURATION, '`textStyles:`');
 
     expect(TextStyles::KEY)->toBe('textStyles');
 });

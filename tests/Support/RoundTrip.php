@@ -45,6 +45,11 @@ final class RoundTrip
     private static function documents(): array
     {
         return [
+            'The frontmatter does not come back' => [
+                "---\ntheme: corporate\nstyles:\n  heading.1:\n    name: Georgia\n"
+                    . "options:\n  hardBreak: line\n---\n\n# Title\n",
+                '# Title',
+            ],
             "A table's header row comes back bold" => [
                 "| A | B |\n| --- | --- |\n| 1 | 2 |\n",
                 "| **A** | **B** |\n| :-- | :-- |\n| 1 | 2 |",

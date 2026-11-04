@@ -14,7 +14,7 @@ There are two, and they answer different questions.
 | | The design is | You give it | It gives you |
 | --- | --- | --- | --- |
 | **A template** | a Word document — a `.docx` or a `.dotx` | the `styleId`s of its styles | its fonts, colours, spacing, headers and footers, and its letterhead |
-| **A theme** | a directory of YAML | nothing | a look of your own, in every document that names it |
+| **A theme** | one file of YAML — a `theme.yml` | nothing | a look of your own, in every document that names it |
 
 A template is a design somebody made in Word. A theme is a design you write down, and it is
 the only one of the two that travels with the Markdown rather than with the document.
@@ -148,16 +148,16 @@ $template->insert('body', $markdown)->save('northwind.docx');   // a .docx, what
 
 ## A theme
 
-A theme is a directory: `theme.yml` — `name` required, plus `description` and `author` — and
-an optional `styles.yml` holding the same slot names as
-[the configuration](/word/configuration/#every-style-slot). One key of that file is not a slot:
-`textStyles` holds the named styles a document may write a word in.
+A theme is **one file**: `theme.yml` — `name` required, plus `description` and `author`. Its
+`styles:` section holds the same slot names as
+[the configuration](/word/configuration/#every-style-slot), and its `textStyles:` section holds
+the named styles a document may write a word in.
 
 A document names one with `theme:`, and the ones that ship are listed with the configuration, on
 [the themes](/word/configuration/#themes).
 
-A theme may also name the `theme.yml` itself, in which case the `styles.yml` beside it is the
-theme's, and a document that names one by path gets that one.
+A theme may also name the `theme.yml` itself, in which case that file is the theme's, and a
+document that names one by path gets that one.
 
 ## The command line
 

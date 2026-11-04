@@ -6,7 +6,9 @@ namespace MarkdownOffice\Documentation\Tests\Support;
 
 use MarkdownPresentation\Document\DeckParser;
 use MarkdownPresentation\Files\FileFinder;
+use MarkdownPresentation\PowerPointToMarkdown;
 use MarkdownPresentation\Render\PresentationRenderer;
+use MarkdownPresentation\Reverse\Options;
 use MarkdownPresentation\Theme\ThemeResolver;
 
 /**
@@ -89,6 +91,51 @@ final class Deck
         }
 
         return $names;
+    }
+
+    /**
+     * The Markdown a deck is read back as.
+     *
+     * The other direction, and the only one that says what a deck carries: the file is
+     * written, read, and the Markdown it is made of is what comes back.
+     */
+    public static function readBack(string $markdown, string $directory = '.'): string
+    {
+        return (new PowerPointToMarkdown(
+            self::render($markdown, $directory),
+            new Options(mediaDirectory: null),
+        ))->convert();
+    }
+
+    /**
+     * The name each layout part of a deck carries, by the part it is in.
+     *
+     * @return array<string, string>
+     */
+    public static function layouts(string $markdown, string $directory = '.'): array
+    {
+        $zip = new \ZipArchive();
+        $zip->open(self::render($markdown, $directory));
+
+        $layouts = [];
+
+        for ($number = 1; $number <= $zip->numFiles; $number++) {
+            $name = (string) $zip->getNameIndex($number - 1);
+
+            if (\preg_match('#^ppt/slideLayouts/slideLayout(\d+)\.xml$#', $name) !== 1) {
+                continue;
+            }
+
+            \preg_match('#<p:cSld[^>]*name="([^"]*)"#', (string) $zip->getFromName($name), $match);
+
+            $layouts[$name] = $match[1] ?? '';
+        }
+
+        $zip->close();
+
+        \ksort($layouts);
+
+        return $layouts;
     }
 
     /**
