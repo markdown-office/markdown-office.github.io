@@ -19,6 +19,18 @@ use MarkdownOffice\Documentation\Tests\Support\Site;
  * the library that has to behave that way.
  */
 
+/**
+ * The refusal messages a page quotes, as the page writes them.
+ *
+ * @return list<string>
+ */
+function quotedRefusals(string $page): array
+{
+    \preg_match_all('/^> (.*)$/m', Site::page($page), $matches);
+
+    return $matches[1];
+}
+
 it('refuses a theme that names a style "style"', function () {
     says(Site::GENERAL_DIRECTIVES, 'a theme may not name a style `style`');
 
@@ -72,14 +84,16 @@ it('refuses each file of the old theme format, and says where the content goes',
     says(Site::PRESENTATION_THEMES, 'move its content into the "textStyles:" section of its "theme.yml"');
     says(Site::PRESENTATION_THEMES, 'That file is the Word half\'s, and this half does not read it');
 
+    // The whole message and not a piece of it: the message the library used to print is
+    // a prefix of the one it prints now, so a check for the prefix passes for both.
     expect(Theme::slidesRetired(Theme::DECK, 'layouts.yml', "layouts:\n  content: Title and Content\n"))
-        ->toContain('move its content into the "layouts:" section');
+        ->toBe('The theme "mine" has a "layouts.yml" beside it. A theme is one file: move its content into the "layouts:" section of its "theme.yml", and delete the file.');
 
     expect(Theme::slidesRetired(Theme::DECK, 'text-styles.yml', "brand:\n  color: FF0000\n"))
-        ->toContain('move its content into the "textStyles:" section');
+        ->toBe('The theme "mine" has a "text-styles.yml" beside it. A theme is one file: move its content into the "textStyles:" section of its "theme.yml", and delete the file.');
 
     expect(Theme::slidesRetired(Theme::DECK, 'styles.yml', "heading.1:\n  name: Georgia\n"))
-        ->toContain('That file is the Word half\'s, and this half does not read it');
+        ->toBe('The theme "mine" has a "styles.yml" beside it. That file is the Word half\'s, and this half does not read it: its slots name Word styles, which a deck of slides has no use for. Delete it, and the theme is read again.');
 });
 
 it('refuses the file the Word half\'s slots used to be in, and says where they go', function () {
@@ -89,7 +103,49 @@ it('refuses the file the Word half\'s slots used to be in, and says where they g
         "---\ntheme: mine\n---\n\n# One\n",
         'styles.yml',
         "heading.1:\n  name: Georgia\n",
-    ))->toContain('A theme\'s styles are in the "styles:" section of its "theme.yml"');
+    ))->toMatch(
+        '/^"[^"]*\/styles\.yml" is not read any more\. A theme\'s styles are in the "styles:" section of '
+        . 'its "theme\.yml", and its named text styles in the "textStyles:" section\. Delete the file, '
+        . 'and the theme is read again\.$/',
+    );
+});
+
+it('quotes the refusals as the library prints them', function () {
+    $themes = quotedRefusals(Site::PRESENTATION_THEMES);
+
+    expect($themes)->toHaveCount(3);
+
+    // The page writes the theme's name as "acme", and the library writes the name the
+    // deck named: the same sentence with another name in it.
+    expect(\str_replace('"mine"', '"acme"', Theme::slidesRetired(
+        Theme::DECK,
+        'layouts.yml',
+        "layouts:\n  content: Title and Content\n",
+    )))->toBe($themes[0]);
+
+    expect(\str_replace('"mine"', '"acme"', Theme::slidesRetired(
+        Theme::DECK,
+        'text-styles.yml',
+        "brand:\n  color: FF0000\n",
+    )))->toBe($themes[1]);
+
+    expect(\str_replace('"mine"', '"acme"', Theme::slidesRetired(
+        Theme::DECK,
+        'styles.yml',
+        "heading.1:\n  name: Georgia\n",
+    )))->toBe($themes[2]);
+
+    $configuration = quotedRefusals('word/configuration.md');
+
+    expect($configuration)->toHaveCount(1);
+
+    // The page writes the path the library prints as an ellipsis, because the path is
+    // where the file happened to be and the sentence is about the file.
+    expect((string) \preg_replace(
+        '/^"[^"]*"/',
+        '"…/styles.yml"',
+        Theme::wordRetired("---\ntheme: mine\n---\n\n# One\n", 'styles.yml', "heading.1:\n  name: Georgia\n"),
+    ))->toBe($configuration[0]);
 });
 
 it('refuses a text style the theme does not have, and names the styles it has', function () {

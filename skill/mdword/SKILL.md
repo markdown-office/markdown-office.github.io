@@ -35,7 +35,7 @@ documentation, not by recalling it.
 | Installing this skill | `references/install.md` |
 
 The **examples** are beside these: `examples/site/` holds the documents and the decks this
-documentation shows, and `examples/library/` holds the Word half's own twenty-three — the
+documentation shows, and `examples/library/` holds the Word half's own twenty-four — the
 catalogue of what it can do, one file each. The slides half's own gallery of decks is not in
 the bundle.
 

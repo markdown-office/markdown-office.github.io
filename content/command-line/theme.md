@@ -27,13 +27,30 @@ mdoffice theme deck.pptx                # the same run: init is the default
 The directory is the deck's own name without its extension, so `deck.pptx` gives `deck/` and
 `talks/talk.pptx` gives `talks/talk/`.
 
-**A theme that is already there is not replaced without being asked.** A theme is a directory of
-files somebody has edited, and replacing one is how an afternoon of work goes missing:
+**A theme that is already there is not replaced without being asked.** The theme's own files are
+in a directory somebody has edited, and replacing one is how an afternoon of work goes missing:
 
 ```text
 mdoffice theme: There is already a theme in "deck".
 mdoffice theme:   Pass --force to replace it.
 ```
+
+**A directory that holds a file of the old format is not written into.** A theme is one file,
+and the library refuses a theme that has a `layouts.yml`, a `text-styles.yml` or a `styles.yml`
+beside it — so a theme written into such a directory is a theme no deck can be drawn in. The
+command says so before it writes, and `--force` does not help: it says a theme is to be
+replaced, not that a file is to be deleted.
+
+```text
+mdoffice theme: The theme "deck" has a "layouts.yml" beside it. A theme is one file: move its content into the "layouts:" section of its "theme.yml", and delete the file.
+mdoffice theme:   The command will not write a theme beside a file of the old format.
+mdoffice theme:   Delete it, or move it out of the way.
+```
+
+**A theme the command wrote before no longer works.** It wrote three files — `theme.yml`,
+`layouts.yml` and `template.pptx` — and a theme with a `layouts.yml` beside it is a theme the
+library refuses. Move the content of the `layouts.yml` into the `layouts:` section of the
+`theme.yml` beside it, and delete the file.
 
 ## What is written
 
@@ -49,8 +66,12 @@ A deck with no master has no template to write, so the directory holds the theme
 **Every role is mapped.** The roles the deck's own layouts cover are named the deck's way, and
 the rest take the library's own names — the names the library draws the layouts it generates
 under. A theme's `layouts:` section is the whole mapping, so a role it leaves out is a role no
-slide can be drawn on, and the roles the deck has no layout for are reported rather than
-pointed at a layout that is something else.
+slide can be drawn on. The roles the deck has no layout for are listed in the report, so that
+somebody can point them somewhere else, but they are mapped all the same.
+
+**Two roles may not share a name.** A name is one layout, and two roles on one name are drawn in
+the same geometry. A role whose library name is already the name of one of the deck's own layouts
+takes a name of its own instead, and the report says which role and why.
 
 **The theme is read back before the command reports success.** The library's own reader reads it
 and the library's own geometry reads the boxes of the template, so a theme this command cannot
@@ -69,8 +90,7 @@ scale the sizes below the title.
 
 **The layouts** are mapped by the placeholders they hold, not by their names: a deck calls its
 layouts whatever it likes, and the same layout is called different things in two offices. The
-roles the deck has no layout for are reported rather than pointed at a layout that is something
-else.
+roles the deck has no layout for take the library's own names, and are listed in the report.
 
 **The template** is the deck's layouts without its slides, and without the pictures on them. A
 template places, and the slides of the deck it came from are not a placement.
@@ -130,6 +150,14 @@ mdoffice theme: wrote the theme for "probe.pptx" into "/tmp/probe-theme".
     two-column, section, image-text, image-title, image-slide
 
   the template places 0 of the 3 roles the deck's own layouts map.
+```
+
+The report says how the roles were split, and it says it in two forms. A deck whose own layout
+is called the library's name for a role leaves that role to take a name of its own, and the
+report counts it apart from the two:
+
+```text
+  the deck's own layouts map 1 of the 8 roles; the library's own names map 6, and the rest take a name of their own.
 ```
 
 A deck with no master has no template, and the report says so where the template's line would

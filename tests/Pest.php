@@ -13,8 +13,19 @@ use MarkdownOffice\Documentation\Tests\Support\Site;
  */
 function says(string $path, string $phrase): void
 {
+    saysIn(Site::page($path), $phrase);
+}
+
+/**
+ * Assert that a piece of text says a phrase, whatever case it is written in.
+ *
+ * The text rather than a page, for the files that are not pages of the site: the skill's
+ * own file is one of them, and the bundle's copy of it is made by the build.
+ */
+function saysIn(string $text, string $phrase): void
+{
     $found = \str_contains(
-        \mb_strtolower(Site::flat(Site::page($path))),
+        \mb_strtolower(Site::flat($text)),
         \mb_strtolower($phrase),
     );
 

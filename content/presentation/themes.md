@@ -45,14 +45,14 @@ by hand behave differently from one written by a machine, and this one is for ma
 A theme was a directory of up to five files, and the three that are no longer read are
 **refused** when they are beside the theme, each with a message that says what to do with it:
 
-> The theme "acme" has a "layouts.yml" beside it. A theme is one file: move its content into the "layouts:" section of its "theme.yml".
+> The theme "acme" has a "layouts.yml" beside it. A theme is one file: move its content into the "layouts:" section of its "theme.yml", and delete the file.
 
-> The theme "acme" has a "text-styles.yml" beside it. A theme is one file: move its content into the "textStyles:" section of its "theme.yml".
+> The theme "acme" has a "text-styles.yml" beside it. A theme is one file: move its content into the "textStyles:" section of its "theme.yml", and delete the file.
 
 > The theme "acme" has a "styles.yml" beside it. That file is the Word half's, and this half does not read it: its slots name Word styles, which a deck of slides has no use for. Delete it, and the theme is read again.
 
 `layouts.yml` and `text-styles.yml` are the two that became sections of the theme's own file.
-`styles.yml` was the Word half's, and this half loaded it for years without ever reading it.
+`styles.yml` was the Word half's, and this half loaded it for years without ever using it.
 
 They are refused rather than ignored, because a file that is quietly not read is a theme that
 looks like the one its author wrote and is not: the author renames a layout in the file

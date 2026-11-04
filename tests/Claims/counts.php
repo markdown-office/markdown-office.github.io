@@ -97,3 +97,14 @@ it('counts the renderer\'s methods as the code does', function () {
 
     says(Site::PRESENTATION_INDEX, words(\count($methods)) . ' methods');
 });
+
+it('counts the Word half\'s own examples as the library ships them', function () {
+    $examples = \glob(Site::root() . '/../markdown-word/examples/markdown/*.md') ?: [];
+
+    $count = \count($examples);
+
+    $phrase = 'the Word half\'s own ' . words($count);
+
+    says('skills/index.md', $phrase);
+    saysIn(Site::skill(), $phrase);
+});

@@ -86,7 +86,7 @@ mdword/
 The **references** are the pages of this site, one file each, with the frontmatter off. They
 cover both halves: the Word half's pages and the slides half's four, and the pages the two
 have in common. The **examples** are the decks and documents the pages show, built and named,
-and the Word half's own twenty-three — which between them are the catalogue of what that half
+and the Word half's own twenty-four — which between them are the catalogue of what that half
 can do. The slides half's own gallery of decks is not in the bundle.
 
 The **scripts** render a document so that it can be looked at, which is the one step a

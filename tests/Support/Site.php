@@ -72,6 +72,17 @@ final class Site
     }
 
     /**
+     * The skill's own file, as it is written.
+     *
+     * The bundle's `SKILL.md` is a copy of this file, so a claim about what it says is a
+     * claim about a file that is not a page of the site.
+     */
+    public static function skill(): string
+    {
+        return (string) \file_get_contents(self::root() . '/skill/mdword/SKILL.md');
+    }
+
+    /**
      * The body of a section of a page, as the page wrote it.
      *
      * The section rather than the page, because a page carries several lists and a claim is
@@ -193,6 +204,15 @@ final class Site
             18 => 'eighteen',
             19 => 'nineteen',
             20 => 'twenty',
+            21 => 'twenty-one',
+            22 => 'twenty-two',
+            23 => 'twenty-three',
+            24 => 'twenty-four',
+            25 => 'twenty-five',
+            26 => 'twenty-six',
+            27 => 'twenty-seven',
+            28 => 'twenty-eight',
+            29 => 'twenty-nine',
         ];
 
         return $words[$number] ?? (string) $number;

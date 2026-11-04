@@ -378,6 +378,18 @@ deck-settings:
 ## What changed
 
 - Two products shipped
+
+---
+
+## What it cost
+
+- Two engineers, for a quarter
+
+---
+
+## What happens next
+
+- A second release
 ````
 {% endexample %}
 

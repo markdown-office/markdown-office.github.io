@@ -38,11 +38,11 @@ final class MemoryFinder implements WordFileFinder, SlidesFileFinder
     /**
      * The site's own themes, which are in no directory at all.
      *
-     * Two of them, because a theme file serves one half and the halves keep separate
-     * vocabularies: the Word half's `theme.yml` carries the slots a document is drawn from,
-     * and the slides half's carries the colours, the type and the layout roles. One file
-     * cannot be both — each half refuses the other's keys — so a finder that serves both
-     * holds a theme for each.
+     * Two of them, because each carries the look of its own half: the Word half's
+     * `theme.yml` carries the slots a document is drawn from, and the slides half's carries
+     * the colours, the type and the layout roles. Each half refuses the other's look, so
+     * one file cannot carry both — but a file that carries neither half's look is read by
+     * both, and each half draws it its own way.
      *
      * They are here rather than under `themes/` on purpose: an example that named a theme
      * beside it would be an example of the disk default, and these are about the other kind.

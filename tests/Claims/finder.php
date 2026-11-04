@@ -12,10 +12,12 @@ use MarkdownOffice\Documentation\Tests\Support\Package;
 use MarkdownOffice\Documentation\Tests\Support\Refusal;
 use MarkdownOffice\Documentation\Tests\Support\Site;
 use MarkdownOffice\Documentation\Tests\Support\Snippet;
+use MarkdownPresentation\Exception\MalformedTheme as SlidesMalformedTheme;
 use MarkdownPresentation\Exception\UnservedTemplate;
 use MarkdownPresentation\Files\FileFinder as SlidesFileFinder;
 use MarkdownPresentation\Theme\ThemeLoader as SlidesThemeLoader;
 use MarkdownPresentation\Theme\ThemeResolver as SlidesThemeResolver;
+use MarkdownWord\Exception\MalformedTheme as WordMalformedTheme;
 use MarkdownWord\Exception\ThemeNotFound;
 use MarkdownWord\Files\DiskFinder as WordDiskFinder;
 use MarkdownWord\Files\FileFinder as WordFileFinder;
@@ -340,14 +342,50 @@ it('serves both halves with one adapter', function () {
     expect($finder)->toBeInstanceOf(WordFileFinder::class);
     expect($finder)->toBeInstanceOf(SlidesFileFinder::class);
 
-    // A theme file serves one half, so the finder holds one for each: the Word half's
-    // carries the slots a document is drawn from, and the slides half's the colours, the
-    // type and the layout roles.
+    // The finder holds a theme for each half: each carries the look of its own half —
+    // the Word half's the slots a document is drawn from, and the slides half's the
+    // colours, the type and the layout roles — and each half refuses the other's look.
     $document = "---\ntheme: house\n---\n\n# The house style\n";
-    $deck = "---\ntheme: deck\n---\n\n# The house style\n\n---\n\n## A deck\n";
+    $deck = "---\ntheme: deck\n---\n\n# The deck style\n\n---\n\n## A deck\n";
 
     expect(Document::body($document, null, $finder))->toContain('The house style');
     expect(Deck::slides($deck, '.', $finder))->toHaveCount(2);
+});
+
+it('reads a theme file that carries neither half\'s look with both loaders', function () {
+    // The two vocabularies part at the look and not at the name: a file that names
+    // itself and carries a named style is a theme file for both halves.
+    $finder = new MemoryFinder([
+        'both/theme.yml' => "name: Shared\ntextStyles:\n  brand:\n    color: FF0000\n",
+    ]);
+
+    $word = (new WordThemeLoader())->load('both', 'both', $finder);
+    $slides = (new SlidesThemeLoader())->load('both', 'both', $finder);
+
+    expect($word->theme()->name())->toBe('Shared')
+        ->and($word->theme()->textStyles()->names())->toBe(['brand'])
+        ->and($slides->theme()->name())->toBe('Shared')
+        ->and($slides->theme()->textStyles()->names())->toBe(['brand']);
+});
+
+it('refuses the other half\'s look in a theme file', function () {
+    $slides = new MemoryFinder([
+        'both/theme.yml' => "name: Shared\nstyles:\n  heading.1:\n    name: Georgia\n",
+    ]);
+
+    expect(static fn (): mixed => (new SlidesThemeLoader())->load('both', 'both', $slides))
+        ->toThrow(SlidesMalformedTheme::class, '"styles" is not a key of a theme');
+
+    $word = new MemoryFinder([
+        'both/theme.yml' => "name: Shared\ncolors:\n  accent1: \"#123456\"\n",
+    ]);
+
+    expect(static fn (): mixed => (new WordThemeLoader())->load('both', 'both', $word))
+        ->toThrow(WordMalformedTheme::class, 'Unknown key "colors"');
+});
+
+it('says that a theme file carrying only the shared keys is read by both halves', function () {
+    says(Site::FILES, 'a file that carries only those is read by both');
 });
 
 it('says which half composes which theme file', function () {

@@ -85,7 +85,7 @@ description: What changed, what it cost, and what happens next.
 
 #### A theme
 
-A theme is a directory, and `theme.yml` is what it has to hold: the name, an optional description
+A theme is **one file**, and `theme.yml` is what it has to hold: the name, an optional description
 and author, the colours, the fonts and the geometry — and, when it says anything, the layout
 roles and the named text styles. A `theme:` may also name the `theme.yml` itself, in which case
 the theme's master beside it is the theme's. The keys it takes, the colour slots, the geometry
