@@ -34,6 +34,13 @@ final class Theme
     public const SLOTS = "styles:\n  heading.1:\n    name: Georgia\n    bold: true\n    size: 20\n    color: \"1F3864\"\n";
 
     /**
+     * The name a theme of the tests' own carries, and where its file is.
+     */
+    private const NAME = "name: Mine\n";
+
+    private const FILE = '/themes/mine/theme.yml';
+
+    /**
      * A directory holding a theme of the slides half's shape, and the directory it is in.
      *
      * `$textStyles` is the theme's `textStyles:` section, written as YAML because the
@@ -46,7 +53,7 @@ final class Theme
     {
         $root = self::directory();
 
-        \file_put_contents($root . '/themes/mine/theme.yml', "name: Mine\n" . ($textStyles ?? ''));
+        \file_put_contents($root . self::FILE, self::NAME . ($textStyles ?? ''));
 
         return $root;
     }
@@ -63,7 +70,7 @@ final class Theme
     {
         $root = self::directory();
 
-        \file_put_contents($root . '/themes/mine/theme.yml', "name: Mine\n" . $sections);
+        \file_put_contents($root . self::FILE, self::NAME . $sections);
 
         if ($layouts !== null) {
             \copy(Master::of($layouts), $root . '/themes/mine/template.pptx');
@@ -124,7 +131,7 @@ final class Theme
     {
         $root = self::directory();
 
-        \file_put_contents($root . '/themes/mine/theme.yml', "name: Mine\n" . ($styles ?? ''));
+        \file_put_contents($root . self::FILE, self::NAME . ($styles ?? ''));
 
         return $root;
     }

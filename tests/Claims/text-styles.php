@@ -41,12 +41,21 @@ const DECLARED_NAME = '"mine"';
 /** The theme's name as a page writes it, which is not the deck's own. */
 const PAGE_NAME = '"acme"';
 
+/** A theme that names a style called `style`, which is the raw form's own name. */
+const RESERVED_STYLE = "textStyles:\n  style:\n    color: FF0000\n";
+
+/** A deck that names a theme of its own and writes nothing in it. */
+const THEME_ONLY = "---\ntheme: mine\n---\n\n# One\n";
+
+/** The claim a page makes about a named style's name, in all three halves' words. */
+const FOLDED = 'A style\'s name is folded';
+
 it('refuses a theme that names a style "style"', function () {
     says(Site::GENERAL_DIRECTIVES, 'a theme may not name a style `style`');
 
     $message = Theme::slidesRefusal(
         Theme::DECK,
-        "textStyles:\n  style:\n    color: FF0000\n",
+        RESERVED_STYLE,
     );
 
     expect($message)->toContain('reserved word');
@@ -110,7 +119,7 @@ it('refuses the file the Word half\'s slots used to be in, and says where they g
     says(Site::WORD_CONFIGURATION, 'A `styles.yml` beside the theme is refused');
 
     expect(Theme::wordRetired(
-        "---\ntheme: mine\n---\n\n# One\n",
+        THEME_ONLY,
         'styles.yml',
         WORD_SLOT,
     ))->toMatch(
@@ -161,7 +170,7 @@ it('quotes the refusals as the library prints them', function () {
     expect((string) \preg_replace(
         '/^"[^"]*"/',
         '"…/styles.yml"',
-        Theme::wordRetired("---\ntheme: mine\n---\n\n# One\n", 'styles.yml', WORD_SLOT),
+        Theme::wordRetired(THEME_ONLY, 'styles.yml', WORD_SLOT),
     ))->toBe($configuration[0]);
 });
 
@@ -188,7 +197,7 @@ it('lists every mistake a theme\'s named styles may carry, and refuses it', func
     ],
     'the reserved word' => [
         'a style called `style`',
-        "textStyles:\n  style:\n    color: FF0000\n",
+        RESERVED_STYLE,
         'is named with a reserved word',
     ],
     'a highlight' => [
@@ -227,7 +236,7 @@ it('lists every mistake a Word theme\'s named styles may carry, and refuses it',
     says(Site::WORD_CONFIGURATION, 'Seven mistakes in a theme\'s named styles are refused');
     says(Site::WORD_CONFIGURATION, $page);
 
-    expect(Theme::wordRefusal("---\ntheme: mine\n---\n\n# One\n", $styles))->toContain($message);
+    expect(Theme::wordRefusal(THEME_ONLY, $styles))->toContain($message);
 })->with([
     'a style that is not a set of properties' => [
         'a style that is not a set of properties',
@@ -251,7 +260,7 @@ it('lists every mistake a Word theme\'s named styles may carry, and refuses it',
     ],
     'the reserved word' => [
         'a style called `style`',
-        "textStyles:\n  style:\n    color: FF0000\n",
+        RESERVED_STYLE,
         'cannot be defined',
     ],
     'the name of a directive' => [
@@ -267,9 +276,9 @@ it('lists every mistake a Word theme\'s named styles may carry, and refuses it',
 ]);
 
 it('folds a style\'s name, in both halves', function () {
-    says(Site::GENERAL_DIRECTIVES, 'A style\'s name is folded');
-    says(Site::PRESENTATION_THEMES, 'A style\'s name is folded');
-    says(Site::WORD_CONFIGURATION, 'A style\'s name is folded');
+    foreach ([Site::GENERAL_DIRECTIVES, Site::PRESENTATION_THEMES, Site::WORD_CONFIGURATION] as $page) {
+        says($page, FOLDED);
+    }
 
     $slide = Theme::slidesSlide(
         "---\ntheme: mine\n---\n\nA :brand[Bakery] B :Brand[Croissant] C\n",
