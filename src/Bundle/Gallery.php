@@ -27,13 +27,13 @@ final class Gallery
         $file = $root . '/skill/mdword/galleries.json';
 
         if (! \is_file($file)) {
-            throw new \RuntimeException('skill/mdword/galleries.json could not be read.');
+            throw UnreadableGallery::unreadable('skill/mdword/galleries.json');
         }
 
         $parsed = \json_decode((string) \file_get_contents($file), true);
 
         if (! \is_array($parsed)) {
-            throw new \RuntimeException('skill/mdword/galleries.json could not be read as JSON.');
+            throw UnreadableGallery::notJson('skill/mdword/galleries.json');
         }
 
         return [
@@ -73,55 +73,113 @@ final class Gallery
         $problems = [];
 
         foreach ($manifest['galleries'] as $half => $gallery) {
-            $library = $root . '/../' . $gallery['source'];
-            $carried = $bundle . '/' . $gallery['path'];
+            foreach (self::differencesIn($half, $gallery, $manifest['exclude'], $root, $bundle) as $problem) {
+                $problems[] = $problem;
+            }
+        }
 
-            if (! \is_dir($library)) {
+        return $problems;
+    }
+
+    /**
+     * How one half's gallery differs from the one the library ships.
+     *
+     * @param array{source: string, path: string} $gallery
+     * @param list<string> $exclude
+     *
+     * @return list<string>
+     */
+    private static function differencesIn(string $half, array $gallery, array $exclude, string $root, string $bundle): array
+    {
+        $library = $root . '/../' . $gallery['source'];
+        $carried = $bundle . '/' . $gallery['path'];
+
+        if (! \is_dir($library)) {
+            return [\sprintf(
+                'The %s half\'s gallery is not there. The library is checked out beside this one.',
+                $half,
+            )];
+        }
+
+        if (! \is_dir($carried)) {
+            return [\sprintf('The bundle does not carry the %s half\'s gallery.', $half)];
+        }
+
+        $theirs = self::files($library, $exclude);
+        $ours = self::files($carried, []);
+
+        return [
+            ...self::missing($half, $theirs, $ours),
+            ...self::changed($half, $theirs, $ours, $library, $carried),
+            ...self::extra($half, $ours, $theirs),
+        ];
+    }
+
+    /**
+     * The files of the library's gallery the bundle does not carry.
+     *
+     * @param list<string> $theirs
+     * @param list<string> $ours
+     *
+     * @return list<string>
+     */
+    private static function missing(string $half, array $theirs, array $ours): array
+    {
+        $problems = [];
+
+        foreach ($theirs as $file) {
+            if (! \in_array($file, $ours, true)) {
+                $problems[] = \sprintf('The bundle does not carry "%s" of the %s half\'s gallery.', $file, $half);
+            }
+        }
+
+        return $problems;
+    }
+
+    /**
+     * The files the bundle carries that are not the ones the library ships.
+     *
+     * @param list<string> $theirs
+     * @param list<string> $ours
+     *
+     * @return list<string>
+     */
+    private static function extra(string $half, array $ours, array $theirs): array
+    {
+        $problems = [];
+
+        foreach ($ours as $file) {
+            if (! \in_array($file, $theirs, true)) {
+                $problems[] = \sprintf('The bundle carries "%s", which the %s half does not ship.', $file, $half);
+            }
+        }
+
+        return $problems;
+    }
+
+    /**
+     * The files the bundle carries that are not the library's own.
+     *
+     * @param list<string> $theirs
+     * @param list<string> $ours
+     *
+     * @return list<string>
+     */
+    private static function changed(string $half, array $theirs, array $ours, string $library, string $carried): array
+    {
+        $problems = [];
+
+        foreach ($theirs as $file) {
+            if (! \in_array($file, $ours, true)) {
+                continue;
+            }
+
+            if (\md5_file($library . '/' . $file) !== \md5_file($carried . '/' . $file)) {
                 $problems[] = \sprintf(
-                    'The %s half\'s gallery is not there. The library is checked out beside this one.',
+                    'The bundle\'s copy of "%s" is not the one the %s half ships.',
+                    $file,
                     $half,
                 );
-
-                continue;
-            }
-
-            if (! \is_dir($carried)) {
-                $problems[] = \sprintf('The bundle does not carry the %s half\'s gallery.', $half);
-
-                continue;
-            }
-
-            $theirs = self::files($library, $manifest['exclude']);
-            $ours = self::files($carried, []);
-
-            foreach ($theirs as $file) {
-                if (! \in_array($file, $ours, true)) {
-                    $problems[] = \sprintf(
-                        'The bundle does not carry "%s" of the %s half\'s gallery.',
-                        $file,
-                        $half,
-                    );
-
-                    continue;
-                }
-
-                if (\md5_file($library . '/' . $file) !== \md5_file($carried . '/' . $file)) {
-                    $problems[] = \sprintf(
-                        'The bundle\'s copy of "%s" is not the one the %s half ships.',
-                        $file,
-                        $half,
-                    );
-                }
-            }
-
-            foreach ($ours as $file) {
-                if (! \in_array($file, $theirs, true)) {
-                    $problems[] = \sprintf(
-                        'The bundle carries "%s", which the %s half does not ship.',
-                        $file,
-                        $half,
-                    );
-                }
             }
         }
 

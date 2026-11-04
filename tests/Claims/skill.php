@@ -21,22 +21,32 @@ use MarkdownOffice\Documentation\Tests\Support\Site;
  */
 const MISSING_GALLERY = 'gallery of decks is not in the bundle';
 
+/**
+ * The page that describes what the bundle carries.
+ */
+const SKILL_PAGE = 'skills/index.md';
+
+/**
+ * The phrase the page and the bundle both use to name the two galleries.
+ */
+const BOTH_GALLERIES = 'the two halves\' own galleries';
+
 it('says the bundle carries both halves\' galleries', function () {
-    says('skills/index.md', 'the two halves\' own galleries');
+    says(SKILL_PAGE, BOTH_GALLERIES);
 
     foreach (Gallery::paths(Site::root()) as $path) {
-        says('skills/index.md', $path);
+        says(SKILL_PAGE, $path);
     }
 });
 
 it('does not say the slides half\'s gallery is missing', function () {
-    expect(Site::flat(Site::page('skills/index.md')))->not->toContain(MISSING_GALLERY);
+    expect(Site::flat(Site::page(SKILL_PAGE)))->not->toContain(MISSING_GALLERY);
     expect(Site::flat(Site::skill()))->not->toContain(MISSING_GALLERY);
 });
 
 it('says about the galleries what the site says', function () {
     $skill = Site::flat(Site::skill());
-    $page = Site::flat(Site::page('skills/index.md'));
+    $page = Site::flat(Site::page(SKILL_PAGE));
 
     $paths = \array_values(Gallery::paths(Site::root()));
 
@@ -47,6 +57,6 @@ it('says about the galleries what the site says', function () {
         expect($page)->toContain($path);
     }
 
-    expect($skill)->toContain('the two halves\' own galleries');
-    expect($page)->toContain('the two halves\' own galleries');
+    expect($skill)->toContain(BOTH_GALLERIES);
+    expect($page)->toContain(BOTH_GALLERIES);
 });
