@@ -31,6 +31,18 @@ function quotedRefusals(string $page): array
     return $matches[1];
 }
 
+/** The Word half's slots, as a `styles.yml` held them. */
+const WORD_SLOT = "heading.1:\n  name: Georgia\n";
+
+/** The page that names the Word half's theme, and its refusals. */
+const WORD_CONFIGURATION = 'word/configuration.md';
+
+/** The theme's name as the library prints it: the name the deck gave. */
+const DECLARED_NAME = '"mine"';
+
+/** The theme's name as a page writes it, which is not the deck's own. */
+const PAGE_NAME = '"acme"';
+
 it('refuses a theme that names a style "style"', function () {
     says(Site::GENERAL_DIRECTIVES, 'a theme may not name a style `style`');
 
@@ -92,17 +104,17 @@ it('refuses each file of the old theme format, and says where the content goes',
     expect(Theme::slidesRetired(Theme::DECK, 'text-styles.yml', "brand:\n  color: FF0000\n"))
         ->toBe('The theme "mine" has a "text-styles.yml" beside it. A theme is one file: move its content into the "textStyles:" section of its "theme.yml", and delete the file.');
 
-    expect(Theme::slidesRetired(Theme::DECK, 'styles.yml', "heading.1:\n  name: Georgia\n"))
+    expect(Theme::slidesRetired(Theme::DECK, 'styles.yml', WORD_SLOT))
         ->toBe('The theme "mine" has a "styles.yml" beside it. That file is the Word half\'s, and this half does not read it: its slots name Word styles, which a deck of slides has no use for. Delete it, and the theme is read again.');
 });
 
 it('refuses the file the Word half\'s slots used to be in, and says where they go', function () {
-    says('word/configuration.md', 'A `styles.yml` beside the theme is refused');
+    says(WORD_CONFIGURATION, 'A `styles.yml` beside the theme is refused');
 
     expect(Theme::wordRetired(
         "---\ntheme: mine\n---\n\n# One\n",
         'styles.yml',
-        "heading.1:\n  name: Georgia\n",
+        WORD_SLOT,
     ))->toMatch(
         '/^"[^"]*\/styles\.yml" is not read any more\. A theme\'s styles are in the "styles:" section of '
         . 'its "theme\.yml", and its named text styles in the "textStyles:" section\. Delete the file, '
@@ -117,25 +129,25 @@ it('quotes the refusals as the library prints them', function () {
 
     // The page writes the theme's name as "acme", and the library writes the name the
     // deck named: the same sentence with another name in it.
-    expect(\str_replace('"mine"', '"acme"', Theme::slidesRetired(
+    expect(\str_replace(DECLARED_NAME, PAGE_NAME, Theme::slidesRetired(
         Theme::DECK,
         'layouts.yml',
         "layouts:\n  content: Title and Content\n",
     )))->toBe($themes[0]);
 
-    expect(\str_replace('"mine"', '"acme"', Theme::slidesRetired(
+    expect(\str_replace(DECLARED_NAME, PAGE_NAME, Theme::slidesRetired(
         Theme::DECK,
         'text-styles.yml',
         "brand:\n  color: FF0000\n",
     )))->toBe($themes[1]);
 
-    expect(\str_replace('"mine"', '"acme"', Theme::slidesRetired(
+    expect(\str_replace(DECLARED_NAME, PAGE_NAME, Theme::slidesRetired(
         Theme::DECK,
         'styles.yml',
-        "heading.1:\n  name: Georgia\n",
+        WORD_SLOT,
     )))->toBe($themes[2]);
 
-    $configuration = quotedRefusals('word/configuration.md');
+    $configuration = quotedRefusals(WORD_CONFIGURATION);
 
     expect($configuration)->toHaveCount(1);
 
@@ -144,7 +156,7 @@ it('quotes the refusals as the library prints them', function () {
     expect((string) \preg_replace(
         '/^"[^"]*"/',
         '"…/styles.yml"',
-        Theme::wordRetired("---\ntheme: mine\n---\n\n# One\n", 'styles.yml', "heading.1:\n  name: Georgia\n"),
+        Theme::wordRetired("---\ntheme: mine\n---\n\n# One\n", 'styles.yml', WORD_SLOT),
     ))->toBe($configuration[0]);
 });
 
@@ -222,7 +234,7 @@ it('leaves a property off the run of a deck when an attribute is false', functio
 });
 
 it('reads the named styles of a Word theme from the section the page names', function () {
-    says('word/configuration.md', '`textStyles:`');
+    says(WORD_CONFIGURATION, '`textStyles:`');
 
     expect(TextStyles::KEY)->toBe('textStyles');
 });

@@ -31,13 +31,27 @@ const DECK_SETTINGS_TEMPLATED = "---\ndeck-settings:\n  background: \"#101014\"\
  */
 const DECK_SETTINGS_TEMPLATED_AND_SLIDDEN = "---\ndeck-settings:\n  background: \"#101014\"\n---\n\n---\ntemplate: brand\ntemplate-settings:\n  background: \"#303030\"\n---\n:::content{left=4.5% top=3.913% width=29.996% height=4.969% fill=none padding=0 color=FFFFFF font-size=11 font-family=Calibri align=left vertical-align=middle}\nResilience\n:::\n\n---\nlayout: blank\ntemplate: brand\nbackground: \"#404040\"\n---\n\n## Two\n";
 
+/**
+ * The colours the decks above are drawn with, as the package writes them.
+ *
+ * A colour is written into the package as `val="RRGGBB"`, so these are the hex without
+ * the `#` the frontmatter names it with.
+ */
+const DECK_BACKGROUND = 'val="101014"';
+
+const SLIDE_BACKGROUND = 'val="202020"';
+
+const TEMPLATE_BACKGROUND = 'val="303030"';
+
+const SLIDE_OVER_TEMPLATE = 'val="404040"';
+
 it('draws every slide of a deck with the deck\'s own background', function () {
     says(Site::PRESENTATION_DIRECTIVES, 'Every slide is drawn with them');
 
     $slides = Deck::slides(DECK_SETTINGS);
 
     expect($slides)->toHaveCount(2);
-    expect($slides[0])->toContain('val="101014"');
+    expect($slides[0])->toContain(DECK_BACKGROUND);
 });
 
 it('lets a slide\'s own background beat the deck\'s', function () {
@@ -45,8 +59,8 @@ it('lets a slide\'s own background beat the deck\'s', function () {
 
     $slides = Deck::slides(DECK_SETTINGS);
 
-    expect($slides[1])->toContain('val="202020"');
-    expect($slides[1])->not->toContain('val="101014"');
+    expect($slides[1])->toContain(SLIDE_BACKGROUND);
+    expect($slides[1])->not->toContain(DECK_BACKGROUND);
 });
 
 it('lets a template\'s own background beat the deck\'s', function () {
@@ -54,8 +68,8 @@ it('lets a template\'s own background beat the deck\'s', function () {
 
     $slides = Deck::slides(DECK_SETTINGS_TEMPLATED);
 
-    expect($slides[0])->toContain('val="101014"');
-    expect($slides[1])->toContain('val="303030"');
+    expect($slides[0])->toContain(DECK_BACKGROUND);
+    expect($slides[1])->toContain(TEMPLATE_BACKGROUND);
 });
 
 it('lets a slide\'s own background beat a template\'s', function () {
@@ -63,9 +77,9 @@ it('lets a slide\'s own background beat a template\'s', function () {
 
     $slides = Deck::slides(DECK_SETTINGS_TEMPLATED_AND_SLIDDEN);
 
-    expect($slides[1])->toContain('val="404040"');
-    expect($slides[1])->not->toContain('val="303030"');
-    expect($slides[1])->not->toContain('val="101014"');
+    expect($slides[1])->toContain(SLIDE_OVER_TEMPLATE);
+    expect($slides[1])->not->toContain(TEMPLATE_BACKGROUND);
+    expect($slides[1])->not->toContain(DECK_BACKGROUND);
 });
 
 it('shows a deck whose accent every slide is drawn with', function () {

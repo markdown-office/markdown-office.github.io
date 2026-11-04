@@ -174,22 +174,17 @@ final class Vocabularies
     /**
      * The sections a theme's own file may carry beside the theme's own values.
      *
-     * The loader owns them and keeps them to itself, so they are read out of it rather
-     * than written down here: a copy is the thing that drifts. The constant is private and
-     * the library is not this repository's to change, so the reading is a reflection, and
-     * a constant that is renamed or dropped makes it fail loudly rather than quietly.
+     * Read out of the loader rather than written down here: a copy is the thing that
+     * drifts. The constant is public, and it is public because the loader's own refusal
+     * offers it — {@see \MarkdownPresentation\Exception\MalformedTheme::unknownKey()}
+     * names the whole vocabulary — so a reader of the format is given the list and then
+     * asked to find it somewhere else.
      *
      * @return list<string>
      */
     public static function themeSections(): array
     {
-        $sections = (new \ReflectionClass(ThemeLoader::class))->getConstant('SECTIONS');
-
-        if (!\is_array($sections)) {
-            throw UnreadableCode::missingConstant(ThemeLoader::class, 'SECTIONS');
-        }
-
-        return \array_values($sections);
+        return \array_values(ThemeLoader::SECTIONS);
     }
 
     /**
