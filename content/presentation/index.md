@@ -230,7 +230,7 @@ echo (new PowerPointToMarkdown('deck.pptx', new Options(mediaDirectory: null)))-
 
 ```text
 ---
-title: "Untitled Presentation"
+title: "One"
 author: "markdown-office"
 ---
 
@@ -240,8 +240,10 @@ Text.
 ```
 
 The frontmatter carries what the deck said about itself — its title, its theme, its author and
-its description — because a deck's own properties are the only thing about it that is not on a
-slide. `save()` writes it to a file instead, and `read()` gives the slides back as a list.
+its description. The title is the deck's own where it has one, and the first slide's where it
+has not: PHPPresentation gives every deck the title `Untitled Presentation`, and that is its
+own default rather than a title somebody wrote. `save()` writes it to a file instead, and
+`read()` gives the slides back as a list.
 
 **The theme's name comes back; the theme does not.** The name travels into the `.pptx` and comes
 back out of it, so a deck read back into Markdown is drawn again in the theme it was drawn in.
