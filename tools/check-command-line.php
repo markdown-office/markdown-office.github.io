@@ -86,6 +86,7 @@ const FORBIDDEN = [
     'the themes page counted the colour aliases wrongly in capitals' => 'Four read-friendly aliases are accepted',
     'the themes page counted the style keys wrongly' => 'the thirteen style keys',
     'the themes page found a theme under the working directory' => '`<workingDirectory>/themes/<name>`',
+    'the theme page said the page of a deck came from its slides' => '#0D1B2A   the background of the slides',
     'the presentation page listed the layout roles twice' => 'The eight layout roles:',
     'the frontmatter table named a number of roles' => 'one of eight roles',
     'the presentation page said one exception sat beside InvalidInput' => 'One sits beside those two rather than under `InvalidInput`',

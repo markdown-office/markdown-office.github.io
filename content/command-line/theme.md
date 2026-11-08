@@ -83,6 +83,9 @@ read is a failure here rather than a theme nobody can use.
 from the deck's slides where it is not. A deck made in a tool that does not do themes carries
 Office's palette without ever drawing in it, and that palette describes nothing on the page.
 
+**The page** is the deck's master — the page behind every slide that does not paint itself — and
+where the master names no colour of its own, the slides answer for it.
+
 **The type scale** is read off the deck's text, because a deck records a size for every
 paragraph rather than a scale. The title is the size most slides are headed in, the cover the
 largest type on the first slide, the body the size the prose is written at, and the heading
@@ -113,7 +116,7 @@ mdoffice theme: wrote the theme for "probe.pptx" into "/tmp/probe-theme".
   template.pptx the deck's 3 layouts, without its 2 slides
 
   colours
-    dk1        #0D1B2A   the background of the slides
+    dk1        #0D1B2A   the deck's master
     lt1        #F8FAFC   the type
     accent1    #00B4D8   the colour the deck draws with
     hlink      #00B4D8   the accent, as a link is drawn
