@@ -18,7 +18,7 @@
         "league/commonmark": "^2.10",
         "markdown-office/commonmark-generic-directives": "0.3.1",
         "markdown-office/markdown-word": "0.4.0",
-        "markdown-office/markdown-presentation": "0.4.0"
+        "markdown-office/markdown-presentation": "0.5.0"
     },
     "repositories": [
         {
@@ -47,7 +47,7 @@
             "options": {
                 "symlink": true,
                 "versions": {
-                    "markdown-office/markdown-presentation": "0.4.0"
+                    "markdown-office/markdown-presentation": "0.5.0"
                 }
             }
         }
