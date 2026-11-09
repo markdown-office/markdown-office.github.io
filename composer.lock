@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "400d45906ea67c2fad2ef058570787c2",
+    "content-hash": "33fe75d8d0f4e906c8110f8ca3e16f65",
     "packages": [
         {
             "name": "composer/pcre",
@@ -736,11 +736,11 @@
         },
         {
             "name": "markdown-office/markdown-presentation",
-            "version": "0.4.0",
+            "version": "0.5.0",
             "dist": {
                 "type": "path",
                 "url": "../markdown-presentation",
-                "reference": "b26bcdb084a76797d9153db31b2f4537df91b55c"
+                "reference": "5ee678bd61025e09525ff1e62f6deb8ef59e6b4f"
             },
             "require": {
                 "cweagans/composer-patches": "^2.0",
@@ -765,9 +765,9 @@
                 "patches": {
                     "phpoffice/phppresentation": [
                         {
-                            "description": "PHPPresentation 1.2.0 brought up to upstream's master, with the fixes that give a picture the path, the bytes and the name it was read from, that find the folder of a part of a package with the slashes of the package, that write a chart series in the order the schema names it, that write the data points of a series and the fill of the series itself, and that give a category axis a tick label skip of its own, and that write a gradient of more than two stops and a background painted with a gradient",
-                            "url": "https://raw.githubusercontent.com/markdown-office/PHPPresentation/c6de3987c9019a1d60876b4aa1964f15e1abc132/patches/phpoffice-phppresentation-1.2.0-to-master.patch",
-                            "sha256": "bb422f73ad2211948835cf9c5f1aed7ec993c3e4595d6e11bd9836e2f9a5f8d5"
+                            "description": "PHPPresentation 1.2.0 brought up to upstream's master, with the fixes that give a picture the path, the bytes and the name it was read from, that find the folder of a part of a package with the slashes of the package, that write a chart series in the order the schema names it, that write the data points of a series and the fill of the series itself, and that give a category axis a tick label skip of its own, and that write a gradient of more than two stops and a background painted with a gradient, and that give a picture the geometry it is drawn in",
+                            "url": "https://raw.githubusercontent.com/markdown-office/PHPPresentation/93ccb5683674a3c6d6d63a141897f64330be2211/patches/phpoffice-phppresentation-1.2.0-to-master.patch",
+                            "sha256": "200e274eba003f6c1e69d6cc4f52a133c6359d710b85b236f45932751fd2a53a"
                         }
                     ]
                 }
@@ -839,7 +839,7 @@
             "dist": {
                 "type": "path",
                 "url": "../markdown-word",
-                "reference": "453c81a0eb6ae2e5a6ae52c3c8456ef03810d46e"
+                "reference": "bae994cd2608afebd227af660fd77733dadf667c"
             },
             "require": {
                 "cweagans/composer-patches": "^2.0",

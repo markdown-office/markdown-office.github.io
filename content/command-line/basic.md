@@ -180,9 +180,9 @@ An installed copy answers with its own version and the two libraries it holds:
 
 ```bash
 $ mdoffice --version
-mdoffice 0.2.0
+mdoffice 0.2.1
   markdown-office/markdown-word            v0.4.0
-  markdown-office/markdown-presentation    v0.4.0
+  markdown-office/markdown-presentation    v0.5.0
 ```
 
 The tool versions itself separately from the libraries it holds, because it is neither of them: a
