@@ -111,7 +111,8 @@ bold, and the asterisks are markup rather than characters. A bare `*` or `_` is 
 rather than an intent, so `2 * 3` and `snake_case` are ordinary text. So is a construct
 CommonMark does not call emphasis: `__ Bakery__` and `** text**` are text, because a delimiter
 that opens an emphasis may not be followed by a space and one that closes it may not be
-preceded by one.
+preceded by one. A link cannot be one: a label holds no brackets, so it ends at the first `]`
+and there is no way to write a link in one.
 
 What the two halves do with a name they do not know is where they part:
 [Markdown Presentation](/presentation/directives/#a-word-in-a-style) refuses a name and names
