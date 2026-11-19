@@ -1,9 +1,9 @@
 ---
-name: mdword
+name: mdoffice
 description: Turn Markdown into a Word document — .docx, .odt or .rtf — or a PowerPoint deck, with the markdown-word and markdown-presentation libraries, and turn one back to Markdown. Use when asked to write or convert a Word document or a presentation, to render Markdown into a company's own template or theme, to read a Word document or a deck back to Markdown, or to check that a document or a deck the library produced looks right.
 ---
 
-# mdword
+# mdoffice
 
 Markdown becomes a Word document with `markdown-word`. **The answers are in the files
 below, and the answers are the library's own** — this file says where to look and nothing
@@ -124,5 +124,6 @@ of the format. The slides part names the direction instead, because a deck is a 
 way. Exit `0` on success and `1` for anything that did not finish — a mistake the caller can
 put right or a defect they cannot.
 
-The command line is not part of this library; it is `mdoffice`, one program over both
-converters. `references/command-line-install.md` says how to get it.
+The command line is not part of this library; it is a program of its own, called `mdoffice`
+as well: one program over both converters. `references/command-line-install.md` says how to
+get it.

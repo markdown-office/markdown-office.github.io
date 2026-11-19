@@ -201,7 +201,7 @@ absolute, and the links inside the Markdown mirrors are the routes as they are w
 
 ## The skill
 
-The site also publishes a **skill**: `/skills/mdword.zip`, and `/skills/mdword/` file by
+The site also publishes a **skill**: `/skills/mdoffice.zip`, and `/skills/mdoffice/` file by
 file, with `/skills/index.json` as the catalogue OpenCode reads over the network. It is the
 documentation above as a directory an agent can read, with the examples beside it and the
 tools that render a document so that it can be looked at.

@@ -135,7 +135,7 @@ final class ControlServer
 
     private function __construct()
     {
-        $log = \tempnam(\sys_get_temp_dir(), 'mdword-control-');
+        $log = \tempnam(\sys_get_temp_dir(), 'mdoffice-control-');
 
         if ($log === false) {
             throw TheMachineryFailed::because('The control server could not be given a file to write to.');
@@ -151,7 +151,7 @@ final class ControlServer
     {
         $server = new self();
 
-        $portFile = \tempnam(\sys_get_temp_dir(), 'mdword-port-');
+        $portFile = \tempnam(\sys_get_temp_dir(), 'mdoffice-port-');
 
         if ($portFile === false) {
             throw TheMachineryFailed::because('The control server could not be given a file to write its port to.');
