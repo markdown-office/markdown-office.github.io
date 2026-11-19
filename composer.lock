@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "33fe75d8d0f4e906c8110f8ca3e16f65",
+    "content-hash": "9a1df28f9a916b4ac302f9511e917aa8",
     "packages": [
         {
             "name": "composer/pcre",
@@ -656,11 +656,11 @@
         },
         {
             "name": "markdown-office/commonmark-generic-directives",
-            "version": "0.3.1",
+            "version": "0.4.0",
             "dist": {
                 "type": "path",
                 "url": "../commonmark-generic-directives",
-                "reference": "104463802176a8860cda4227b39d44cfbb5dfb82"
+                "reference": "e9645e67c5b3346eeb47fb22ba261e297d69f113"
             },
             "require": {
                 "league/commonmark": "^2.10",
@@ -739,8 +739,8 @@
             "version": "0.5.0",
             "dist": {
                 "type": "path",
-                "url": "../markdown-presentation",
-                "reference": "5ee678bd61025e09525ff1e62f6deb8ef59e6b4f"
+                "url": "../markdown-presentation/.worktrees/label-markdown",
+                "reference": "25706ba922a56e886ca7bb9ab082549c564ce155"
             },
             "require": {
                 "cweagans/composer-patches": "^2.0",
@@ -748,7 +748,7 @@
                 "ext-gd": "*",
                 "ext-zip": "*",
                 "league/commonmark": "^2.10",
-                "markdown-office/commonmark-generic-directives": "^0.3.0",
+                "markdown-office/commonmark-generic-directives": "^0.4.0",
                 "php": "^8.2",
                 "phpoffice/phppresentation": "~1.2.0",
                 "symfony/yaml": "^7.2 || ^8.0"
@@ -838,8 +838,8 @@
             "version": "0.4.0",
             "dist": {
                 "type": "path",
-                "url": "../markdown-word",
-                "reference": "bae994cd2608afebd227af660fd77733dadf667c"
+                "url": "../markdown-word/.worktrees/label-markdown",
+                "reference": "5648ea4a0712291ffab95a64bd9248eaab5a091f"
             },
             "require": {
                 "cweagans/composer-patches": "^2.0",
@@ -848,7 +848,7 @@
                 "ext-mbstring": "*",
                 "ext-zip": "*",
                 "league/commonmark": "^2.10",
-                "markdown-office/commonmark-generic-directives": "^0.3.0",
+                "markdown-office/commonmark-generic-directives": "^0.4.0",
                 "php": "^8.2",
                 "phpoffice/phpword": "~1.4.0",
                 "symfony/yaml": "^7.4 || ^8.1"
