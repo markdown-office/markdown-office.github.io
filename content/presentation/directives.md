@@ -151,6 +151,19 @@ Resilience :style[Bakery]{color=00B4D8} is open.
 ````
 {% endexample %}
 
+{% example "A word in a style, holding emphasis of its own" %}
+````md presentation
+---
+theme: corporate-dark
+layout: blank
+---
+
+:::content{left=8% top=40% width=60% height=20% fill=none font-size=20}
+Resilience :brand[**Bakery**] is open. It has been since :muted[*2019*].
+:::
+````
+{% endexample %}
+
 The `highlight` attribute is **not drawn by this half**. PHPPresentation's font has no setter for
 one, so the attribute is refused by name rather than accepted and quietly dropped.
 

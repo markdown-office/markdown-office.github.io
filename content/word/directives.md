@@ -339,6 +339,16 @@ Resilience :brand[Bakery] is open. It has been since :muted[2019].
 ````
 {% endexample %}
 
+{% example "A word in a style, holding emphasis of its own" %}
+````md word
+---
+theme: corporate
+---
+
+Resilience :brand[**Bakery**] is open. It has been since :muted[*2019*].
+````
+{% endexample %}
+
 ## Everything else
 
 Any other name parses and is **written out as its own source text**. That is the policy, and it is
