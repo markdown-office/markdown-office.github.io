@@ -62,7 +62,7 @@ Cli::autoload();
 
 $root = Cli::root();
 $site = $root . '/_site';
-$bundle = $site . '/skills/mdword';
+$bundle = $site . '/skills/mdoffice';
 
 if (!\is_dir($bundle)) {
     \fwrite(\STDERR, \sprintf("There is no skill at %s. Build the site first.\n", $bundle));
@@ -91,16 +91,16 @@ const REFERENCE_FILES = '/references/*.md';
  */
 function manifest(string $root): array
 {
-    $file = $root . '/skill/mdword/pages.json';
+    $file = $root . '/skill/mdoffice/pages.json';
 
     if (!\is_file($file)) {
-        throw new UnreadableSkill('skill/mdword/pages.json could not be read.');
+        throw new UnreadableSkill('skill/mdoffice/pages.json could not be read.');
     }
 
     $parsed = \json_decode((string) \file_get_contents($file), true);
 
     if (!\is_array($parsed)) {
-        throw new UnreadableSkill('skill/mdword/pages.json could not be read as JSON.');
+        throw new UnreadableSkill('skill/mdoffice/pages.json could not be read as JSON.');
     }
 
     return [
@@ -376,8 +376,8 @@ if (!\is_array($catalogue) || !\is_array($catalogue['skills'] ?? null)) {
 } else {
     $entry = $catalogue['skills'][0] ?? [];
 
-    if (($entry['name'] ?? null) !== 'mdword') {
-        $report->fail('The catalogue does not carry a skill called "mdword".');
+    if (($entry['name'] ?? null) !== 'mdoffice') {
+        $report->fail('The catalogue does not carry a skill called "mdoffice".');
     }
 
     $named = (array) ($entry['files'] ?? []);
