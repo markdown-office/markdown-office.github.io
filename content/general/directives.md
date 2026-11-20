@@ -105,16 +105,18 @@ property neither of them names is not set: the run takes it from the block it is
 reset to a default. A property set to `false` is not set either — it means "not on this run" rather
 than "off", because neither format can write a weight of none.
 
-**The label is plain text.** A directive's label is a string rather than Markdown, because
-CommonMark's inline engine has no way for a parser to say "the rest of this run is mine". So a
-complete Markdown construct in a label — `**text**`, `*text*`, `_text_`, `__text__` or `` `code` ``
-— is not honoured as emphasis. A link cannot be one: a label holds no brackets at all, so there is
-no way to write one. A bare `*` or `_` is a character rather than an intent, so `2 * 3` and
-`snake_case` are ordinary text.
+**The label is parsed as inline Markdown.** A directive's label is Markdown, and the
+directives package parses it: so `:brand[**Bakery**]` is the word "Bakery" in the style and in
+bold, and the asterisks are markup rather than characters. A bare `*` or `_` is a character
+rather than an intent, so `2 * 3` and `snake_case` are ordinary text. So is a construct
+CommonMark does not call emphasis: `__ Bakery__` and `** text**` are text, because a delimiter
+that opens an emphasis may not be followed by a space and one that closes it may not be
+preceded by one. A link cannot be one: a label holds no brackets, so it ends at the first `]`
+and there is no way to write a link in one.
 
-What the two halves do with a name they do not know, and with a label they cannot honour, is where
-they part: [Markdown Presentation](/presentation/directives/#a-word-in-a-style) refuses both and
-names what would have worked, and [Markdown Word](/word/directives/#a-word-in-a-style) writes the
+What the two halves do with a name they do not know is where they part:
+[Markdown Presentation](/presentation/directives/#a-word-in-a-style) refuses a name and names
+what would have worked, and [Markdown Word](/word/directives/#a-word-in-a-style) writes the
 directive out as its own source text.
 
 ## The exact grammar
