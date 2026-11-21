@@ -420,6 +420,7 @@ it('draws a label that holds Markdown in a Word document', function () {
     $body = Document::body("---\ntheme: corporate\n---\n\nA :brand[**Bakery**] B\n");
 
     expect($body)->toContain('Bakery')
+        ->not->toContain('**Bakery**')
         ->not->toContain(':brand[**Bakery**]');
 });
 
