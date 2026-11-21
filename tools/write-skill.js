@@ -81,7 +81,7 @@ const LIBRARY = join(here, "..", "..", "markdown-word");
  * list are two answers to one question, and the two drift.
  */
 const GALLERIES = JSON.parse(
-  readFileSync(join(here, "..", "skill", "mdword", "galleries.json"), "utf8"),
+  readFileSync(join(here, "..", "skill", "mdoffice", "galleries.json"), "utf8"),
 );
 
 /**
@@ -104,23 +104,23 @@ const ZIP = "/usr/bin/zip";
  */
 export async function writeSkill({ dir }) {
   const manifest = JSON.parse(
-    readFileSync(join(here, "..", "skill", "mdword", "pages.json"), "utf8"),
+    readFileSync(join(here, "..", "skill", "mdoffice", "pages.json"), "utf8"),
   );
   const examples = readManifest();
 
-  const bundle = join(dir.output, "skills", "mdword");
+  const bundle = join(dir.output, "skills", "mdoffice");
 
   await rm(bundle, { recursive: true, force: true });
   await mkdir(bundle, { recursive: true });
 
   // The skill itself, and the scripts it points at.
-  await cp(join(here, "..", "skill", "mdword", "SKILL.md"), join(bundle, "SKILL.md"));
+  await cp(join(here, "..", "skill", "mdoffice", "SKILL.md"), join(bundle, "SKILL.md"));
   await mkdir(join(bundle, "scripts"), { recursive: true });
 
   await Promise.all(
-    (await readdir(join(here, "..", "skill", "mdword", "scripts"))).map((script) =>
+    (await readdir(join(here, "..", "skill", "mdoffice", "scripts"))).map((script) =>
       cp(
-        join(here, "..", "skill", "mdword", "scripts", script),
+        join(here, "..", "skill", "mdoffice", "scripts", script),
         join(bundle, "scripts", script),
       ),
     ),
@@ -246,7 +246,7 @@ export async function writeSkill({ dir }) {
       {
         skills: [
           {
-            name: "mdword",
+            name: "mdoffice",
             version,
             files: files.map((file) => relative(bundle, file).replaceAll("\\", "/")),
           },
@@ -257,7 +257,7 @@ export async function writeSkill({ dir }) {
     )}\n`,
   );
 
-  await archive(bundle, join(dir.output, "skills", "mdword.zip"));
+  await archive(bundle, join(dir.output, "skills", "mdoffice.zip"));
 }
 
 /**

@@ -80,12 +80,15 @@ it('refuses the raw form with no attributes in a deck', function () {
     expect($message)->toContain('which says nothing');
 });
 
-it('does not honour a label that holds Markdown', function () {
-    says(Site::GENERAL_DIRECTIVES, 'is not honoured as emphasis');
+it('honours a label that holds Markdown', function () {
+    says(Site::GENERAL_DIRECTIVES, 'the label is parsed as inline Markdown');
 
-    $message = Deck::refusal("A :style[**Bakery**]{color=00B4D8} B\n");
+    // The word is drawn in the style and in bold, and the asterisks are not in the
+    // deck at all.
+    $slide = Deck::slide("A :style[**Bakery**]{color=00B4D8} B\n");
 
-    expect($message)->toContain('which is Markdown');
+    expect($slide)->toContain('Bakery')
+        ->not->toContain('**Bakery**');
 });
 
 it('reads the named styles of a theme from the section the page names', function () {
@@ -339,12 +342,13 @@ it('refuses a highlight in a deck, by name', function () {
     expect($message)->toContain('which the slides half does not draw');
 });
 
-it('refuses a label that holds Markdown in a deck', function () {
-    says(Site::PRESENTATION_DIRECTIVES, 'a complete Markdown construct in one is refused');
+it('draws a label that holds Markdown in a deck', function () {
+    says(Site::PRESENTATION_DIRECTIVES, 'a label is **parsed as inline Markdown**');
 
-    $message = Deck::refusal("A :style[**Bakery**]{color=00B4D8} B\n");
+    $slide = Deck::slide("A :style[**Bakery**]{color=00B4D8} B\n");
 
-    expect($message)->toContain('which is Markdown');
+    expect($slide)->toContain('Bakery')
+        ->not->toContain('**Bakery**');
 });
 
 it('draws a word in a named style, in the colour the theme gives it', function () {
@@ -410,12 +414,14 @@ it('writes a name the theme does not have as its own source text', function () {
     expect($body)->toContain(':brand[Bakery]');
 });
 
-it('writes a label that holds Markdown as the source text of a Word document', function () {
-    says(Site::WORD_DIRECTIVES, 'a complete Markdown construct in one is drawn as the source text as well');
+it('draws a label that holds Markdown in a Word document', function () {
+    says(Site::WORD_DIRECTIVES, 'the label is parsed as inline Markdown');
 
     $body = Document::body("---\ntheme: corporate\n---\n\nA :brand[**Bakery**] B\n");
 
-    expect($body)->toContain(':brand[**Bakery**]');
+    expect($body)->toContain('Bakery')
+        ->not->toContain('**Bakery**')
+        ->not->toContain(':brand[**Bakery**]');
 });
 
 it('reads a word in a text style back as the word', function () {

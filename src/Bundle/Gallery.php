@@ -24,16 +24,16 @@ final class Gallery
      */
     private static function manifest(string $root): array
     {
-        $file = $root . '/skill/mdword/galleries.json';
+        $file = $root . '/skill/mdoffice/galleries.json';
 
         if (! \is_file($file)) {
-            throw UnreadableGallery::unreadable('skill/mdword/galleries.json');
+            throw UnreadableGallery::unreadable('skill/mdoffice/galleries.json');
         }
 
         $parsed = \json_decode((string) \file_get_contents($file), true);
 
         if (! \is_array($parsed)) {
-            throw UnreadableGallery::notJson('skill/mdword/galleries.json');
+            throw UnreadableGallery::notJson('skill/mdoffice/galleries.json');
         }
 
         return [

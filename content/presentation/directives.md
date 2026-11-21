@@ -135,9 +135,8 @@ it**, and the message names the styles the theme does have. Every inline directi
 text style, so `Status :green[go]` — which reads like a status — names a style the theme does not
 have, and it fails the build rather than reaching the slide as text.
 
-A label is **plain text** — the directives package stores a label as a string rather than parsing
-it as Markdown — so a complete Markdown construct in one is refused, and the message names the two
-ways out: give the style the weight, or write the emphasis in the paragraph around it. A bare `*`
+A label is **parsed as inline Markdown** — the directives package parses it — so
+`:brand[**Bakery**]` is drawn as the word "Bakery" in the style and in bold. A bare `*`
 or `_` is a character and not an intent, so `2 * 3` and `snake_case` are drawn as they are.
 
 {% example "A word in a colour of its own, inside a box" %}
@@ -148,6 +147,19 @@ layout: blank
 
 :::content{left=8% top=40% width=60% height=20% fill=none font-size=20}
 Resilience :style[Bakery]{color=00B4D8} is open.
+:::
+````
+{% endexample %}
+
+{% example "A word in a style, holding emphasis of its own" %}
+````md presentation
+---
+theme: corporate-dark
+layout: blank
+---
+
+:::content{left=8% top=40% width=60% height=20% fill=none font-size=20}
+Resilience :brand[**Bakery**] is open. It has been since :muted[*2019*].
 :::
 ````
 {% endexample %}
