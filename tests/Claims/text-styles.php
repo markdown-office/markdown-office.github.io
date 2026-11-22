@@ -44,6 +44,15 @@ const PAGE_NAME = '"acme"';
 /** A theme that names a style called `style`, which is the raw form's own name. */
 const RESERVED_STYLE = "textStyles:\n  style:\n    color: FF0000\n";
 
+/**
+ * The asterisks of a label's own Markdown, as the output would hold them if they
+ * were text rather than markup.
+ */
+const LABEL_ASTERISKS = '**Bakery**';
+
+/** The property a deck's run carries when the run is bold. */
+const DECK_BOLD = 'b="1"';
+
 /** A deck that names a theme of its own and writes nothing in it. */
 const THEME_ONLY = "---\ntheme: mine\n---\n\n# One\n";
 
@@ -90,8 +99,8 @@ it('honours a label that holds Markdown', function () {
 
     expect($run)->not->toBe('')
         ->toContain('<a:srgbClr val="00B4D8"')
-        ->toContain('b="1"');
-    expect($slide)->not->toContain('**Bakery**');
+        ->toContain(DECK_BOLD);
+    expect($slide)->not->toContain(LABEL_ASTERISKS);
 });
 
 it('reads the named styles of a theme from the section the page names', function () {
@@ -353,8 +362,8 @@ it('draws a label that holds Markdown in a deck', function () {
 
     expect($run)->not->toBe('')
         ->toContain('<a:srgbClr val="00B4D8"')
-        ->toContain('b="1"');
-    expect($slide)->not->toContain('**Bakery**');
+        ->toContain(DECK_BOLD);
+    expect($slide)->not->toContain(LABEL_ASTERISKS);
 });
 
 it('draws a word in a named style, in the colour the theme gives it', function () {
@@ -382,7 +391,7 @@ it('leaves a property off the run of a deck when an attribute is false', functio
         Theme::BRAND,
     );
 
-    expect(Deck::run($slide, 'Bakery'))->not->toContain('b="1"');
+    expect(Deck::run($slide, 'Bakery'))->not->toContain(DECK_BOLD);
 });
 
 it('reads the named styles of a Word theme from the section the page names', function () {
@@ -432,7 +441,7 @@ it('draws a label that holds Markdown in a Word document', function () {
         ->toContain('<w:color w:val="00B4D8"/>')
         ->toContain('<w:b w:val="1"/>');
     expect($body)->not->toContain(':style[**Bakery**]')
-        ->not->toContain('**Bakery**');
+        ->not->toContain(LABEL_ASTERISKS);
 });
 
 it('reads a word in a text style back as the word', function () {
