@@ -53,7 +53,7 @@ function client(array $environment, array $arguments): array
     ];
 
     $process = proc_open(
-        [PHP_BINARY, $root . '/skill/mdword/scripts/render.php', ...$arguments],
+        [PHP_BINARY, $root . '/skill/mdoffice/scripts/render.php', ...$arguments],
         $descriptors,
         $pipes,
         null,
@@ -111,8 +111,8 @@ function aRun(): array
 {
     $unique = bin2hex(random_bytes(6));
 
-    $home = sys_get_temp_dir() . '/mdword-home-' . $unique;
-    $out = sys_get_temp_dir() . '/mdword-out-' . $unique;
+    $home = sys_get_temp_dir() . '/mdoffice-home-' . $unique;
+    $out = sys_get_temp_dir() . '/mdoffice-out-' . $unique;
 
     mkdir($home, 0o777, true);
     mkdir($out, 0o777, true);

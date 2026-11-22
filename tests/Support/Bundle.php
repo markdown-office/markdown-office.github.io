@@ -27,7 +27,7 @@ final class Bundle
      */
     public static function built(): string
     {
-        return self::output() . '/skills/mdword';
+        return self::output() . '/skills/mdoffice';
     }
 
     /**
@@ -46,7 +46,7 @@ final class Bundle
             import { mkdtempSync } from "node:fs";
             import { tmpdir } from "node:os";
 
-            const dir = { output: mkdtempSync(tmpdir() + "/mdword-bundle-") };
+            const dir = { output: mkdtempSync(tmpdir() + "/mdoffice-bundle-") };
 
             await writeSkill({ dir });
 

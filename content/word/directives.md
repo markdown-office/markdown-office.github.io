@@ -323,10 +323,10 @@ writes the directive out as its own source text.**
 | `:brand[Bakery]` where the theme has no `brand` | `:brand[Bakery]` |
 | `:style[Bakery]` with no attributes | `:style[Bakery]` |
 | `:brand[Bakery]{weight=900}` | `:brand[Bakery]{weight="900"}` |
-| `:brand[**Bakery**]` | `:brand[**Bakery**]` |
 
-The label is plain text, so a complete Markdown construct in one is drawn as the source text as
-well. A bare `*` or `_` is not Markdown: `2 * 3` and `snake_case` are ordinary text, and the word
+The label is parsed as inline Markdown, so a complete Markdown construct in one is honoured: `:brand[**Bakery**]`
+is the word "Bakery" in the style and in bold, and the asterisks are not in the document at all. A bare `*`
+or `_` is not Markdown: `2 * 3` and `snake_case` are ordinary text, and the word
 is written in the style as it stands.
 
 {% example "A word in the theme's own named style" %}
@@ -336,6 +336,16 @@ theme: corporate
 ---
 
 Resilience :brand[Bakery] is open. It has been since :muted[2019].
+````
+{% endexample %}
+
+{% example "A word in a style, holding emphasis of its own" %}
+````md word
+---
+theme: corporate
+---
+
+Resilience :brand[**Bakery**] is open. It has been since :muted[*2019*].
 ````
 {% endexample %}
 

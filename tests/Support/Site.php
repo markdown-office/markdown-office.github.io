@@ -84,7 +84,7 @@ final class Site
      */
     public static function skill(): string
     {
-        return (string) \file_get_contents(self::root() . '/skill/mdword/SKILL.md');
+        return (string) \file_get_contents(self::root() . '/skill/mdoffice/SKILL.md');
     }
 
     /**

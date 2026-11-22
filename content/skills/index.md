@@ -17,7 +17,7 @@ use a design that already exists. This page is how it gets them.
 when to use it — and beside it the files it points at: the documentation, the examples, and
 the scripts that render a document so that it can be looked at.
 
-**The one for this suite is `mdword`**, and it is built from this site. The pages in it are
+**The one for this suite is `mdoffice`**, and it is built from this site. The pages in it are
 the pages of this site; the examples in it are this site's own and the two libraries' own.
 Nothing in it is written twice: it is a copy made by the build, and a copy that is made by
 the build cannot drift from what it was made from.
@@ -37,24 +37,24 @@ OpenCode reads it over the network and needs nothing downloaded — one line in
 Every other agent reads a directory, and the whole bundle is one file:
 
 ```bash
-curl -LO https://markdown-office.github.io/skills/mdword.zip
-unzip -q mdword.zip -d ~/.agents/skills/mdword
+curl -LO https://markdown-office.github.io/skills/mdoffice.zip
+unzip -q mdoffice.zip -d ~/.agents/skills/mdoffice
 ```
 
 ## Where it goes
 
 | Agent | It looks here | What to do |
 | --- | --- | --- |
-| **Codex** | `~/.agents/skills/mdword` | nothing — that is where it is |
-| **OpenCode** | `~/.agents/skills/mdword`, `~/.config/opencode/skills/mdword` and `~/.claude/skills/mdword` | nothing, or the catalog above |
-| **Claude Code** | `~/.claude/skills/mdword` | a symlink to the unpacked copy |
-| **GitHub Copilot** | `~/.copilot/skills/mdword`, and `.github/skills/mdword` in a repository | a symlink to the unpacked copy |
+| **Codex** | `~/.agents/skills/mdoffice` | nothing — that is where it is |
+| **OpenCode** | `~/.agents/skills/mdoffice`, `~/.config/opencode/skills/mdoffice` and `~/.claude/skills/mdoffice` | nothing, or the catalog above |
+| **Claude Code** | `~/.claude/skills/mdoffice` | a symlink to the unpacked copy |
+| **GitHub Copilot** | `~/.copilot/skills/mdoffice`, and `.github/skills/mdoffice` in a repository | a symlink to the unpacked copy |
 
 So the bundle is unpacked in one place and the other two are links to it:
 
 ```bash
-ln -s ~/.agents/skills/mdword ~/.claude/skills/mdword
-ln -s ~/.agents/skills/mdword ~/.copilot/skills/mdword
+ln -s ~/.agents/skills/mdoffice ~/.claude/skills/mdoffice
+ln -s ~/.agents/skills/mdoffice ~/.copilot/skills/mdoffice
 ```
 
 A repository can carry one of its own instead, under `.agents/skills/` or `.github/skills/`,
@@ -73,7 +73,7 @@ curl -s https://markdown-office.github.io/skills/index.json
 ## What is in it
 
 ```
-mdword/
+mdoffice/
 ├── SKILL.md              what the library does, and how to use it
 ├── VERSION               the version of this bundle
 ├── references/           the documentation, one file per page
