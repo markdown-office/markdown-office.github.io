@@ -48,7 +48,7 @@ const RESERVED_STYLE = "textStyles:\n  style:\n    color: FF0000\n";
  * The asterisks of a label's own Markdown, as the output would hold them if they
  * were text rather than markup.
  */
-const LABEL_ASTERISKS = '**Bakery**';
+const LABEL_ASTERISKS = '**Corp**';
 
 /** The property a deck's run carries when the run is bold. */
 const DECK_BOLD = 'b="1"';
@@ -84,7 +84,7 @@ it('refuses a Word theme that names a style "style"', function () {
 it('refuses the raw form with no attributes in a deck', function () {
     says(Site::GENERAL_DIRECTIVES, 'a style with neither a named style nor a property says nothing');
 
-    $message = Deck::refusal("A :style[Bakery] B\n");
+    $message = Deck::refusal("A :style[Corp] B\n");
 
     expect($message)->toContain('which says nothing');
 });
@@ -94,11 +94,11 @@ it('honours a label that holds Markdown', function () {
 
     // The run and not the deck: a deck that holds the word somewhere says nothing
     // about whether that word was drawn in the style and in bold.
-    $slide = Deck::slide("A :style[**Bakery**]{color=00B4D8} B\n");
-    $run = Deck::run($slide, 'Bakery');
+    $slide = Deck::slide("A :style[**Corp**]{color=6D4BD1} B\n");
+    $run = Deck::run($slide, 'Corp');
 
     expect($run)->not->toBe('')
-        ->toContain('<a:srgbClr val="00B4D8"')
+        ->toContain('<a:srgbClr val="6D4BD1"')
         ->toContain(DECK_BOLD);
     expect($slide)->not->toContain(LABEL_ASTERISKS);
 });
@@ -296,11 +296,11 @@ it('folds a style\'s name, in both halves', function () {
     }
 
     $slide = Theme::slidesSlide(
-        "---\ntheme: mine\n---\n\nA :brand[Bakery] B :Brand[Croissant] C\n",
+        "---\ntheme: mine\n---\n\nA :brand[Corp] B :Brand[Croissant] C\n",
         "textStyles:\n  Brand:\n    color: FF0000\n",
     );
 
-    expect(Deck::run($slide, 'Bakery'))->toContain('<a:srgbClr val="FF0000"');
+    expect(Deck::run($slide, 'Corp'))->toContain('<a:srgbClr val="FF0000"');
     expect(Deck::run($slide, 'Croissant'))->toContain('<a:srgbClr val="FF0000"');
 
     $root = Theme::word("textStyles:\n  Brand:\n    color: \"0B5CAB\"\n");
@@ -308,12 +308,12 @@ it('folds a style\'s name, in both halves', function () {
     $body = Directory::during(
         $root,
         static fn (string $root): string => Document::body(
-            "---\ntheme: mine\n---\n\nA :brand[Bakery] B :Brand[Croissant] C\n",
+            "---\ntheme: mine\n---\n\nA :brand[Corp] B :Brand[Croissant] C\n",
             $root,
         ),
     );
 
-    expect(Document::run($body, 'Bakery'))->toContain('<w:color w:val="0B5CAB"/>');
+    expect(Document::run($body, 'Corp'))->toContain('<w:color w:val="0B5CAB"/>');
     expect(Document::run($body, 'Croissant'))->toContain('<w:color w:val="0B5CAB"/>');
 });
 
@@ -321,7 +321,7 @@ it('refuses a text style the theme does not have, and names the styles it has', 
     says(Site::PRESENTATION_DIRECTIVES, 'the message names the styles the theme does have');
 
     $message = Theme::slidesRefusal(
-        "---\ntheme: mine\n---\n\nResilience :bakery[Bakery] is open.\n",
+        "---\ntheme: mine\n---\n\nAcme :corp[Corp] is open.\n",
         "textStyles:\n  brand:\n    color: FF0000\n    bold: true\n  muted:\n    color: accent1\n    size: 10\n",
     );
 
@@ -349,7 +349,7 @@ it('says that a theme without named styles has none', function () {
 it('refuses a highlight in a deck, by name', function () {
     says(Site::PRESENTATION_DIRECTIVES, 'refused by name rather than accepted and quietly dropped');
 
-    $message = Deck::refusal("A :style[Bakery]{highlight=00B4D8} B\n");
+    $message = Deck::refusal("A :style[Corp]{highlight=6D4BD1} B\n");
 
     expect($message)->toContain('which the slides half does not draw');
 });
@@ -357,11 +357,11 @@ it('refuses a highlight in a deck, by name', function () {
 it('draws a label that holds Markdown in a deck', function () {
     says(Site::PRESENTATION_DIRECTIVES, 'a label is **parsed as inline Markdown**');
 
-    $slide = Deck::slide("A :style[**Bakery**]{color=00B4D8} B\n");
-    $run = Deck::run($slide, 'Bakery');
+    $slide = Deck::slide("A :style[**Corp**]{color=6D4BD1} B\n");
+    $run = Deck::run($slide, 'Corp');
 
     expect($run)->not->toBe('')
-        ->toContain('<a:srgbClr val="00B4D8"')
+        ->toContain('<a:srgbClr val="6D4BD1"')
         ->toContain(DECK_BOLD);
     expect($slide)->not->toContain(LABEL_ASTERISKS);
 });
@@ -372,26 +372,26 @@ it('draws a word in a named style, in the colour the theme gives it', function (
         Theme::BRAND,
     );
 
-    expect(Deck::run($slide, 'Bakery'))->toContain('<a:srgbClr val="FF0000"');
+    expect(Deck::run($slide, 'Corp'))->toContain('<a:srgbClr val="FF0000"');
 });
 
 it('overrides a named style with the attributes on the directive', function () {
     $slide = Theme::slidesSlide(
-        "---\ntheme: mine\n---\n\nA :brand[Bakery]{color=00B4D8} B\n",
+        "---\ntheme: mine\n---\n\nA :brand[Corp]{color=6D4BD1} B\n",
         Theme::BRAND,
     );
 
-    expect(Deck::run($slide, 'Bakery'))->toContain('<a:srgbClr val="00B4D8"');
-    expect(Deck::run($slide, 'Bakery'))->not->toContain('<a:srgbClr val="FF0000"');
+    expect(Deck::run($slide, 'Corp'))->toContain('<a:srgbClr val="6D4BD1"');
+    expect(Deck::run($slide, 'Corp'))->not->toContain('<a:srgbClr val="FF0000"');
 });
 
 it('leaves a property off the run of a deck when an attribute is false', function () {
     $slide = Theme::slidesSlide(
-        "---\ntheme: mine\n---\n\nA :brand[Bakery]{bold=false} B\n",
+        "---\ntheme: mine\n---\n\nA :brand[Corp]{bold=false} B\n",
         Theme::BRAND,
     );
 
-    expect(Deck::run($slide, 'Bakery'))->not->toContain(DECK_BOLD);
+    expect(Deck::run($slide, 'Corp'))->not->toContain(DECK_BOLD);
 });
 
 it('reads the named styles of a Word theme from the section the page names', function () {
@@ -403,30 +403,30 @@ it('reads the named styles of a Word theme from the section the page names', fun
 it('draws a word in a named style in a Word document', function () {
     says(Site::WORD_DIRECTIVES, 'the named styles come from the theme');
 
-    $body = Document::body("---\ntheme: corporate\n---\n\nResilience :brand[Bakery] is open.\n");
+    $body = Document::body("---\ntheme: corporate\n---\n\nAcme :brand[Corp] is open.\n");
 
-    expect(Document::run($body, 'Bakery'))->not->toBe('');
-    expect($body)->not->toContain(':brand[Bakery]');
+    expect(Document::run($body, 'Corp'))->not->toBe('');
+    expect($body)->not->toContain(':brand[Corp]');
 });
 
 it('overrides a named style with the attributes on the directive in a Word document', function () {
-    $body = Document::body("---\ntheme: corporate\n---\n\nA :brand[Bakery]{color=FF0000} B\n");
+    $body = Document::body("---\ntheme: corporate\n---\n\nA :brand[Corp]{color=FF0000} B\n");
 
-    expect(Document::run($body, 'Bakery'))->toContain('<w:color w:val="FF0000"/>');
+    expect(Document::run($body, 'Corp'))->toContain('<w:color w:val="FF0000"/>');
 });
 
 it('leaves a property off the run of a Word document when an attribute is false', function () {
-    $body = Document::body("---\ntheme: corporate\n---\n\nA :brand[Bakery]{bold=false} B\n");
+    $body = Document::body("---\ntheme: corporate\n---\n\nA :brand[Corp]{bold=false} B\n");
 
-    expect(Document::run($body, 'Bakery'))->not->toContain('<w:b');
+    expect(Document::run($body, 'Corp'))->not->toContain('<w:b');
 });
 
 it('writes a name the theme does not have as its own source text', function () {
     says(Site::WORD_DIRECTIVES, 'writes the directive out as its own source text');
 
-    $body = Document::body("Resilience :brand[Bakery] is open.\n");
+    $body = Document::body("Acme :brand[Corp] is open.\n");
 
-    expect($body)->toContain(':brand[Bakery]');
+    expect($body)->toContain(':brand[Corp]');
 });
 
 it('draws a label that holds Markdown in a Word document', function () {
@@ -434,22 +434,22 @@ it('draws a label that holds Markdown in a Word document', function () {
 
     // The theme's `brand` style is bold already, so the emphasis is shown through a
     // style of its own: the bold in the run is the Markdown's and nowhere else.
-    $body = Document::body("---\ntheme: corporate\n---\n\nA :style[**Bakery**]{color=00B4D8} B\n");
-    $run = Document::run($body, 'Bakery');
+    $body = Document::body("---\ntheme: corporate\n---\n\nA :style[**Corp**]{color=6D4BD1} B\n");
+    $run = Document::run($body, 'Corp');
 
     expect($run)->not->toBe('')
-        ->toContain('<w:color w:val="00B4D8"/>')
+        ->toContain('<w:color w:val="6D4BD1"/>')
         ->toContain('<w:b w:val="1"/>');
-    expect($body)->not->toContain(':style[**Bakery**]')
+    expect($body)->not->toContain(':style[**Corp**]')
         ->not->toContain(LABEL_ASTERISKS);
 });
 
 it('reads a word in a text style back as the word', function () {
     says(Site::WORD_ROUND_TRIP, 'the style is not, and neither is the name it was written under');
 
-    $path = Document::path("---\ntheme: corporate\n---\n\nResilience :brand[Bakery] is open.\n");
+    $path = Document::path("---\ntheme: corporate\n---\n\nAcme :brand[Corp] is open.\n");
     $markdown = (new WordToMarkdown($path))->convert();
 
-    expect($markdown)->toContain('Bakery');
+    expect($markdown)->toContain('Corp');
     expect($markdown)->not->toContain(':brand');
 });

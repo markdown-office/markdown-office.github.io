@@ -116,10 +116,10 @@ mdoffice theme: wrote the theme for "probe.pptx" into "/tmp/probe-theme".
   template.pptx the deck's 3 layouts, without its 2 slides
 
   colours
-    dk1        #0D1B2A   the deck's master
-    lt1        #F8FAFC   the type
-    accent1    #00B4D8   the colour the deck draws with
-    hlink      #00B4D8   the accent, as a link is drawn
+    dk1        #1A1A22   the deck's master
+    lt1        #F6F6FA   the type
+    accent1    #6D4BD1   the colour the deck draws with
+    hlink      #6D4BD1   the accent, as a link is drawn
 
   type
     heading        Cambria                  the face of the type at the title size

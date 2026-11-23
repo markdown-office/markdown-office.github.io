@@ -106,10 +106,10 @@ reset to a default. A property set to `false` is not set either — it means "no
 than "off", because neither format can write a weight of none.
 
 **The label is parsed as inline Markdown.** A directive's label is Markdown, and the
-directives package parses it: so `:brand[**Bakery**]` is the word "Bakery" in the style and in
+directives package parses it: so `:brand[**Corp**]` is the word "Corp" in the style and in
 bold, and the asterisks are markup rather than characters. A bare `*` or `_` is a character
 rather than an intent, so `2 * 3` and `snake_case` are ordinary text. So is a construct
-CommonMark does not call emphasis: `__ Bakery__` and `** text**` are text, because a delimiter
+CommonMark does not call emphasis: `__ Corp__` and `** text**` are text, because a delimiter
 that opens an emphasis may not be followed by a space and one that closes it may not be
 preceded by one. A link cannot be one: a label holds no brackets, so it ends at the first `]`
 and there is no way to write a link in one.

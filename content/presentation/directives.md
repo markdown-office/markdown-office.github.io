@@ -136,7 +136,7 @@ text style, so `Status :green[go]` — which reads like a status — names a sty
 have, and it fails the build rather than reaching the slide as text.
 
 A label is **parsed as inline Markdown** — the directives package parses it — so
-`:brand[**Bakery**]` is drawn as the word "Bakery" in the style and in bold. A bare `*`
+`:brand[**Corp**]` is drawn as the word "Corp" in the style and in bold. A bare `*`
 or `_` is a character and not an intent, so `2 * 3` and `snake_case` are drawn as they are.
 
 {% example "A word in a colour of its own, inside a box" %}
@@ -146,7 +146,7 @@ layout: blank
 ---
 
 :::content{left=8% top=40% width=60% height=20% fill=none font-size=20}
-Resilience :style[Bakery]{color=00B4D8} is open.
+Acme :style[Corp]{color=6D4BD1} is open.
 :::
 ````
 {% endexample %}
@@ -159,7 +159,7 @@ layout: blank
 ---
 
 :::content{left=8% top=40% width=60% height=20% fill=none font-size=20}
-Resilience :brand[**Bakery**] is open. It has been since :muted[*2019*].
+Acme :brand[**Corp**] is open. It has been since :muted[*2019*].
 :::
 ````
 {% endexample %}
@@ -423,11 +423,11 @@ but its own settings**:
 ---
 template: brand
 ---
-:::content{left=4.5% top=3.913% width=29.996% height=4.969% fill=none padding=0 color=FFFFFF font-size=11 font-family=Calibri align=left vertical-align=middle}
-Resilience
+:::content{left=4.5% top=3.9% width=30% height=5% fill=none padding=0 color=FFFFFF font-size=11 font-family=Calibri align=left vertical-align=middle}
+Acme
 :::
 
-::line{left=5% top=72.889% width=30% height=0.185% stroke=00B4D8 stroke-width=1}
+::line{left=5% top=72.9% width=30% height=0.2% stroke=6D4BD1 stroke-width=1}
 ```
 
 and every slide that wants that furniture names it:
@@ -462,11 +462,11 @@ see [The deck's own settings](#the-decks-own-settings).
 ---
 template: brand
 ---
-:::content{left=4.5% top=3.913% width=29.996% height=4.969% fill=none padding=0 color=FFFFFF font-size=11 font-family=Calibri align=left vertical-align=middle}
-Resilience
+:::content{left=4.5% top=3.9% width=30% height=5% fill=none padding=0 color=FFFFFF font-size=11 font-family=Calibri align=left vertical-align=middle}
+Acme
 :::
 
-::line{left=5% top=72.889% width=30% height=0.185% stroke=00B4D8 stroke-width=1}
+::line{left=5% top=72.9% width=30% height=0.2% stroke=6D4BD1 stroke-width=1}
 
 ---
 layout: blank

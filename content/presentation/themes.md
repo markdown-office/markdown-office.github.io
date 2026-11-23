@@ -64,7 +64,7 @@ One file, with every section in it:
 
 ```yaml
 # themes/mine/theme.yml
-name: Resilience Bakery
+name: Acme Corp
 description: The house look.
 author: Markdown Office
 dark: true
