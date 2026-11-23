@@ -199,7 +199,7 @@ the section break survives and the columns do not. That is reported the way ever
 ## `::textbox` — a floating box with text in it
 
 ```markdown
-::textbox[A floating note]{width=6 height=2 left=1 top=1 border=00B4D8}
+::textbox[A floating note]{width=6 height=2 left=1 top=1 border=6D4BD1}
 ```
 
 The label is the text the box holds.
@@ -307,7 +307,7 @@ letting the document quietly lose the thing.
 A word in a style, in the middle of a sentence:
 
 ```markdown
-Resilience :brand[Bakery] is open.
+Acme :brand[Corp] is open.
 ```
 
 The three forms and the eight attributes are the suite's, and are on
@@ -320,12 +320,12 @@ writes the directive out as its own source text.**
 
 | Written | In the document |
 | --- | --- |
-| `:brand[Bakery]` where the theme has no `brand` | `:brand[Bakery]` |
-| `:style[Bakery]` with no attributes | `:style[Bakery]` |
-| `:brand[Bakery]{weight=900}` | `:brand[Bakery]{weight="900"}` |
+| `:brand[Corp]` where the theme has no `brand` | `:brand[Corp]` |
+| `:style[Corp]` with no attributes | `:style[Corp]` |
+| `:brand[Corp]{weight=900}` | `:brand[Corp]{weight="900"}` |
 
-The label is parsed as inline Markdown, so a complete Markdown construct in one is honoured: `:brand[**Bakery**]`
-is the word "Bakery" in the style and in bold, and the asterisks are not in the document at all. A bare `*`
+The label is parsed as inline Markdown, so a complete Markdown construct in one is honoured: `:brand[**Corp**]`
+is the word "Corp" in the style and in bold, and the asterisks are not in the document at all. A bare `*`
 or `_` is not Markdown: `2 * 3` and `snake_case` are ordinary text, and the word
 is written in the style as it stands.
 
@@ -335,7 +335,7 @@ is written in the style as it stands.
 theme: corporate
 ---
 
-Resilience :brand[Bakery] is open. It has been since :muted[2019].
+Acme :brand[Corp] is open. It has been since :muted[2019].
 ````
 {% endexample %}
 
@@ -345,7 +345,7 @@ Resilience :brand[Bakery] is open. It has been since :muted[2019].
 theme: corporate
 ---
 
-Resilience :brand[**Bakery**] is open. It has been since :muted[*2019*].
+Acme :brand[**Corp**] is open. It has been since :muted[*2019*].
 ````
 {% endexample %}
 

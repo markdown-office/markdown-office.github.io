@@ -126,12 +126,12 @@ it('says what the three faces are, and draws a style\'s font in the theme\'s fac
     says(Site::PRESENTATION_THEMES, 'A text style\'s `font:` may name one of the three');
 
     $slide = Theme::slidesSlide(
-        "---\ntheme: mine\n---\n\nA :slot[Bakery] B :literal[Croissant] C\n",
+        "---\ntheme: mine\n---\n\nA :slot[Corp] B :literal[Croissant] C\n",
         "fonts:\n  heading: Avenir Next\ntextStyles:\n  slot:\n    font: heading\n  literal:\n    font: Inter\n",
     );
 
     // The slot is the theme's face, and the name that is not a slot is a family as written.
-    expect(Deck::run($slide, 'Bakery'))->toContain('typeface="Avenir Next"');
+    expect(Deck::run($slide, 'Corp'))->toContain('typeface="Avenir Next"');
     expect(Deck::run($slide, 'Croissant'))->toContain('typeface="Inter"');
 });
 

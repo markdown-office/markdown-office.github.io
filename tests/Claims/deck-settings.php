@@ -24,12 +24,12 @@ const DECK_SETTINGS = "---\ndeck-settings:\n  background: \"#101014\"\n---\n\n# 
 /**
  * The same deck, with a template whose own settings name a background.
  */
-const DECK_SETTINGS_TEMPLATED = "---\ndeck-settings:\n  background: \"#101014\"\n---\n\n---\ntemplate: brand\ntemplate-settings:\n  background: \"#303030\"\n---\n:::content{left=4.5% top=3.913% width=29.996% height=4.969% fill=none padding=0 color=FFFFFF font-size=11 font-family=Calibri align=left vertical-align=middle}\nResilience\n:::\n\n---\nlayout: blank\ntemplate: brand\n---\n\n## Two\n";
+const DECK_SETTINGS_TEMPLATED = "---\ndeck-settings:\n  background: \"#101014\"\n---\n\n---\ntemplate: brand\ntemplate-settings:\n  background: \"#303030\"\n---\n:::content{left=4.5% top=3.9% width=30% height=5% fill=none padding=0 color=FFFFFF font-size=11 font-family=Calibri align=left vertical-align=middle}\nAcme\n:::\n\n---\nlayout: blank\ntemplate: brand\n---\n\n## Two\n";
 
 /**
  * The same deck, with a template and a slide that names a background of its own.
  */
-const DECK_SETTINGS_TEMPLATED_AND_SLIDDEN = "---\ndeck-settings:\n  background: \"#101014\"\n---\n\n---\ntemplate: brand\ntemplate-settings:\n  background: \"#303030\"\n---\n:::content{left=4.5% top=3.913% width=29.996% height=4.969% fill=none padding=0 color=FFFFFF font-size=11 font-family=Calibri align=left vertical-align=middle}\nResilience\n:::\n\n---\nlayout: blank\ntemplate: brand\nbackground: \"#404040\"\n---\n\n## Two\n";
+const DECK_SETTINGS_TEMPLATED_AND_SLIDDEN = "---\ndeck-settings:\n  background: \"#101014\"\n---\n\n---\ntemplate: brand\ntemplate-settings:\n  background: \"#303030\"\n---\n:::content{left=4.5% top=3.9% width=30% height=5% fill=none padding=0 color=FFFFFF font-size=11 font-family=Calibri align=left vertical-align=middle}\nAcme\n:::\n\n---\nlayout: blank\ntemplate: brand\nbackground: \"#404040\"\n---\n\n## Two\n";
 
 /**
  * The colours the decks above are drawn with, as the package writes them.

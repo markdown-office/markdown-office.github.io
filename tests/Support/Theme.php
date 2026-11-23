@@ -18,7 +18,7 @@ final class Theme
      * The deck every claim about a named style is drawn from: the theme is named in the
      * deck's own front matter, and the word is written in the style the theme gives.
      */
-    public const DECK = "---\ntheme: mine\n---\n\nResilience :brand[Bakery] is open.\n";
+    public const DECK = "---\ntheme: mine\n---\n\nAcme :brand[Corp] is open.\n";
 
     /**
      * A theme's named styles, as the section of a theme's file that carries them.

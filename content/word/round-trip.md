@@ -48,7 +48,7 @@ Checked, rather than assumed:
 | --- | --- |
 | `::toc{depth=2}` | `Press F9 to build the table of contents.` |
 | `:footnote[Source: the ledger.]` | nothing |
-| `:brand[Bakery]` | `Bakery` |
+| `:brand[Corp]` | `Corp` |
 | `::image[Revenue by quarter]{src="chart.png" width=4 height=2}` | a Markdown image with the alt text — the picture, without the size it was placed at |
 | `::caption[Figure 1: Revenue by quarter]{}` | `*Figure 1: Revenue by quarter*` — the text, in italics |
 | `::pagebreak` | nothing |
@@ -65,7 +65,7 @@ The second is a real Word footnote, and none of it comes back: the reader reads 
 the footnotes, so neither the mark nor the note is in what it finds. See
 [Word directives](/word/directives/).
 
-The third keeps the word and loses the style: `:brand[Bakery]` is written as direct formatting — a
+The third keeps the word and loses the style: `:brand[Corp]` is written as direct formatting — a
 colour, a weight, a size — and the reader reads bold, italic and strike and no colour. The word is
 there; the style is not, and neither is the name it was written under.
 

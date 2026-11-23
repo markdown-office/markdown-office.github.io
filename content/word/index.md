@@ -134,8 +134,8 @@ rather than parsed as Markdown. There are no attributes.
 > Word footnote, and the `.docx` carries `word/footnotes.xml`.
 
 **`:style[…]`** — a word in a style. The text in the brackets is the word, and the name is the
-style: `:brand[Bakery]` is "Bakery" in the theme's `brand` style, and `:style[Bakery]{color=00B4D8}`
-is "Bakery" in teal with no theme style behind it. Attributes on a directive override the style's
+style: `:brand[Corp]` is "Corp" in the theme's `brand` style, and `:style[Corp]{color=6D4BD1}`
+is "Corp" in violet with no theme style behind it. Attributes on a directive override the style's
 own properties for that word alone.
 
 **The seven that place objects in a document** — `::image`, `::caption`, `::pagebreak`,
