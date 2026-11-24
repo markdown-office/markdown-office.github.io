@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4cb25208b055a4344aa7d92f207bd971",
+    "content-hash": "91511de4b915836199fca0ed5597a6a0",
     "packages": [
         {
             "name": "composer/pcre",
@@ -736,11 +736,11 @@
         },
         {
             "name": "markdown-office/markdown-presentation",
-            "version": "0.5.0",
+            "version": "0.5.1",
             "dist": {
                 "type": "path",
                 "url": "../markdown-presentation",
-                "reference": "25706ba922a56e886ca7bb9ab082549c564ce155"
+                "reference": "10d5ad5c9b44a4b0a86f6f3b50fee61a639d2b0b"
             },
             "require": {
                 "cweagans/composer-patches": "^2.0",
@@ -835,11 +835,11 @@
         },
         {
             "name": "markdown-office/markdown-word",
-            "version": "0.4.0",
+            "version": "0.5.0",
             "dist": {
                 "type": "path",
                 "url": "../markdown-word",
-                "reference": "5648ea4a0712291ffab95a64bd9248eaab5a091f"
+                "reference": "4ac66c439f21d403c477fa898e7b74c64791e268"
             },
             "require": {
                 "cweagans/composer-patches": "^2.0",
